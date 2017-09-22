@@ -84,6 +84,10 @@
       <Project>{12427f13-a043-44a8-9054-497c6df75e4f}</Project>
       <Name>LocalSearch</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SimpleProblems\SimpleProblems.csproj">
+      <Project>{d4e3f62e-27c2-458a-822d-0e300bcf9fb5}</Project>
+      <Name>SimpleProblems</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

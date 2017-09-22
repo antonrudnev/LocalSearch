@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using LocalSearch.Solver;
 using LocalSearch.TSP;
-using LocalSearch.Packing2D;
 using System.Drawing.Imaging;
+using LocalSearch.Components;
 
 namespace TestForm
 {
     public partial class LocalSearchForm : Form
     {
-        INeighbourhood neighbourhood = new TspNeighbourhood(new TspProblem(50));
+        TspProblem tspProblem = new TspProblem(100);
 
-        private int multistart = 1;
+        private int multistart = 10;
         private int problemType = 0;
 
         private int layoutW = 300;
@@ -68,7 +68,14 @@ namespace TestForm
             costValueStatus.Text = "";
             iterationStatus.Text = "";
             algorithmStatus.Text = "Running...";
-            SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(neighbourhood);
+
+            TspSolution startSolution = new TspSolution(tspProblem);
+
+            SwapOperation swap = new SwapOperation(tspProblem.NumberOfCities);
+            ShiftOperation shift = new ShiftOperation(tspProblem.NumberOfCities);
+            TwoOptOperation twoOpt = new TwoOptOperation(tspProblem.NumberOfCities);
+
+            SimulatedAnnealing<IPermutation> localDescent = new SimulatedAnnealing<IPermutation>(new List<Operation> { swap, shift, twoOpt });
 
             if (wasResized)
             {
@@ -77,14 +84,20 @@ namespace TestForm
             }
 
             layouts.Clear();
-            layouts.AddRange(new List<Bitmap> { saCurrentLayout, saBestLayout,  ldCurrentLayout, ldBestLayout });
+            layouts.AddRange(new List<Bitmap> { saCurrentLayout, saBestLayout, ldCurrentLayout, ldBestLayout });
             saCost.Clear();
             saMinCost = int.MaxValue;
             saMaxCost = 0;
 
-            foreach (SolutionDetails solution in simulatedAnnealing.Minimize())
+            foreach (IPermutation solution in localDescent.Minimize(startSolution, new SimulatedAnnealingParameters()
             {
-                DrawSolution(solution, solution.IsBest ? saBestLayout : saCurrentLayout, "SA");
+                OutputDelayInMilliseconds = 1000,
+                InitProbability = 0.05,
+                OutputImprovementsOnly = false,
+                Multistart = multistart
+            }))
+            {
+                DrawSolution(solution, solution.IsCurrentBest ? saBestLayout : saCurrentLayout, "SA");
                 saCost.Add(solution.CostValue);
                 if (solution.CostValue > saMaxCost) saMaxCost = solution.CostValue;
                 if (solution.CostValue < saMinCost) saMinCost = solution.CostValue;
@@ -99,7 +112,14 @@ namespace TestForm
             costValueStatus.Text = "";
             iterationStatus.Text = "";
             algorithmStatus.Text = "Running...";
-            LocalDescentSearch localDescentSearch = new LocalDescentSearch(neighbourhood);
+
+            TspSolution startSolution = new TspSolution(tspProblem);
+
+            SwapOperation swap = new SwapOperation(tspProblem.NumberOfCities);
+            ShiftOperation shift = new ShiftOperation(tspProblem.NumberOfCities);
+            TwoOptOperation twoOpt = new TwoOptOperation(tspProblem.NumberOfCities);
+
+            LocalDescent<IPermutation> localDescent = new LocalDescent<IPermutation>(new List<Operation> { swap, shift, twoOpt });
 
             if (wasResized)
             {
@@ -113,9 +133,15 @@ namespace TestForm
             ldMinCost = int.MaxValue;
             ldMaxCost = 0;
 
-            foreach (SolutionDetails solution in localDescentSearch.Minimize(multistart))
+            foreach (IPermutation solution in localDescent.Minimize(startSolution, new LocalDescentParameters()
             {
-                DrawSolution(solution, solution.IsBest ? ldBestLayout : ldCurrentLayout, "LD");
+                OutputDelayInMilliseconds = 100,
+                OutputImprovementsOnly = false,
+                IsSteepestDescent = false,
+                Multistart = multistart
+            }))
+            {
+                DrawSolution(solution, solution.IsCurrentBest ? ldBestLayout : ldCurrentLayout, "LD");
                 ldCost.Add(solution.CostValue);
                 if (solution.CostValue > ldMaxCost) ldMaxCost = solution.CostValue;
                 if (solution.CostValue < ldMinCost) ldMinCost = solution.CostValue;
@@ -125,34 +151,34 @@ namespace TestForm
             algorithmStatus.Text = "Done";
         }
 
-        private void DrawSolution(SolutionDetails solution, Bitmap bitmap, string alg)
+        private void DrawSolution(ISolution solution, Bitmap bitmap, string alg)
         {
             toRenderBackground = false;
-            if (solution.IsBest)
+            if (solution.IsCurrentBest)
             {
-                costValueStatus.Text = solution.CostValue.ToString() + "  " + solution.N;
-                iterationStatus.Text = "It." + solution.Iteration.ToString();
+                costValueStatus.Text = solution.CostValue.ToString() + "  " + (solution as IPermutation).OperationName;
+                iterationStatus.Text = "It." + solution.IterationNumber.ToString();
             }
-            double scaleX = bitmap.Width / solution.MaxW;
-            double scaleY = bitmap.Height / solution.MaxH;
+            double scaleX = bitmap.Width / (solution as TspSolution).Details.MaxW;
+            double scaleY = bitmap.Height / (solution as TspSolution).Details.MaxH;
             int dotRadius = 5;
 
             using (Graphics g = Graphics.FromImage(bitmap))
             {
-                Pen pen = solution.IsBest && alg == "SA" ? new Pen(Color.Green) : alg == "SA" ? new Pen(Color.Blue) : solution.IsBest ? new Pen(Color.Red) : new Pen(Color.Purple);
-                SolidBrush brush = solution.IsBest && alg == "SA" ? new SolidBrush(Color.LightGreen) : alg == "SA" ? new SolidBrush(Color.LightBlue) : solution.IsBest ? new SolidBrush(Color.Orange) : new SolidBrush(Color.Magenta); ;
+                Pen pen = solution.IsCurrentBest && alg == "SA" ? new Pen(Color.Green) : alg == "SA" ? new Pen(Color.Blue) : solution.IsCurrentBest ? new Pen(Color.Red) : new Pen(Color.Purple);
+                SolidBrush brush = solution.IsCurrentBest && alg == "SA" ? new SolidBrush(Color.LightGreen) : alg == "SA" ? new SolidBrush(Color.LightBlue) : solution.IsCurrentBest ? new SolidBrush(Color.Orange) : new SolidBrush(Color.Magenta); ;
                 g.Clear(SystemColors.Control);
-                foreach (var line in solution.Lines)
+                foreach (var line in (solution as TspSolution).Details.Lines)
                 {
                     g.DrawLine(pen, (float)(line.Item1 * scaleX), (float)(line.Item2 * scaleY), (float)(line.Item3 * scaleX), (float)(line.Item4 * scaleY));
                     g.FillEllipse(brush, (float)(line.Item1 * scaleX - dotRadius), (float)(line.Item2 * scaleY - dotRadius), 2 * dotRadius, 2 * dotRadius);
                 }
-                foreach (var rect in solution.Rectangles)
+                foreach (var rect in (solution as TspSolution).Details.Rectangles)
                 {
                     g.FillRectangle(brush, (float)(rect.Item1 * scaleX), (float)(rect.Item2 * scaleY), (float)(rect.Item3 * scaleX), (float)(rect.Item4 * scaleY));
                     g.DrawRectangle(pen, (float)(rect.Item1 * scaleX), (float)(rect.Item2 * scaleY), (float)(rect.Item3 * scaleX), (float)(rect.Item4 * scaleY));
                 }
-                g.DrawString(alg + (solution.IsBest ? " best: " : " current: ") + Math.Round(solution.CostValue, 4) + ", It." + solution.Iteration.ToString() + ", " + Math.Round(solution.TimeInSeconds, 3).ToString() + "s", SystemFonts.DefaultFont, new SolidBrush(Color.Black), 0, 0);
+                g.DrawString(alg + (solution.IsCurrentBest ? " best: " : " current: ") + Math.Round(solution.CostValue, 4) + ", It." + solution.IterationNumber.ToString() + ", " + Math.Round(solution.TimeInSeconds, 3).ToString() + "s", SystemFonts.DefaultFont, new SolidBrush(Color.Black), 0, 0);
             }
             Application.DoEvents();
             this.Invalidate();
@@ -229,7 +255,7 @@ namespace TestForm
             bool hasDimChanged = int.TryParse(dimesionTextBox.Text, out int newDim);
             if (hasDimChanged)
             {
-                neighbourhood = (this.problemType == 0 ? (INeighbourhood)new TspNeighbourhood(new TspProblem(newDim)) : (INeighbourhood)new Packing2DNeighbourhood(new Packing2DProblem(newDim)));
+                tspProblem = new TspProblem(newDim);
             }
         }
 
@@ -259,7 +285,7 @@ namespace TestForm
                 bool hasDimChanged = int.TryParse(dimesionTextBox.Text, out int newDim);
                 if (hasDimChanged)
                 {
-                    neighbourhood = (this.problemType == 0 ? (INeighbourhood)new TspNeighbourhood(new TspProblem(newDim)) : (INeighbourhood)new Packing2DNeighbourhood(new Packing2DProblem(newDim)));
+                    tspProblem = new TspProblem(newDim);
                 }
                 LayoutsInit();
             }
@@ -269,7 +295,7 @@ namespace TestForm
                 bool hasDimChanged = int.TryParse(dimesionTextBox.Text, out int newDim);
                 if (hasDimChanged)
                 {
-                    neighbourhood = (this.problemType == 0 ? (INeighbourhood)new TspNeighbourhood(new TspProblem(newDim)) : (INeighbourhood)new Packing2DNeighbourhood(new Packing2DProblem(newDim)));
+                    tspProblem = new TspProblem(newDim);
                     LayoutsInit();
                 }
             }

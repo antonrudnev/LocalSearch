@@ -54,7 +54,7 @@
             this.optionsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1688, 40);
+            this.menuStrip1.Size = new System.Drawing.Size(1688, 42);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -64,7 +64,7 @@
             this.localDescentMenuItem,
             this.simulatedAnnealingMenuItem});
             this.solverToolStripMenuItem.Name = "solverToolStripMenuItem";
-            this.solverToolStripMenuItem.Size = new System.Drawing.Size(93, 36);
+            this.solverToolStripMenuItem.Size = new System.Drawing.Size(93, 38);
             this.solverToolStripMenuItem.Text = "Solver";
             // 
             // localDescentMenuItem
@@ -88,7 +88,7 @@
             this.multistartOptionToolStripMenuItem,
             this.displayCostMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(111, 36);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(111, 38);
             this.optionsToolStripMenuItem.Text = "Options";
             // 
             // dimensionMenuItem
@@ -103,7 +103,7 @@
             // 
             this.dimesionTextBox.Name = "dimesionTextBox";
             this.dimesionTextBox.Size = new System.Drawing.Size(100, 39);
-            this.dimesionTextBox.Text = "50";
+            this.dimesionTextBox.Text = "100";
             this.dimesionTextBox.TextChanged += new System.EventHandler(this.dimesionTextBox_TextChanged);
             // 
             // multistartOptionToolStripMenuItem
@@ -118,7 +118,7 @@
             // 
             this.multistartTextBox.Name = "multistartTextBox";
             this.multistartTextBox.Size = new System.Drawing.Size(100, 39);
-            this.multistartTextBox.Text = "1";
+            this.multistartTextBox.Text = "10";
             this.multistartTextBox.TextChanged += new System.EventHandler(this.multistartTextBox_TextChanged);
             // 
             // displayCostMenuItem

@@ -40,18 +40,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Packing2D\Packing2DProblem.cs" />
-    <Compile Include="Packing2D\Packing2DSolution.cs" />
-    <Compile Include="Packing2D\Packing2DNeighbourhood.cs" />
+    <Compile Include="Components\Neighborhood.cs" />
+    <Compile Include="Permutation\TwoOptOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Solver\INeighbourhood.cs" />
-    <Compile Include="Solver\ISolution.cs" />
-    <Compile Include="Solver\LocalDescentSearch.cs" />
+    <Compile Include="Components\Configuration.cs" />
+    <Compile Include="Components\Operation.cs" />
+    <Compile Include="Permutation\IPermutation.cs" />
+    <Compile Include="Components\ISolution.cs" />
+    <Compile Include="Solver\LocalDescent.cs" />
     <Compile Include="Solver\SimulatedAnnealing.cs" />
-    <Compile Include="Solver\SolutionDetails.cs" />
-    <Compile Include="TSP\TspProblem.cs" />
-    <Compile Include="TSP\TspSolution.cs" />
-    <Compile Include="TSP\TspNeighbourhood.cs" />
+    <Compile Include="Solver\SimulatedAnnealingParameters.cs" />
+    <Compile Include="Solver\LocalDescentParameters.cs" />
+    <Compile Include="Permutation\ShiftOperation.cs" />
+    <Compile Include="Permutation\SwapOperation.cs" />
+    <Compile Include="Permutation\PairConfiguration.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

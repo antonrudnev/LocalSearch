@@ -1,8 +1,9 @@
 ﻿using LocalSearch.Solver;
-using LocalSearch.Packing2D;
+using LocalSearch.TSP;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LocalSearch.Components;
 
 namespace LocalSearch
 {
@@ -11,35 +12,54 @@ namespace LocalSearch
         static void Main(string[] args)
         {
 
-            Packing2DProblem probblem = new Packing2DProblem(50);
-            Packing2DSolution packing2DSolution = new Packing2DSolution(probblem);
-            
+            TspProblem problem = new TspProblem(100);
+            TspSolution solution = new TspSolution(problem);
 
-            Packing2DNeighbourhood neighbourhood = new Packing2DNeighbourhood(probblem);
+            SwapOperation swap = new SwapOperation(problem.NumberOfCities);
+            ShiftOperation shift = new ShiftOperation(problem.NumberOfCities);
+            TwoOptOperation twoOpt = new TwoOptOperation(problem.NumberOfCities);
 
-            //SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(tspSwap);
-            //foreach (SolutionDetails c in simulatedAnnealing.Minimize(tempLevelIterations:100000,isFrozenIterations: 100000))
+            LocalDescent<IPermutation> localDescent = new LocalDescent<IPermutation>(new List<Operation> { swap, shift, twoOpt });
+
+            SimulatedAnnealing<IPermutation> simulatedAnnealing = new SimulatedAnnealing<IPermutation>(new List<Operation> { swap, shift, twoOpt });
+
+            //List<string> operators = new List<string>();
+
+            //foreach (ISolution s in localDescent.Minimize(solution, new LocalDescentParameters() { Multistart = 1, OutputImprovementsOnly = true, IsSteepestDescent = false }))
             //{
-            //    if (c.IsBest) Console.WriteLine(c.CostValue);
+            //    Console.WriteLine("{0}, {1}, {2}", s.CostValue, s.TimeInSeconds, s.IsCurrentBest);
+            //    if (s.IsCurrentBest) Console.WriteLine();
+            //    operators.Add(((IPermutation)s).OperationName);
             //}
 
-            List<string> operators = new List<string>();
+            //var groups = operators.GroupBy(s => s).Select(s => new { Operator = s.Key, Count = s.Count() });
+            //var dictionary = groups.ToDictionary(g => g.Operator, g => g.Count);
 
-            LocalDescentSearch localDescentSearch = new LocalDescentSearch(neighbourhood);
-            foreach (SolutionDetails s in localDescentSearch.Minimize(5))
+            //foreach (var o in groups)
+            //{
+            //    Console.WriteLine("{0} = {1}", o.Operator, o.Count);
+            //}
+
+            IPermutation sol = solution;
+            foreach (IPermutation s in localDescent.Minimize(solution, new LocalDescentParameters() { Multistart = 10, OutputImprovementsOnly=false }))
             {
-                Console.WriteLine(s.CostValue);
-                operators.Add(s.N);
+                Console.WriteLine("{0}, {1:f}s, {2}, {3}, {4}, {5}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, sol.CostValue - s.CostValue);
+                sol = s;
             }
 
-            var groups = operators.GroupBy(s => s).Select(s => new { Operator = s.Key, Count = s.Count() });
-            var dictionary = groups.ToDictionary(g => g.Operator, g => g.Count);
-
-            foreach (var o in groups)
+            foreach (IPermutation s in simulatedAnnealing.Minimize(sol, new SimulatedAnnealingParameters()
             {
-                Console.WriteLine("{0} = {1}", o.Operator, o.Count);
+                Multistart = 6,
+                InitProbability = 0.01,
+                TemperatureCooling = 0.97,
+                MaxPassesSinceLastTransition = 0.05
+            }))
+            {
+                Console.WriteLine("{0}, {1:f}s, {2}, {3}, {4}, {5}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, sol.CostValue - s.CostValue);
+                sol = s;
             }
 
+            Console.WriteLine("Done");
             Console.ReadLine();
         }
     }
