@@ -22,7 +22,9 @@ namespace LocalSearch.Solvers
             DateTime startedAt = DateTime.Now;
             ISolution bestSolution = solution;
             ISolution currentSolution = solution;
-            Neighborhood neighborhood = new Neighborhood(solution, parameters.Operations, parameters.Seed);
+            Neighborhood neighborhood = this.parameters.WeightNeighborhood ?
+                new NeighborhoodWeighted(solution, parameters.Operations, parameters.Seed) :
+                    new Neighborhood(solution, parameters.Operations, parameters.Seed);
             double temperature = GetStartTemperature(parameters.InitProbability, neighborhood);
             int maxIterationsForTemperatureValue = (int)(parameters.TemperatureLevelPasses * neighborhood.Power);
             int maxIterationsSinceLastTransition = (int)(parameters.MaxPassesSinceLastTransition * neighborhood.Power);

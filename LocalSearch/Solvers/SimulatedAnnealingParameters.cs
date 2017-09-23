@@ -12,6 +12,8 @@ namespace LocalSearch.Solvers
 
         public double MaxPassesSinceLastTransition { get; set; } = 0.1;
 
+        public bool WeightNeighborhood { get; set; } = false;
+
         public override SearchParameters Clone()
         {
             return new SimulatedAnnealingParameters()
@@ -24,7 +26,8 @@ namespace LocalSearch.Solvers
                 InitProbability = InitProbability,
                 TemperatureCooling = TemperatureCooling,
                 TemperatureLevelPasses = TemperatureLevelPasses,
-                MaxPassesSinceLastTransition = MaxPassesSinceLastTransition
+                MaxPassesSinceLastTransition = MaxPassesSinceLastTransition,
+                WeightNeighborhood = WeightNeighborhood
             };
         }
     }

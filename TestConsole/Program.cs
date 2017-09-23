@@ -15,9 +15,9 @@ namespace LocalSearch
             TspProblem problem = new TspProblem(100);
             TspSolution solution = new TspSolution(problem);
 
-            SwapOperation swap = new SwapOperation(problem.NumberOfCities);
-            ShiftOperation shift = new ShiftOperation(problem.NumberOfCities);
-            TwoOptOperation twoOpt = new TwoOptOperation(problem.NumberOfCities);
+            SwapOperation swap = new SwapOperation(problem.NumberOfCities, 1);
+            ShiftOperation shift = new ShiftOperation(problem.NumberOfCities, 2);
+            TwoOptOperation twoOpt = new TwoOptOperation(problem.NumberOfCities, 3);
 
             List<Operation> operations = new List<Operation> { swap, shift, twoOpt };
 
@@ -38,6 +38,7 @@ namespace LocalSearch
                 InitProbability = 0.1,
                 TemperatureCooling = 0.97,
                 MaxPassesSinceLastTransition = 0.01,
+                WeightNeighborhood = true,
                 DetailedOutput = false,
                 Seed = 0,
                 Operations = operations,
@@ -52,15 +53,16 @@ namespace LocalSearch
             ParallelSearch<IPermutation, LocalDescent<IPermutation>, LocalDescentParameters> pld = new ParallelSearch<IPermutation, LocalDescent<IPermutation>, LocalDescentParameters>(ldParameters);
             ParallelSearch<IPermutation, SimulatedAnnealing<IPermutation>, SimulatedAnnealingParameters> psa = new ParallelSearch<IPermutation, SimulatedAnnealing<IPermutation>, SimulatedAnnealingParameters>(saParameters);
 
-
-
             List<string> operators = new List<string>();
 
-            foreach (ISolution s in pld.Minimize(solution))
+            IPermutation sol = solution;
+            foreach (IPermutation s in sa.Minimize(solution))
             {
-                Console.WriteLine("{0}, {1}, {2}", s.CostValue, s.IterationNumber, s.IsCurrentBest);
-                operators.Add(((IPermutation)s).OperationName);
+                Console.WriteLine("{0}, {1:f}s, {2}, {3}, {4}, {5}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, sol.CostValue - s.CostValue);
+                sol = s;
+                operators.Add(s.OperationName);
             }
+
 
             var groups = operators.GroupBy(s => s).Select(s => new { Operator = s.Key, Count = s.Count() });
             var dictionary = groups.ToDictionary(g => g.Operator, g => g.Count);
@@ -69,13 +71,6 @@ namespace LocalSearch
             {
                 Console.WriteLine("{0} = {1}", o.Operator, o.Count);
             }
-
-            //IPermutation sol = solution;
-            //foreach (IPermutation s in pld.Minimize(solution))
-            //{
-            //    Console.WriteLine("{0}, {1:f}s, {2}, {3}, {4}, {5}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, sol.CostValue - s.CostValue);
-            //    sol = s;
-            //}
 
             Console.WriteLine("Done");
             Console.ReadLine();

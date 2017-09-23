@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace LocalSearch.Components
 {
     public abstract class Operation
     {
-        private Random random= new Random();
-
         public double Weight { get; set; }
 
         public List<Configuration> Configurations { get; }
+
+        public int Power
+        {
+            get
+            {
+                return Configurations.Count;
+            }
+        }
 
         public Operation(int dimension, double weight = 1)
         {
@@ -19,9 +24,9 @@ namespace LocalSearch.Components
 
         public abstract ISolution Apply(ISolution solution, Configuration configuration);
 
-        public ISolution Random(ISolution solution)
+        public ISolution Apply(ISolution solution, int configuration)
         {
-            return Apply(solution, Configurations[(random.Next(Configurations.Count))]);
+            return this.Apply(solution, Configurations[configuration]);
         }
     }
 }
