@@ -4,12 +4,11 @@ using LocalSearch.Components;
 
 namespace LocalSearch.Solvers
 {
-    public class LocalDescent<T> : LocalSearch<T>
-        where T : ISolution
+    public class LocalDescent<T> : LocalSearch<T> where T : ISolution
     {
-        private LocalDescentParameters parameters;
+        private ParametersLocalDescent parameters;
 
-        public LocalDescent(LocalDescentParameters parameters)
+        public LocalDescent(ParametersLocalDescent parameters)
         {
             this.parameters = parameters;
         }

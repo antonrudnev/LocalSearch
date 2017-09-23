@@ -1,6 +1,6 @@
 ﻿namespace LocalSearch.Components
 {
-    public class MultistartParameters
+    public class MultistartOptions
     {
         public int InstancesNumber { get; set; } = 1;
 

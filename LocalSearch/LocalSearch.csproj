@@ -49,11 +49,11 @@
     <Compile Include="Components\LocalSearch.cs" />
     <Compile Include="Solvers\ParallelSearch.cs" />
     <Compile Include="Solvers\LocalDescent.cs" />
-    <Compile Include="Components\MultistartParameters.cs" />
+    <Compile Include="Components\MultistartOptions.cs" />
     <Compile Include="Components\SearchParameters.cs" />
     <Compile Include="Solvers\SimulatedAnnealing.cs" />
-    <Compile Include="Solvers\SimulatedAnnealingParameters.cs" />
-    <Compile Include="Solvers\LocalDescentParameters.cs" />
+    <Compile Include="Solvers\ParametersSimulatedAnnealing.cs" />
+    <Compile Include="Solvers\ParametersLocalDescent.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

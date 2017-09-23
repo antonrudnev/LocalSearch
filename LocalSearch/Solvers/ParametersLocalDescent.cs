@@ -2,13 +2,13 @@
 
 namespace LocalSearch.Solvers
 {
-    public class LocalDescentParameters : SearchParameters
+    public class ParametersLocalDescent : SearchParameters
     {
         public bool IsSteepestDescent { get; set; } = false;
 
         public override SearchParameters Clone()
         {
-            return new LocalDescentParameters()
+            return new ParametersLocalDescent()
             {
                 Name = Name,
                 Seed = Seed,

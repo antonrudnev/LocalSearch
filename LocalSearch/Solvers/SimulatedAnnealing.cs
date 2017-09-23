@@ -5,12 +5,11 @@ using LocalSearch.Components;
 
 namespace LocalSearch.Solvers
 {
-    public class SimulatedAnnealing<T> : LocalSearch<T>
-        where T : ISolution
+    public class SimulatedAnnealing<T> : LocalSearch<T> where T : ISolution
     {
-        private SimulatedAnnealingParameters parameters;
+        private ParametersSimulatedAnnealing parameters;
 
-        public SimulatedAnnealing(SimulatedAnnealingParameters parameters)
+        public SimulatedAnnealing(ParametersSimulatedAnnealing parameters)
         {
             this.parameters = parameters;
         }

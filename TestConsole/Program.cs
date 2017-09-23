@@ -21,19 +21,19 @@ namespace LocalSearch
 
             List<Operation> operations = new List<Operation> { swap, shift, twoOpt };
 
-            LocalDescentParameters ldParameters = new LocalDescentParameters()
+            ParametersLocalDescent ldParameters = new ParametersLocalDescent()
             {
-                DetailedOutput = true,
+                DetailedOutput = false,
                 Seed = 0,
                 Operations = operations,
-                Multistart = new MultistartParameters()
+                Multistart = new MultistartOptions()
                 {
                     InstancesNumber = 10,
                     OutputDelayInMilliseconds = 0
                 }
             };
 
-            SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
+            ParametersSimulatedAnnealing saParameters = new ParametersSimulatedAnnealing()
             {
                 InitProbability = 0.1,
                 TemperatureCooling = 0.97,
@@ -42,7 +42,7 @@ namespace LocalSearch
                 DetailedOutput = false,
                 Seed = 0,
                 Operations = operations,
-                Multistart = new MultistartParameters()
+                Multistart = new MultistartOptions()
                 {
                     InstancesNumber = 10
                 }
@@ -50,13 +50,13 @@ namespace LocalSearch
 
             LocalDescent<IPermutation> ld = new LocalDescent<IPermutation>(ldParameters);
             SimulatedAnnealing<IPermutation> sa = new SimulatedAnnealing<IPermutation>(saParameters);
-            ParallelSearch<IPermutation, LocalDescent<IPermutation>, LocalDescentParameters> pld = new ParallelSearch<IPermutation, LocalDescent<IPermutation>, LocalDescentParameters>(ldParameters);
-            ParallelSearch<IPermutation, SimulatedAnnealing<IPermutation>, SimulatedAnnealingParameters> psa = new ParallelSearch<IPermutation, SimulatedAnnealing<IPermutation>, SimulatedAnnealingParameters>(saParameters);
+            ParallelSearch<IPermutation, LocalDescent<IPermutation>, ParametersLocalDescent> pld = new ParallelSearch<IPermutation, LocalDescent<IPermutation>, ParametersLocalDescent>(ldParameters);
+            ParallelSearch<IPermutation, SimulatedAnnealing<IPermutation>, ParametersSimulatedAnnealing> psa = new ParallelSearch<IPermutation, SimulatedAnnealing<IPermutation>, ParametersSimulatedAnnealing>(saParameters);
 
             List<string> operators = new List<string>();
 
             IPermutation sol = solution;
-            foreach (IPermutation s in sa.Minimize(solution))
+            foreach (IPermutation s in pld.Minimize(solution))
             {
                 Console.WriteLine("{0}, {1:f}s, {2}, {3}, {4}, {5}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, sol.CostValue - s.CostValue);
                 sol = s;

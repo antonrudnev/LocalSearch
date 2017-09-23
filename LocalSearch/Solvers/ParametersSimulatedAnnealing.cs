@@ -2,7 +2,7 @@
 
 namespace LocalSearch.Solvers
 {
-    public class SimulatedAnnealingParameters : SearchParameters
+    public class ParametersSimulatedAnnealing : SearchParameters
     {
         public double InitProbability { get; set; } = 0.5;
 
@@ -16,7 +16,7 @@ namespace LocalSearch.Solvers
 
         public override SearchParameters Clone()
         {
-            return new SimulatedAnnealingParameters()
+            return new ParametersSimulatedAnnealing()
             {
                 Name = Name,
                 Seed = Seed,

@@ -12,7 +12,7 @@ namespace LocalSearch.Components
 
         public List<Operation> Operations { get; set; }
 
-        public MultistartParameters Multistart { get; set; }
+        public MultistartOptions Multistart { get; set; }
 
         public abstract SearchParameters Clone();
     }
