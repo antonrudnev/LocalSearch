@@ -1,4 +1,6 @@
-﻿namespace LocalSearch.Components
+﻿using LocalSearch.Components;
+
+namespace SimpleProblems.Permutations
 {
     public class PairConfiguration : Configuration
     {
@@ -10,6 +12,11 @@
         {
             FirstItem = i;
             SecondItem = j;
+        }
+
+        public override string ToString()
+        {
+            return FirstItem + "-" + SecondItem;
         }
     }
 }

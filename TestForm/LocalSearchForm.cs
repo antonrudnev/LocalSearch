@@ -7,10 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using LocalSearch.Solver;
-using LocalSearch.TSP;
+using LocalSearch.Solvers;
+using SimpleProblems.TSP;
 using System.Drawing.Imaging;
 using LocalSearch.Components;
+using SimpleProblems.Permutations;
 
 namespace TestForm
 {
@@ -65,90 +66,90 @@ namespace TestForm
 
         private void simulatedAnnealingMenuItem_Click(object sender, EventArgs e)
         {
-            costValueStatus.Text = "";
-            iterationStatus.Text = "";
-            algorithmStatus.Text = "Running...";
+            //costValueStatus.Text = "";
+            //iterationStatus.Text = "";
+            //algorithmStatus.Text = "Running...";
 
-            TspSolution startSolution = new TspSolution(tspProblem);
+            //TspSolution startSolution = new TspSolution(tspProblem);
 
-            SwapOperation swap = new SwapOperation(tspProblem.NumberOfCities);
-            ShiftOperation shift = new ShiftOperation(tspProblem.NumberOfCities);
-            TwoOptOperation twoOpt = new TwoOptOperation(tspProblem.NumberOfCities);
+            //SwapOperation swap = new SwapOperation(tspProblem.NumberOfCities);
+            //ShiftOperation shift = new ShiftOperation(tspProblem.NumberOfCities);
+            //TwoOptOperation twoOpt = new TwoOptOperation(tspProblem.NumberOfCities);
 
-            SimulatedAnnealing<IPermutation> localDescent = new SimulatedAnnealing<IPermutation>(new List<Operation> { swap, shift, twoOpt });
+            //SimulatedAnnealing<IPermutation> localDescent = new SimulatedAnnealing<IPermutation>(new List<Operation> { swap, shift, twoOpt });
 
-            if (wasResized)
-            {
-                wasResized = false;
-                LayoutsInit();
-            }
+            //if (wasResized)
+            //{
+            //    wasResized = false;
+            //    LayoutsInit();
+            //}
 
-            layouts.Clear();
-            layouts.AddRange(new List<Bitmap> { saCurrentLayout, saBestLayout, ldCurrentLayout, ldBestLayout });
-            saCost.Clear();
-            saMinCost = int.MaxValue;
-            saMaxCost = 0;
+            //layouts.Clear();
+            //layouts.AddRange(new List<Bitmap> { saCurrentLayout, saBestLayout, ldCurrentLayout, ldBestLayout });
+            //saCost.Clear();
+            //saMinCost = int.MaxValue;
+            //saMaxCost = 0;
 
-            foreach (IPermutation solution in localDescent.Minimize(startSolution, new SimulatedAnnealingParameters()
-            {
-                OutputDelayInMilliseconds = 1000,
-                InitProbability = 0.05,
-                OutputImprovementsOnly = false,
-                Multistart = multistart
-            }))
-            {
-                DrawSolution(solution, solution.IsCurrentBest ? saBestLayout : saCurrentLayout, "SA");
-                saCost.Add(solution.CostValue);
-                if (solution.CostValue > saMaxCost) saMaxCost = solution.CostValue;
-                if (solution.CostValue < saMinCost) saMinCost = solution.CostValue;
-                saTime = solution.TimeInSeconds;
-            }
+            //foreach (IPermutation solution in localDescent.Minimize(startSolution, new SimulatedAnnealingParameters()
+            //{
+            //    OutputDelayInMilliseconds = 1000,
+            //    InitProbability = 0.05,
+            //    DetailedOutput = false,
+            //    InstancesNumber = multistart
+            //}))
+            //{
+            //    DrawSolution(solution, solution.IsCurrentBest ? saBestLayout : saCurrentLayout, "SA");
+            //    saCost.Add(solution.CostValue);
+            //    if (solution.CostValue > saMaxCost) saMaxCost = solution.CostValue;
+            //    if (solution.CostValue < saMinCost) saMinCost = solution.CostValue;
+            //    saTime = solution.TimeInSeconds;
+            //}
 
-            algorithmStatus.Text = "Done";
+            //algorithmStatus.Text = "Done";
         }
 
         private void localDescentMenuItem_Click(object sender, EventArgs e)
         {
-            costValueStatus.Text = "";
-            iterationStatus.Text = "";
-            algorithmStatus.Text = "Running...";
+            //costValueStatus.Text = "";
+            //iterationStatus.Text = "";
+            //algorithmStatus.Text = "Running...";
 
-            TspSolution startSolution = new TspSolution(tspProblem);
+            //TspSolution startSolution = new TspSolution(tspProblem);
 
-            SwapOperation swap = new SwapOperation(tspProblem.NumberOfCities);
-            ShiftOperation shift = new ShiftOperation(tspProblem.NumberOfCities);
-            TwoOptOperation twoOpt = new TwoOptOperation(tspProblem.NumberOfCities);
+            //SwapOperation swap = new SwapOperation(tspProblem.NumberOfCities);
+            //ShiftOperation shift = new ShiftOperation(tspProblem.NumberOfCities);
+            //TwoOptOperation twoOpt = new TwoOptOperation(tspProblem.NumberOfCities);
 
-            LocalDescent<IPermutation> localDescent = new LocalDescent<IPermutation>(new List<Operation> { swap, shift, twoOpt });
+            //LocalDescent<IPermutation> localDescent = new LocalDescent<IPermutation>(new List<Operation> { swap, shift, twoOpt });
 
-            if (wasResized)
-            {
-                wasResized = false;
-                LayoutsInit();
-            }
+            //if (wasResized)
+            //{
+            //    wasResized = false;
+            //    LayoutsInit();
+            //}
 
-            layouts.Clear();
-            layouts.AddRange(new List<Bitmap> { ldCurrentLayout, ldBestLayout, saCurrentLayout, saBestLayout });
-            ldCost.Clear();
-            ldMinCost = int.MaxValue;
-            ldMaxCost = 0;
+            //layouts.Clear();
+            //layouts.AddRange(new List<Bitmap> { ldCurrentLayout, ldBestLayout, saCurrentLayout, saBestLayout });
+            //ldCost.Clear();
+            //ldMinCost = int.MaxValue;
+            //ldMaxCost = 0;
 
-            foreach (IPermutation solution in localDescent.Minimize(startSolution, new LocalDescentParameters()
-            {
-                OutputDelayInMilliseconds = 100,
-                OutputImprovementsOnly = false,
-                IsSteepestDescent = false,
-                Multistart = multistart
-            }))
-            {
-                DrawSolution(solution, solution.IsCurrentBest ? ldBestLayout : ldCurrentLayout, "LD");
-                ldCost.Add(solution.CostValue);
-                if (solution.CostValue > ldMaxCost) ldMaxCost = solution.CostValue;
-                if (solution.CostValue < ldMinCost) ldMinCost = solution.CostValue;
-                ldTime = solution.TimeInSeconds;
-            }
+            //foreach (IPermutation solution in localDescent.Minimize(startSolution, new LocalDescentParameters()
+            //{
+            //    OutputDelayInMilliseconds = 100,
+            //    DetailedOutput = false,
+            //    IsSteepestDescent = false,
+            //    Multistart = multistart
+            //}))
+            //{
+            //    DrawSolution(solution, solution.IsCurrentBest ? ldBestLayout : ldCurrentLayout, "LD");
+            //    ldCost.Add(solution.CostValue);
+            //    if (solution.CostValue > ldMaxCost) ldMaxCost = solution.CostValue;
+            //    if (solution.CostValue < ldMinCost) ldMinCost = solution.CostValue;
+            //    ldTime = solution.TimeInSeconds;
+            //}
 
-            algorithmStatus.Text = "Done";
+            //algorithmStatus.Text = "Done";
         }
 
         private void DrawSolution(ISolution solution, Bitmap bitmap, string alg)

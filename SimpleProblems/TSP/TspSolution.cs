@@ -2,12 +2,13 @@
 using System.Linq;
 using System.Collections.Generic;
 using LocalSearch.Components;
+using System.Text;
+using SimpleProblems.Permutations;
 
-namespace LocalSearch.TSP
+namespace SimpleProblems.TSP
 {
     public class TspSolution : IPermutation
     {
-        private Random random = new Random();
         private TspProblem tspProblem;
 
         public double CostValue { get; private set; }
@@ -16,7 +17,7 @@ namespace LocalSearch.TSP
         public bool IsCurrentBest { get; set; }
         public bool IsFinal { get; set; }
 
-        public List<int> Permutation { get; }
+        public List<int> Order { get; }
 
         public string OperationName { get; }
 
@@ -30,25 +31,26 @@ namespace LocalSearch.TSP
         public TspSolution(TspProblem tspProblem, List<int> permutation, string operationName)
         {
             this.tspProblem = tspProblem;
-            Permutation = permutation;
+            Order = permutation;
             OperationName = operationName;
             DecodeSolution(tspProblem);
-        }     
+        }
 
         public IPermutation DeriveFromPermutation(List<int> permutation, string operationName)
         {
             return new TspSolution(this.tspProblem, permutation, operationName);
         }
 
-        public ISolution Shuffle()
+        public ISolution Shuffle(int seed)
         {
-            return new TspSolution(this.tspProblem, Permutation.OrderBy(x => this.random.Next()).ToList(), "shuffle");
+            Random random = new Random(seed);
+            return new TspSolution(this.tspProblem, Order.OrderBy(x => random.Next()).ToList(), "shuffle");
         }
 
         private void DecodeSolution(TspProblem tspProblem)
         {
-            int city = Permutation[tspProblem.NumberOfCities - 1];
-            int nextCity = Permutation[0];
+            int city = Order[tspProblem.NumberOfCities - 1];
+            int nextCity = Order[0];
             double cost = tspProblem.Distance[city, nextCity];
             var lines = new List<Tuple<double, double, double, double>>
             {
@@ -61,8 +63,8 @@ namespace LocalSearch.TSP
 
             for (int i = 0; i < tspProblem.NumberOfCities - 1; i++)
             {
-                city = Permutation[i];
-                nextCity = Permutation[i + 1];
+                city = Order[i];
+                nextCity = Order[i + 1];
                 cost += tspProblem.Distance[city, nextCity];
                 lines.Add(new Tuple<double, double, double, double>(
                     tspProblem.X[city],
@@ -79,6 +81,16 @@ namespace LocalSearch.TSP
             };
 
             CostValue = cost;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder s = new StringBuilder();
+            foreach (int i in Order)
+            {
+                s.Append(i + " ");
+            }
+            return s.ToString();
         }
     }
 }

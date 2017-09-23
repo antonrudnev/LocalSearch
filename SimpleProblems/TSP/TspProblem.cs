@@ -1,8 +1,7 @@
-﻿using LocalSearch.Components;
-using System;
+﻿using System;
 
 
-namespace LocalSearch.TSP
+namespace SimpleProblems.TSP
 {
     public class TspProblem
     {

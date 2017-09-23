@@ -12,6 +12,6 @@
 
         bool IsFinal { get; set; }
 
-        ISolution Shuffle();
+        ISolution Shuffle(int seed);
     }
 }

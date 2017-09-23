@@ -42,6 +42,11 @@
   <ItemGroup>
     <Compile Include="Packing2D\Packing2DProblem.cs" />
     <Compile Include="Packing2D\Packing2DSolution.cs" />
+    <Compile Include="Permutations\IPermutation.cs" />
+    <Compile Include="Permutations\PairConfiguration.cs" />
+    <Compile Include="Permutations\ShiftOperation.cs" />
+    <Compile Include="Permutations\SwapOperation.cs" />
+    <Compile Include="Permutations\TwoOptOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SolutionDetails.cs" />
     <Compile Include="TSP\TspProblem.cs" />

@@ -1,7 +1,8 @@
-﻿using System;
+﻿using LocalSearch.Components;
+using System;
 using System.Collections.Generic;
 
-namespace LocalSearch.Components
+namespace SimpleProblems.Permutations
 {
     public class ShiftOperation : Operation
     {
@@ -17,7 +18,7 @@ namespace LocalSearch.Components
             IPermutation permutation = (IPermutation)solution;
             PairConfiguration pairConfiguration = (PairConfiguration)configuration;
 
-            List<int> shifted = new List<int>(permutation.Permutation);
+            List<int> shifted = new List<int>(permutation.Order);
 
             int shiftedItem = shifted[pairConfiguration.FirstItem];
             shifted.RemoveAt(pairConfiguration.FirstItem);

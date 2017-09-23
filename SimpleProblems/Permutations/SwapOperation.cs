@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using LocalSearch.Components;
+using System.Collections.Generic;
 
-namespace LocalSearch.Components
+namespace SimpleProblems.Permutations
 {
     public class SwapOperation : Operation
     {
@@ -16,10 +17,10 @@ namespace LocalSearch.Components
             IPermutation permutation = (IPermutation)solution;
             PairConfiguration pairConfiguration = (PairConfiguration)configuration;
 
-            List<int> swapped = new List<int>(permutation.Permutation)
+            List<int> swapped = new List<int>(permutation.Order)
             {
-                [pairConfiguration.FirstItem] = permutation.Permutation[pairConfiguration.SecondItem],
-                [pairConfiguration.SecondItem] = permutation.Permutation[pairConfiguration.FirstItem]
+                [pairConfiguration.FirstItem] = permutation.Order[pairConfiguration.SecondItem],
+                [pairConfiguration.SecondItem] = permutation.Order[pairConfiguration.FirstItem]
             };
 
             return permutation.DeriveFromPermutation(swapped, "swap");

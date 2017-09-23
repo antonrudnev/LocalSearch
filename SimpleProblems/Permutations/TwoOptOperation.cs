@@ -1,7 +1,7 @@
-﻿using System;
+﻿using LocalSearch.Components;
 using System.Collections.Generic;
 
-namespace LocalSearch.Components
+namespace SimpleProblems.Permutations
 {
     public class TwoOptOperation : Operation
     {
@@ -21,13 +21,13 @@ namespace LocalSearch.Components
 
             if (pairConfiguration.FirstItem < pairConfiguration.SecondItem)
             {
-                twoOpted = new List<int>(permutation.Permutation);
+                twoOpted = new List<int>(permutation.Order);
                 twoOpted.Reverse(pairConfiguration.FirstItem, pairConfiguration.SecondItem - pairConfiguration.FirstItem + 1);
             }
             else
             {
-                twoOpted = permutation.Permutation.GetRange(pairConfiguration.FirstItem, permutation.Permutation.Count - pairConfiguration.FirstItem);
-                twoOpted.AddRange(permutation.Permutation.GetRange(0, pairConfiguration.FirstItem));
+                twoOpted = permutation.Order.GetRange(pairConfiguration.FirstItem, permutation.Order.Count - pairConfiguration.FirstItem);
+                twoOpted.AddRange(permutation.Order.GetRange(0, pairConfiguration.FirstItem));
                 twoOpted.Reverse(0, pairConfiguration.SecondItem + twoOpted.Count - pairConfiguration.FirstItem + 1);
             }
 

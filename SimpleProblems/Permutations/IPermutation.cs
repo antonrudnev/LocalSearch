@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using LocalSearch.Components;
+using System.Collections.Generic;
 
-namespace LocalSearch.Components
+namespace SimpleProblems.Permutations
 {
     public interface IPermutation : ISolution
     {
-        List<int> Permutation { get; }
+        List<int> Order { get; }
 
         string OperationName { get; }
 

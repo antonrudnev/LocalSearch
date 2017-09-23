@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace LocalSearch.Components
 {
     public class Neighborhood
     {
-        private Random random = new Random();
+        private Random random;
 
         private List<Operation> operations = new List<Operation>();
 
@@ -33,8 +34,9 @@ namespace LocalSearch.Components
             }
         }
 
-        public Neighborhood(ISolution solution, List<Operation> operations)
+        public Neighborhood(ISolution solution, List<Operation> operations, int seed)
         {
+            random = new Random(seed);
             CurrentSolution = solution;
             this.operations.AddRange(operations);
             double sumOperationsWeight = operations.Sum(x => x.Weight);
@@ -49,12 +51,12 @@ namespace LocalSearch.Components
 
         public ISolution GetRandom()
         {
-            return configurations[random.Next(Power)].Apply(CurrentSolution);
+            return configurations[this.random.Next(Power)].Apply(CurrentSolution);
         }
 
         public ISolution GetWeightedRandom()
         {
-            double rand = random.NextDouble();
+            double rand = this.random.NextDouble();
             double bound = 0;
             foreach (Operation operation in this.operations)
             {
@@ -73,6 +75,16 @@ namespace LocalSearch.Components
         public void Randomize()
         {
             configurations = configurations.OrderBy(x => this.random.Next()).ToList();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder s = new StringBuilder();
+            foreach (Configuration c in this.configurations)
+            {
+                s.Append(c + " ");
+            }
+            return s.ToString();
         }
     }
 }

@@ -5,7 +5,7 @@ namespace LocalSearch.Components
 {
     public abstract class Operation
     {
-        private Random random = new Random();
+        private Random random= new Random();
 
         public double Weight { get; set; }
 
