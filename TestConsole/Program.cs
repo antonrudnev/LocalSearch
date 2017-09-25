@@ -1,66 +1,85 @@
-﻿using LocalSearch.Solvers;
-using SimpleProblems.TSP;
+﻿using LocalSearchOptimization.Solvers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LocalSearch.Components;
-using SimpleProblems.Permutations;
+using LocalSearchOptimization.Components;
+using LocalSearchOptimization.Examples.Problems.TravelingSalesman;
+using LocalSearchOptimization.Parameters;
+using LocalSearchOptimization.Examples.Structures.Permutation;
+using LocalSearchOptimization.Examples.RectangularPacking;
+using LocalSearchOptimization.Examples.Structures.Tree;
+using LocalSearchOptimization.Examples.Structures;
 
-namespace LocalSearch
+namespace LocalSearchOptimization
 {
     class Program
     {
         static void Main(string[] args)
         {
-            TspProblem problem = new TspProblem(100);
-            TspSolution solution = new TspSolution(problem);
 
-            SwapOperation swap = new SwapOperation(problem.NumberOfCities, 1);
-            ShiftOperation shift = new ShiftOperation(problem.NumberOfCities, 2);
-            TwoOptOperation twoOpt = new TwoOptOperation(problem.NumberOfCities, 3);
+            FloorplanProblem problem = new FloorplanProblem(50);
+            FloorplanSolution solution = new FloorplanSolution(problem);
+            Swap swap = new Swap(problem.Dimension);
+            Shift shift = new Shift(problem.Dimension);
+            Leaf leaf = new Leaf(problem.Dimension);
+            List<Operator> operations = new List<Operator> { swap, shift, leaf };
 
-            List<Operation> operations = new List<Operation> { swap, shift, twoOpt };
 
-            ParametersLocalDescent ldParameters = new ParametersLocalDescent()
+
+
+            //TspProblem problem = new TspProblem(100);
+            //TspSolution solution = new TspSolution(problem);
+            //Swap swap = new Swap(problem.NumberOfCities, 1);
+            //Shift shift = new Shift(problem.NumberOfCities, 2);
+            //TwoOpt twoOpt = new TwoOpt(problem.NumberOfCities, 3);
+            //List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
+
+
+
+
+
+
+
+
+            MultistartOptions multistartOptions = new MultistartOptions()
             {
-                DetailedOutput = false,
-                Seed = 0,
-                Operations = operations,
-                Multistart = new MultistartOptions()
-                {
-                    InstancesNumber = 10,
-                    OutputDelayInMilliseconds = 0
-                }
+                InstancesNumber = 10,
+                OutputFrequency = 100,
+                ReturnImprovedOnly = true
             };
 
-            ParametersSimulatedAnnealing saParameters = new ParametersSimulatedAnnealing()
+            LocalDescentParameters ldParameters = new LocalDescentParameters()
+            {
+                DetailedOutput = true,
+                Seed = 0,
+                Operators = operations,
+                IsSteepestDescent = false
+            };
+
+            SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
             {
                 InitProbability = 0.1,
                 TemperatureCooling = 0.97,
                 MaxPassesSinceLastTransition = 0.01,
-                WeightNeighborhood = true,
+                UseWeightedNeighborhood = true,
                 DetailedOutput = false,
                 Seed = 0,
-                Operations = operations,
-                Multistart = new MultistartOptions()
-                {
-                    InstancesNumber = 10
-                }
+                Operators = operations,
             };
 
-            LocalDescent<IPermutation> ld = new LocalDescent<IPermutation>(ldParameters);
-            SimulatedAnnealing<IPermutation> sa = new SimulatedAnnealing<IPermutation>(saParameters);
-            ParallelSearch<IPermutation, LocalDescent<IPermutation>, ParametersLocalDescent> pld = new ParallelSearch<IPermutation, LocalDescent<IPermutation>, ParametersLocalDescent>(ldParameters);
-            ParallelSearch<IPermutation, SimulatedAnnealing<IPermutation>, ParametersSimulatedAnnealing> psa = new ParallelSearch<IPermutation, SimulatedAnnealing<IPermutation>, ParametersSimulatedAnnealing>(saParameters);
+            LocalDescent ld = new LocalDescent(ldParameters);
+            SimulatedAnnealing sa = new SimulatedAnnealing(saParameters);
+            ParallelMultistart<LocalDescent, LocalDescentParameters> pld = new ParallelMultistart<LocalDescent, LocalDescentParameters>(ldParameters, multistartOptions);
+            ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters> psa = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(saParameters, multistartOptions);
 
             List<string> operators = new List<string>();
 
             IPermutation sol = solution;
-            foreach (IPermutation s in pld.Minimize(solution))
+            foreach (IPermutation s in ld.Minimize(solution))
             {
                 Console.WriteLine("{0}, {1:f}s, {2}, {3}, {4}, {5}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, sol.CostValue - s.CostValue);
                 sol = s;
-                operators.Add(s.OperationName);
+                operators.Add(s.DerivedByOperation);
             }
 
 

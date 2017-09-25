@@ -1,8 +1,14 @@
-﻿using LocalSearch.Solver;
-using LocalSearch.Packing2D;
+﻿using LocalSearchOptimization.Solvers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LocalSearchOptimization.Components;
+using LocalSearchOptimization.Examples.Problems.TravelingSalesman;
+using LocalSearchOptimization.Parameters;
+using LocalSearchOptimization.Examples.Structures.Permutation;
+using LocalSearchOptimization.Examples.RectangularPacking;
+using LocalSearchOptimization.Examples.Structures.Tree;
+using LocalSearchOptimization.Examples.Structures;
 
 namespace LocalSearch
 {
@@ -11,26 +17,71 @@ namespace LocalSearch
         static void Main(string[] args)
         {
 
-            Packing2DProblem probblem = new Packing2DProblem(50);
-            Packing2DSolution packing2DSolution = new Packing2DSolution(probblem);
+            FloorplanProblem problem = new FloorplanProblem(50);
+            FloorplanSolution solution = new FloorplanSolution(problem);
+            Swap swap = new Swap(problem.Dimension);
+            Shift shift = new Shift(problem.Dimension);
+            Leaf leaf = new Leaf(problem.Dimension);
+            List<Operator> operations = new List<Operator> { swap, shift, leaf };
 
 
-            Packing2DNeighbourhood neighbourhood = new Packing2DNeighbourhood(probblem);
 
-            //SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(tspSwap);
-            //foreach (SolutionDetails c in simulatedAnnealing.Minimize(tempLevelIterations:100000,isFrozenIterations: 100000))
-            //{
-            //    if (c.IsBest) Console.WriteLine(c.CostValue);
-            //}
+
+            //TspProblem problem = new TspProblem(100);
+            //TspSolution solution = new TspSolution(problem);
+            //Swap swap = new Swap(problem.NumberOfCities, 1);
+            //Shift shift = new Shift(problem.NumberOfCities, 2);
+            //TwoOpt twoOpt = new TwoOpt(problem.NumberOfCities, 3);
+            //List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
+
+
+
+
+
+
+
+
+            MultistartOptions multistartOptions = new MultistartOptions()
+            {
+                InstancesNumber = 10,
+                OutputFrequency = 100,
+                ReturnImprovedOnly = true
+            };
+
+            LocalDescentParameters ldParameters = new LocalDescentParameters()
+            {
+                DetailedOutput = true,
+                Seed = 0,
+                Operators = operations,
+                IsSteepestDescent = false
+            };
+
+            SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
+            {
+                InitProbability = 0.1,
+                TemperatureCooling = 0.97,
+                MaxPassesSinceLastTransition = 0.01,
+                UseWeightedNeighborhood = true,
+                DetailedOutput = false,
+                Seed = 0,
+                Operators = operations,
+            };
+
+            LocalDescent ld = new LocalDescent(ldParameters);
+            SimulatedAnnealing sa = new SimulatedAnnealing(saParameters);
+            ParallelMultistart<LocalDescent, LocalDescentParameters> pld = new ParallelMultistart<LocalDescent, LocalDescentParameters>(ldParameters, multistartOptions);
+            ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters> psa = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(saParameters, multistartOptions);
 
             List<string> operators = new List<string>();
 
-            LocalDescentSearch localDescentSearch = new LocalDescentSearch(neighbourhood);
-            foreach (SolutionDetails s in localDescentSearch.Minimize(5))
+            IPermutation sol = solution;
+            foreach (IPermutation s in ld.Minimize(solution))
             {
-                Console.WriteLine(s.CostValue);
-                operators.Add(s.N);
+                Console.WriteLine("{0}, {1:f}s, {2}, {3}, {4}, {5}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, sol.CostValue - s.CostValue);
+                sol = s;
+                operators.Add(s.DerivedByOperation);
             }
+
 
             var groups = operators.GroupBy(s => s).Select(s => new { Operator = s.Key, Count = s.Count() });
             var dictionary = groups.ToDictionary(g => g.Operator, g => g.Count);
@@ -40,6 +91,7 @@ namespace LocalSearch
                 Console.WriteLine("{0} = {1}", o.Operator, o.Count);
             }
 
+            Console.WriteLine("Done");
             Console.ReadLine();
         }
     }

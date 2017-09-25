@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LocalSearch.TSP
+namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
 {
     public class TspProblem
     {
@@ -8,16 +8,16 @@ namespace LocalSearch.TSP
         public double[] Y { get; }
         public double[,] Distance { get;}
 
-        public int NumberOfCities { get; }
+        public int Dimension { get; }
 
-        public TspProblem(int numberOfCities)
+        public TspProblem(int numberOfCities, int seed = 3)
         {
-            NumberOfCities = numberOfCities;
+            Dimension = numberOfCities;
             this.X = new double[numberOfCities];
             this.Y = new double[numberOfCities];
             this.Distance = new double[numberOfCities, numberOfCities];
 
-            Random random = new Random(3);
+            Random random = new Random(seed);
 
             for (int i = 0; i < numberOfCities; i++)
             {

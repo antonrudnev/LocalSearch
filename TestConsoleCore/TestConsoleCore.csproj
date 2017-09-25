@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LocalSearchCore\LocalSearchCore.csproj" />
+    <ProjectReference Include="..\LocalSearchOptimization\LocalSearchOptimization.csproj" />
   </ItemGroup>
 
 </Project>
