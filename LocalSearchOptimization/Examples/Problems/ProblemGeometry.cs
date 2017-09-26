@@ -9,8 +9,8 @@ namespace LocalSearchOptimization.Examples
 
         public double MaxHeight { get; set; }
 
-        public List<Tuple<double, double, double, double>> Lines { get; set; } = new List<Tuple<double, double, double, double>>();
+        public List<Tuple<double, double>> Points { get; set; }
 
-        public List<Tuple<double, double, double, double>> Rectangles { get; set; } = new List<Tuple<double, double, double, double>>();
+        public List<Tuple<double, double, double, double>> Rectangles { get; set; }
     }
 }

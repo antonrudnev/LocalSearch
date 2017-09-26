@@ -19,7 +19,11 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
 
         public List<int> Order { get; }
 
-        public string DerivedByOperation { get; }
+        public string OperatorTag { get; }
+
+        public string InstanceTag { get; set; }
+
+        public List<ISolution> SolutionsHistory { get; set; } 
 
         public ProblemGeometry Details { get; private set; }
 
@@ -32,7 +36,7 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
         {
             this.tspProblem = tspProblem;
             Order = permutation;
-            DerivedByOperation = operationName;
+            OperatorTag = operationName;
             DecodeSolution(tspProblem);
         }
 
@@ -52,30 +56,25 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
             int city = Order[problem.Dimension - 1];
             int nextCity = Order[0];
             double cost = problem.Distance[city, nextCity];
-            var lines = new List<Tuple<double, double, double, double>>
-            {
-                new Tuple<double, double, double, double>(
+
+            var points = new List<Tuple<double, double>>{
+                new Tuple<double, double>(
                     problem.X[city],
-                    problem.Y[city],
-                    problem.X[nextCity],
-                    problem.Y[nextCity])
-            };
+                    problem.Y[city])};
 
             for (int i = 0; i < problem.Dimension - 1; i++)
             {
                 city = Order[i];
                 nextCity = Order[i + 1];
                 cost += problem.Distance[city, nextCity];
-                lines.Add(new Tuple<double, double, double, double>(
+                points.Add(new Tuple<double, double>(
                     problem.X[city],
-                    problem.Y[city],
-                    problem.X[nextCity],
-                    problem.Y[nextCity]));
+                    problem.Y[city]));
             }
 
             Details = new ProblemGeometry()
             {
-                Lines = lines,
+                Points = points,
                 MaxWidth = 1,
                 MaxHeight = 1,
             };

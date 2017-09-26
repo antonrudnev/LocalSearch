@@ -9,6 +9,8 @@ namespace LocalSearchOptimization.Solvers
     {
         private LocalDescentParameters parameters;
 
+        private List<ISolution> solutionsHistory = new List<ISolution>();
+
         public LocalDescent(LocalDescentParameters parameters)
         {
             this.parameters = parameters;
@@ -22,6 +24,9 @@ namespace LocalSearchOptimization.Solvers
             DateTime startedAt = DateTime.Now;
             ISolution bestNeighbor = solution;
             ISolution subOptimal = solution;
+            solution.InstanceTag = this.parameters.Name;
+            solution.SolutionsHistory = solutionsHistory;
+            solutionsHistory.Add(solution);
             Neighborhood neighborhood = new Neighborhood(solution, parameters.Operators, parameters.Seed);
             bool bestFound = false;
             while (!bestFound)
@@ -44,6 +49,9 @@ namespace LocalSearchOptimization.Solvers
                     neighborhood.MoveToSolution(bestNeighbor);
                     if (parameters.DetailedOutput) yield return subOptimal;
                     subOptimal = bestNeighbor;
+                    subOptimal.InstanceTag = this.parameters.Name;
+                    subOptimal.SolutionsHistory = solutionsHistory;
+                    solutionsHistory.Add(subOptimal);
                 }
                 else
                 {

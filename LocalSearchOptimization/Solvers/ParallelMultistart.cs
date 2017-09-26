@@ -16,6 +16,8 @@ namespace LocalSearchOptimization.Solvers
 
         private MultistartOptions multistart;
 
+        private List<ISolution> solutionsHistory = new List<ISolution>();
+
         private object thisLock = new object();
 
         public ParallelMultistart(T2 parameters, MultistartOptions multistart)
@@ -50,6 +52,8 @@ namespace LocalSearchOptimization.Solvers
                             ISolution bestFromList = solutions.OrderBy(x => x.CostValue).First();
                             bestFromList.IsCurrentBest = false;
                             bestFromList.IsFinal = false;
+                            bestFromList.SolutionsHistory = solutionsHistory;
+                            solutionsHistory.AddRange(solutions);
                             if (bestFromList.CostValue < bestSolution.CostValue)
                             {
                                 bestFromList.IsCurrentBest = true;

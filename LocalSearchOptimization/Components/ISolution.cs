@@ -1,4 +1,6 @@
-﻿namespace LocalSearchOptimization.Components
+﻿using System.Collections.Generic;
+
+namespace LocalSearchOptimization.Components
 {
     public interface ISolution
     {
@@ -12,7 +14,11 @@
 
         bool IsFinal { get; set; }
 
-        string DerivedByOperation { get; }
+        string OperatorTag { get; }
+
+        string InstanceTag { get; set; }
+
+        List<ISolution> SolutionsHistory { get; set; }
 
         ISolution Shuffle(int seed);
     }

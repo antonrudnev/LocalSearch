@@ -21,7 +21,7 @@ namespace TestForm
 {
     public partial class LocalSearchForm : Form
     {
-        FloorplanProblem problem = new FloorplanProblem(20);
+        TspProblem problem = new TspProblem(50);
 
         private int multistart = 10;
 
@@ -73,7 +73,8 @@ namespace TestForm
             iterationStatus.Text = "";
             algorithmStatus.Text = "Running...";
 
-            FloorplanSolution startSolution = new FloorplanSolution(problem);
+            TspSolution startSolution = new TspSolution(problem);
+            //FloorplanSolution startSolution = new FloorplanSolution(problem);
 
             Swap swap = new Swap(problem.Dimension);
             Shift shift = new Shift(problem.Dimension);
@@ -95,7 +96,7 @@ namespace TestForm
                 UseWeightedNeighborhood = false,
                 DetailedOutput = false,
                 Seed = 0,
-                Operators = new List<Operator> { swap, shift, leaf }
+                Operators = new List<Operator> { swap, shift, twoOpt }
             };
 
             SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(saParameters);
@@ -130,7 +131,8 @@ namespace TestForm
             iterationStatus.Text = "";
             algorithmStatus.Text = "Running...";
 
-            FloorplanSolution startSolution = new FloorplanSolution(problem);
+            TspSolution startSolution = new TspSolution(problem);
+            //FloorplanSolution startSolution = new FloorplanSolution(problem);
 
             Swap swap = new Swap(problem.Dimension);
             Shift shift = new Shift(problem.Dimension);
@@ -148,7 +150,7 @@ namespace TestForm
             {
                 DetailedOutput = true,
                 Seed = 0,
-                Operators = new List<Operator> { swap, shift, leaf },
+                Operators = new List<Operator> { swap, shift, twoOpt },
                 IsSteepestDescent = false
             };
 
@@ -183,32 +185,42 @@ namespace TestForm
             toRenderBackground = false;
             if (solution.IsCurrentBest)
             {
-                costValueStatus.Text = solution.CostValue.ToString() + "  " + solution.DerivedByOperation;
+                costValueStatus.Text = solution.CostValue.ToString() + "  " + solution.OperatorTag;
                 iterationStatus.Text = "It." + solution.IterationNumber.ToString();
             }
-            double scaleX = (bitmap.Width) / solution.Details.MaxWidth;
-            double scaleY = (bitmap.Height - 2) / solution.Details.MaxHeight;
-
-            int dotRadius = 5;
+            double sX = bitmap.Width / solution.Details.MaxWidth;
+            double sY = (bitmap.Height - 2) / solution.Details.MaxHeight;
 
             using (Graphics g = Graphics.FromImage(bitmap))
             {
-                Pen pen = solution.IsCurrentBest && alg == "SA" ? new Pen(Color.Green) : alg == "SA" ? new Pen(Color.Blue) : solution.IsCurrentBest ? new Pen(Color.Red) : new Pen(Color.Purple);
-                SolidBrush brush = solution.IsCurrentBest && alg == "SA" ? new SolidBrush(Color.LightGreen) : alg == "SA" ? new SolidBrush(Color.LightBlue) : solution.IsCurrentBest ? new SolidBrush(Color.Orange) : new SolidBrush(Color.Magenta); ;
+                Color cInternal = solution.IsCurrentBest && alg == "SA" ? Color.LightGreen : alg == "SA" ? Color.LightBlue : solution.IsCurrentBest ? Color.Orange : Color.Magenta;
+                Color cExternal = solution.IsCurrentBest && alg == "SA" ? Color.Green : alg == "SA" ? Color.Blue : solution.IsCurrentBest ? Color.Red : Color.Purple;
+                Pen pen = new Pen(cExternal);
+                SolidBrush brush = new SolidBrush(cInternal);
                 g.Clear(SystemColors.Control);
-                foreach (var line in solution.Details.Lines)
+                if (solution.Details.Points != null)
                 {
-                    g.DrawLine(pen, (float)(line.Item1 * scaleX), (float)(line.Item2 * scaleY), (float)(line.Item3 * scaleX), (float)(line.Item4 * scaleY));
-                    g.FillEllipse(brush, (float)(line.Item1 * scaleX - dotRadius), (float)(line.Item2 * scaleY - dotRadius), 2 * dotRadius, 2 * dotRadius);
+                    int dR = 4;
+                    PointF[] points = solution.Details.Points.Select(x => new PointF((float)(x.Item1 * sX), (float)(x.Item2 * sY))).ToArray();
+                    if (solution.IsFinal) g.FillPolygon(brush, points);
+                    g.DrawPolygon(pen, points);
+                    points.ToList().ForEach(x =>
+                    {
+                        g.FillEllipse(brush, x.X - dR, x.Y - dR, 2 * dR, 2 * dR);
+                        g.DrawEllipse(pen, x.X - dR, x.Y - dR, 2 * dR, 2 * dR);
+                    });
                 }
-                foreach (var rect in solution.Details.Rectangles)
+                if (solution.Details.Rectangles != null)
                 {
-                    float x = (float)(rect.Item1 * scaleX);
-                    float y = (float)(bitmap.Height - (rect.Item2 + rect.Item4) * scaleY) - 1;
-                    float w = (float)(rect.Item3 * scaleX);
-                    float h = (float)(rect.Item4 * scaleY) - 1;
-                    g.FillRectangle(brush, x, y, w, h);
-                    g.DrawRectangle(pen, x, y, w, h);
+                    foreach (var rect in solution.Details.Rectangles)
+                    {
+                        float x = (float)(rect.Item1 * sX);
+                        float y = (float)(bitmap.Height - (rect.Item2 + rect.Item4) * sY) - 1;
+                        float w = (float)(rect.Item3 * sX);
+                        float h = (float)(rect.Item4 * sY) - 1;
+                        g.FillRectangle(brush, x, y, w, h);
+                        g.DrawRectangle(pen, x, y, w, h);
+                    }
                 }
                 g.DrawString(alg + (solution.IsCurrentBest ? " best: " : " current: ") + Math.Round(solution.CostValue, 4) + ", It." + solution.IterationNumber.ToString() + ", " + Math.Round(solution.TimeInSeconds, 3).ToString() + "s", new Font(SystemFonts.DefaultFont, FontStyle.Bold), new SolidBrush(Color.Black), 0, 0);
             }
@@ -284,11 +296,7 @@ namespace TestForm
 
         private void dimesionTextBox_TextChanged(object sender, EventArgs e)
         {
-            bool hasDimChanged = int.TryParse(dimesionTextBox.Text, out int newDim);
-            if (hasDimChanged)
-            {
-                problem = new FloorplanProblem(newDim);
-            }
+
         }
 
         private void multistartTextBox_TextChanged(object sender, EventArgs e)

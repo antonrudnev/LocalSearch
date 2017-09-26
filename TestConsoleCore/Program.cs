@@ -79,7 +79,7 @@ namespace LocalSearch
             {
                 Console.WriteLine("{0}, {1:f}s, {2}, {3}, {4}, {5}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, sol.CostValue - s.CostValue);
                 sol = s;
-                operators.Add(s.DerivedByOperation);
+                operators.Add(s.OperatorTag);
             }
 
 

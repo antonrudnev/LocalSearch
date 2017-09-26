@@ -23,7 +23,11 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         public List<bool> Branching { get; }
 
-        public string DerivedByOperation { get; }
+        public string OperatorTag { get; }
+
+        public string InstanceTag { get; set; }
+
+        public List<ISolution> SolutionsHistory { get; set; }
 
         public ProblemGeometry Details { get; private set; }
 
@@ -37,7 +41,7 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
             this.floorplanProblem = floorplanProblem;
             Order = permutation;
             Branching = branching;
-            DerivedByOperation = operationName;
+            OperatorTag = operationName;
             DecodeSolution(floorplanProblem);
         }
 
@@ -167,7 +171,7 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                 MaxHeight = maxSize
             };
 
-            CostValue = maxW * maxH;
+            CostValue = Math.Pow(maxW + maxH,2);
         }
 
         public override string ToString()
