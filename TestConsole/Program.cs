@@ -17,9 +17,10 @@ using TestConsole;
 namespace LocalSearchOptimization
 {
     class Program
-    {
+    {      
         static void Main(string[] args)
         {
+
 
             //FloorplanProblem problem = new FloorplanProblem(50);
             //FloorplanSolution solution = new FloorplanSolution(problem);
@@ -47,7 +48,7 @@ namespace LocalSearchOptimization
 
             MultistartOptions multistartOptions = new MultistartOptions()
             {
-                InstancesNumber = 5,
+                InstancesNumber = 2,
                 OutputFrequency = 100,
                 ReturnImprovedOnly = true
             };
@@ -87,13 +88,13 @@ namespace LocalSearchOptimization
             }
 
 
-            var groups = operators.GroupBy(s => s).Select(s => new { Operator = s.Key, Count = s.Count() });
-            var dictionary = groups.ToDictionary(g => g.Operator, g => g.Count);
+            //var groups = operators.GroupBy(s => s).Select(s => new { Operator = s.Key, Count = s.Count() });
+            //var dictionary = groups.ToDictionary(g => g.Operator, g => g.Count);
 
-            foreach (var o in groups)
-            {
-                Console.WriteLine("{0} = {1}", o.Operator, o.Count);
-            }
+            //foreach (var o in groups)
+            //{
+            //    Console.WriteLine("{0} = {1}", o.Operator, o.Count);
+            //}
 
             Console.WriteLine("Done");
             
@@ -116,13 +117,11 @@ namespace LocalSearchOptimization
 
         static private Bitmap DrawCost(ISolution solution, BitmapStyle style)
         {
-            List<Color> colors = new List<Color>();
-            foreach (var colorValue in Enum.GetValues(typeof(KnownColor)))
-                colors.Add(Color.FromKnownColor((KnownColor)colorValue));
+            List<Color> colors = new List<Color> { Color.Blue, Color.Brown, Color.Cyan, Color.Green, Color.Purple, Color.Lime, Color.Magenta, Color.Maroon, Color.Navy, Color.Olive, Color.Orange, Color.Pink, Color.Purple, Color.Red, Color.Teal, Color.Yellow };
 
             Bitmap bitmap = new Bitmap(style.BitmapWidth, style.BitmapHeight, PixelFormat.Format32bppRgb);
-            double minCost = solution.SolutionsHistory.Min(x => x.CostValue);
-            double maxCost = solution.SolutionsHistory.Max(x => x.CostValue);
+            double minCost = solution.SolutionsHistory.Min(x => x.Item3);
+            double maxCost = solution.SolutionsHistory.Max(x => x.Item3);
             double sX = bitmap.Width / (solution.SolutionsHistory.Count + 0.1);
             double sY = (bitmap.Height - 4 * style.CostRadius) / (maxCost - minCost);
             using (Graphics g = Graphics.FromImage(bitmap))
@@ -130,8 +129,8 @@ namespace LocalSearchOptimization
                 g.Clear(style.Background);
                 for (int i = 0; i < solution.SolutionsHistory.Count - 1; i++)
                 {
-                    bool parsed = int.TryParse(solution.SolutionsHistory[i].InstanceTag, out int instance);
-                    g.FillEllipse(parsed ? new SolidBrush(colors[instance]) : style.CostBrush, (float)(i * sX - style.CostRadius), (float)(bitmap.Height - (solution.SolutionsHistory[i].CostValue - minCost) * sY - 5 * style.CostRadius), 2 * style.CostRadius, 2 * style.CostRadius);
+                    bool parsed = int.TryParse(solution.SolutionsHistory[i].Item1, out int instance);
+                    g.FillEllipse(parsed ? new SolidBrush(colors[instance%colors.Count]) : style.CostBrush, (float)(i * sX - style.CostRadius), (float)(bitmap.Height - (solution.SolutionsHistory[i].Item3 - minCost) * sY - 5 * style.CostRadius), 2 * style.CostRadius, 2 * style.CostRadius);
                 }
                 //g.DrawString(String.Format("Tour lenght: {0}\nIteration: {1}\nTime: {2}s", Math.Round(solution.CostValue, 4), solution.IterationNumber, Math.Round(solution.TimeInSeconds, 3)), style.Font, new SolidBrush(Color.Black), 0, 0);
             }

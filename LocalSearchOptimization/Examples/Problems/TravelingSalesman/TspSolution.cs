@@ -23,7 +23,7 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
 
         public string InstanceTag { get; set; }
 
-        public List<ISolution> SolutionsHistory { get; set; } 
+        public List<Tuple<string, int, double>> SolutionsHistory { get; set; }
 
         public ProblemGeometry Details { get; private set; }
 

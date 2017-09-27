@@ -16,7 +16,7 @@ namespace LocalSearchOptimization.Solvers
 
         private MultistartOptions multistart;
 
-        private List<ISolution> solutionsHistory = new List<ISolution>();
+        private List<Tuple<string, int, double>> solutionsHistory = new List<Tuple<string, int, double>>();
 
         private object thisLock = new object();
 
@@ -28,10 +28,16 @@ namespace LocalSearchOptimization.Solvers
 
         public IEnumerable<ISolution> Minimize(ISolution solution)
         {
+            Random random = new Random(this.parameters.Seed);
             DateTime startedAt = DateTime.Now;
             ISolution bestSolution = solution;
+            solution.IterationNumber = 0;
+            solution.TimeInSeconds = 0;
+            solution.IsCurrentBest = false;
+            solution.IsFinal = false;
+            solution.InstanceTag = this.parameters.Name;
+            solution.SolutionsHistory = solutionsHistory;
             List<ISolution> solutions = new List<ISolution>();
-            Random random = new Random(this.parameters.Seed);
             Task<int>[] solvers = new Task<int>[this.multistart.InstancesNumber];
             for (int i = 0; i < this.multistart.InstancesNumber; i++)
             {
@@ -49,19 +55,19 @@ namespace LocalSearchOptimization.Solvers
                     lock (thisLock)
                         if (solutions.Count > 0)
                         {
-                            ISolution bestFromList = solutions.OrderBy(x => x.CostValue).First();
-                            bestFromList.IsCurrentBest = false;
-                            bestFromList.IsFinal = false;
-                            bestFromList.SolutionsHistory = solutionsHistory;
-                            solutionsHistory.AddRange(solutions);
-                            if (bestFromList.CostValue < bestSolution.CostValue)
+                            ISolution currentSolution = solutions.OrderBy(x => x.CostValue).First();
+                            currentSolution.IsCurrentBest = false;
+                            currentSolution.IsFinal = false;
+                            currentSolution.SolutionsHistory = solutionsHistory;
+                            solutionsHistory.AddRange(solutions.Select(x => new Tuple<string, int, double>(x.InstanceTag, x.IterationNumber, x.CostValue)));
+                            if (currentSolution.CostValue < bestSolution.CostValue)
                             {
-                                bestFromList.IsCurrentBest = true;
-                                yield return bestFromList;
-                                bestSolution = bestFromList;
+                                yield return bestSolution;
+                                currentSolution.IsCurrentBest = true;
+                                bestSolution = currentSolution;
                             }
                             else if (!this.multistart.ReturnImprovedOnly)
-                                yield return bestFromList;
+                                yield return currentSolution;
                             solutions.Clear();
                         }
                 }

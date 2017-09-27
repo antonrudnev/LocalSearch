@@ -9,7 +9,7 @@ namespace LocalSearchOptimization.Solvers
     {
         private LocalDescentParameters parameters;
 
-        private List<ISolution> solutionsHistory = new List<ISolution>();
+        private List<Tuple<string, int, double>> solutionsHistory = new List<Tuple<string, int, double>>();
 
         public LocalDescent(LocalDescentParameters parameters)
         {
@@ -18,49 +18,51 @@ namespace LocalSearchOptimization.Solvers
 
         public IEnumerable<ISolution> Minimize(ISolution solution)
         {
-            solution.IsCurrentBest = true;
-            solution.IsFinal = false;
             int iteration = 0;
             DateTime startedAt = DateTime.Now;
-            ISolution bestNeighbor = solution;
-            ISolution subOptimal = solution;
+            ISolution bestSolution = solution;
+            ISolution currentSolution = solution;
+            solution.IterationNumber = 0;
+            solution.TimeInSeconds = 0;
+            solution.IsCurrentBest = true;
+            solution.IsFinal = false;
             solution.InstanceTag = this.parameters.Name;
             solution.SolutionsHistory = solutionsHistory;
-            solutionsHistory.Add(solution);
-            Neighborhood neighborhood = new Neighborhood(solution, parameters.Operators, parameters.Seed);
+            solutionsHistory.Add(new Tuple<string, int, double>(this.parameters.Name, currentSolution.IterationNumber, currentSolution.CostValue));
+            Neighborhood neighborhood = new Neighborhood(currentSolution, parameters.Operators, parameters.Seed);
             bool bestFound = false;
             while (!bestFound)
             {
                 foreach (ISolution neighbor in neighborhood.Neighbors)
                 {
                     iteration++;
-                    if (neighbor.CostValue < bestNeighbor.CostValue)
+                    if (neighbor.CostValue < currentSolution.CostValue)
                     {
-                        bestNeighbor = neighbor;
+                        currentSolution = neighbor;
                         if (!parameters.IsSteepestDescent) break;
                     }
                 }
-                if (bestNeighbor.CostValue < subOptimal.CostValue)
+                if (currentSolution.CostValue < bestSolution.CostValue)
                 {
-                    bestNeighbor.IterationNumber = iteration;
-                    bestNeighbor.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
-                    bestNeighbor.IsCurrentBest = true;
-                    bestNeighbor.IsFinal = false;
-                    neighborhood.MoveToSolution(bestNeighbor);
-                    if (parameters.DetailedOutput) yield return subOptimal;
-                    subOptimal = bestNeighbor;
-                    subOptimal.InstanceTag = this.parameters.Name;
-                    subOptimal.SolutionsHistory = solutionsHistory;
-                    solutionsHistory.Add(subOptimal);
+                    if (parameters.DetailedOutput) yield return bestSolution;
+                    currentSolution.IterationNumber = iteration;
+                    currentSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
+                    currentSolution.IsCurrentBest = true;
+                    currentSolution.IsFinal = false;
+                    currentSolution.InstanceTag = this.parameters.Name;
+                    currentSolution.SolutionsHistory = solutionsHistory;
+                    solutionsHistory.Add(new Tuple<string, int, double>(this.parameters.Name, currentSolution.IterationNumber, currentSolution.CostValue));
+                    neighborhood.MoveToSolution(currentSolution);
+                    bestSolution = currentSolution;
                 }
                 else
                 {
-                    subOptimal.IsFinal = true;
-                    yield return subOptimal;
                     bestFound = true;
+                    bestSolution.IsFinal = true;
+                    yield return bestSolution;
                 }
             }
-            Console.WriteLine("\tLD {0} finished with cost {1} at iteration {2}", parameters.Name, subOptimal.CostValue, iteration);
+            Console.WriteLine("\tLD {0} finished with cost {1} at iteration {2}", parameters.Name, bestSolution.CostValue, iteration);
         }
     }
 }

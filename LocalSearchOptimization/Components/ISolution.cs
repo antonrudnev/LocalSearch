@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace LocalSearchOptimization.Components
 {
@@ -18,7 +19,7 @@ namespace LocalSearchOptimization.Components
 
         string InstanceTag { get; set; }
 
-        List<ISolution> SolutionsHistory { get; set; }
+        List<Tuple<string, int, double>> SolutionsHistory { get; set; }
 
         ISolution Shuffle(int seed);
     }

@@ -83,13 +83,13 @@ namespace LocalSearch
             }
 
 
-            var groups = operators.GroupBy(s => s).Select(s => new { Operator = s.Key, Count = s.Count() });
-            var dictionary = groups.ToDictionary(g => g.Operator, g => g.Count);
+            //var groups = operators.GroupBy(s => s).Select(s => new { Operator = s.Key, Count = s.Count() });
+            //var dictionary = groups.ToDictionary(g => g.Operator, g => g.Count);
 
-            foreach (var o in groups)
-            {
-                Console.WriteLine("{0} = {1}", o.Operator, o.Count);
-            }
+            //foreach (var o in groups)
+            //{
+            //    Console.WriteLine("{0} = {1}", o.Operator, o.Count);
+            //}
 
             Console.WriteLine("Done");
             Console.ReadLine();

@@ -27,7 +27,7 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         public string InstanceTag { get; set; }
 
-        public List<ISolution> SolutionsHistory { get; set; }
+        public List<Tuple<string, int, double>> SolutionsHistory { get; set; }
 
         public ProblemGeometry Details { get; private set; }
 
@@ -79,36 +79,6 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
             return new FloorplanSolution(this.floorplanProblem, Order.OrderBy(x => random.Next()).ToList(), branching, "shuffle");
         }
-
-        //public FloorplanSolution Leaf(int m, int n)
-        //{
-        //    List<int> newTree = new List<int>(this.tree);
-        //    int ind = m;
-        //    int count = 1;
-        //    if (newTree[m] == 0)
-        //    {
-        //        while (count != 0)
-        //        {
-        //            ind++;
-        //            count += newTree[ind] == 0 ? 1 : -1;
-        //        }
-        //        newTree.RemoveAt(ind);
-        //        newTree.RemoveAt(m);
-        //    }
-        //    else
-        //    {
-        //        while (count != 0)
-        //        {
-        //            ind--;
-        //            count += newTree[ind] == 1 ? 1 : -1;
-        //        }
-        //        newTree.RemoveAt(m);
-        //        newTree.RemoveAt(ind);
-        //    }
-        //    newTree.Insert(n, 1);
-        //    newTree.Insert(n, 0);
-        //    return new FloorplanSolution(this.floorplanProblem, this.permutation, newTree, "leaf");
-        //}
 
         public void DecodeSolution(FloorplanProblem problem)
         {

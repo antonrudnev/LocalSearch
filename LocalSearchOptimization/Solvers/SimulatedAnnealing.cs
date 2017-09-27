@@ -10,7 +10,7 @@ namespace LocalSearchOptimization.Solvers
     {
         private SimulatedAnnealingParameters parameters;
 
-        private List<ISolution> solutionsHistory = new List<ISolution>();
+        private List<Tuple<string, int, double>> solutionsHistory = new List<Tuple<string, int, double>>();
 
         public SimulatedAnnealing(SimulatedAnnealingParameters parameters)
         {
@@ -24,9 +24,13 @@ namespace LocalSearchOptimization.Solvers
             DateTime startedAt = DateTime.Now;
             ISolution bestSolution = solution;
             ISolution currentSolution = solution;
+            solution.IterationNumber = 0;
+            solution.TimeInSeconds = 0;
+            solution.IsCurrentBest = false;
+            solution.IsFinal = false;
             solution.InstanceTag = this.parameters.Name;
             solution.SolutionsHistory = solutionsHistory;
-            solutionsHistory.Add(solution);
+            solutionsHistory.Add(new Tuple<string, int, double>(this.parameters.Name, currentSolution.IterationNumber, currentSolution.CostValue));
             Neighborhood neighborhood = this.parameters.UseWeightedNeighborhood ?
                 new WeightedNeighborhood(solution, parameters.Operators, parameters.Seed) :
                     new Neighborhood(solution, parameters.Operators, parameters.Seed);
@@ -52,14 +56,14 @@ namespace LocalSearchOptimization.Solvers
                     currentSolution.IsFinal = false;
                     currentSolution.InstanceTag = this.parameters.Name;
                     currentSolution.SolutionsHistory = solutionsHistory;
-                    solutionsHistory.Add(currentSolution);
-                    if (parameters.DetailedOutput) yield return currentSolution;
+                    solutionsHistory.Add(new Tuple<string, int, double>(this.parameters.Name, currentSolution.IterationNumber, currentSolution.CostValue));
                     if (currentSolution.CostValue < bestSolution.CostValue)
                     {
+                        yield return bestSolution;
                         currentSolution.IsCurrentBest = true;
-                        yield return currentSolution;
                         bestSolution = currentSolution;
                     }
+                    else if (parameters.DetailedOutput) yield return currentSolution;
                     neighborhood.MoveToSolution(currentSolution);
                 }
                 if (iterationsForTemperatureValue >= maxIterationsForTemperatureValue)
