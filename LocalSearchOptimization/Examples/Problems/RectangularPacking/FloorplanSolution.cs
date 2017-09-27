@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using LocalSearchOptimization.Components;
 using LocalSearchOptimization.Examples.Structures.Permutation;
 using LocalSearchOptimization.Examples.Structures.Tree;
-using LocalSearchOptimization.Examples.Problems;
 
 namespace LocalSearchOptimization.Examples.RectangularPacking
 {
-    public class FloorplanSolution : IPermutation, ITreeStructure, IGeometricalSolution
+    public class FloorplanSolution : IPermutation, ITreeStructure
     {
         private FloorplanProblem floorplanProblem;
 
@@ -29,7 +27,15 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         public List<Tuple<string, int, double>> SolutionsHistory { get; set; }
 
-        public ProblemGeometry Details { get; private set; }
+        public double[] X { get; }
+        public double[] Y { get; }
+        public double[] W { get; }
+        public double[] H { get; }
+
+        public double MaxWidth { get; set; }
+        public double MaxHeight { get; set; }
+
+        public int NumberOfRectangles { get => floorplanProblem.Dimension; }
 
         public FloorplanSolution(FloorplanProblem floorplanProblem) : this(floorplanProblem, Enumerable.Range(1, floorplanProblem.Dimension).ToList(), Enumerable.Repeat(false, floorplanProblem.Dimension).ToList().Concat(Enumerable.Repeat(true, floorplanProblem.Dimension)).ToList(), "init")
         {
@@ -39,6 +45,10 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
         private FloorplanSolution(FloorplanProblem floorplanProblem, List<int> permutation, List<bool> branching, string operationName)
         {
             this.floorplanProblem = floorplanProblem;
+            this.X = new double[floorplanProblem.Dimension + 1];
+            this.Y = new double[floorplanProblem.Dimension + 1];
+            this.W = floorplanProblem.W;
+            this.H = floorplanProblem.H;
             Order = permutation;
             Branching = branching;
             OperatorTag = operationName;
@@ -82,15 +92,10 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         public void DecodeSolution(FloorplanProblem problem)
         {
-            List<Tuple<double, double, double, double>> rectangles = new List<Tuple<double, double, double, double>>();
-            double maxW = 0;
-            double maxH = 0;
-            double[] x = new double[problem.Dimension + 1];
-            double[] y = new double[problem.Dimension + 1];
-            double[] w = problem.W;
-            double[] h = problem.H;
-            x[0] = 0;
-            y[0] = 0;
+            MaxWidth = 0;
+            MaxHeight = 0;
+            X[0] = 0;
+            Y[0] = 0;
             List<int> contour = new List<int> { 0 };
             int currentBlock;
             int perm = 0;
@@ -100,30 +105,28 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                 {
                     int currentContour = contour[0];
                     currentBlock = Order[perm];
-                    x[currentBlock] = x[currentContour] + w[currentContour];
+                    X[currentBlock] = X[currentContour] + W[currentContour];
                     double maxY = 0;
                     for (int i = 0; i < perm; i++)
                     {
                         int p = Order[i];
-                        if ((x[p] < x[currentBlock] + w[currentBlock]) && (x[currentBlock] < x[p] + w[p]) && (maxY < y[p] + h[p]))
+                        if ((X[p] < X[currentBlock] + W[currentBlock]) && (X[currentBlock] < X[p] + W[p]) && (maxY < Y[p] + H[p]))
                         {
-                            maxY = y[p] + h[p];
+                            maxY = Y[p] + H[p];
                         }
                     }
-                    y[currentBlock] = maxY;
+                    Y[currentBlock] = maxY;
                     perm++;
                     contour.Insert(0, currentBlock);
-
-                    rectangles.Add(new Tuple<double, double, double, double>(x[currentBlock], y[currentBlock], w[currentBlock], h[currentBlock]));
-                    double currentW = x[currentBlock] + w[currentBlock];
-                    double currentH = y[currentBlock] + h[currentBlock];
-                    if (maxW < currentW)
+                    double currentW = X[currentBlock] + W[currentBlock];
+                    double currentH = Y[currentBlock] + H[currentBlock];
+                    if (MaxWidth < currentW)
                     {
-                        maxW = currentW;
+                        MaxWidth = currentW;
                     }
-                    if (maxH < currentH)
+                    if (MaxHeight < currentH)
                     {
-                        maxH = currentH;
+                        MaxHeight = currentH;
                     }
                 }
                 else
@@ -131,32 +134,22 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                     contour.RemoveAt(0);
                 }
             }
-
-            double maxSize = Math.Max(maxW, maxH);
-
-            Details = new ProblemGeometry()
-            {
-                Rectangles = rectangles,
-                MaxWidth = maxSize,
-                MaxHeight = maxSize
-            };
-
-            CostValue = Math.Pow(maxW + maxH,2);
+            CostValue = Math.Pow(MaxWidth + MaxHeight, 2);
         }
 
-        public override string ToString()
-        {
-            StringBuilder s = new StringBuilder();
-            foreach (int i in Order)
-            {
-                s.Append(i + " ");
-            }
-            s.Append("\n");
-            foreach (bool i in Branching)
-            {
-                s.Append(i ? ")" : "(");
-            }
-            return s.ToString();
-        }
+        //public override string ToString()
+        //{
+        //    StringBuilder s = new StringBuilder();
+        //    foreach (int i in Order)
+        //    {
+        //        s.Append(i + " ");
+        //    }
+        //    s.Append("\n");
+        //    foreach (bool i in Branching)
+        //    {
+        //        s.Append(i ? ")" : "(");
+        //    }
+        //    return s.ToString();
+        //}
     }
 }

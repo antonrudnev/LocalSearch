@@ -22,8 +22,8 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
             for (int i = 1; i <= numberOfRectangles; i++)
             {
-                this.W[i] = 1-random.NextDouble();
-                this.H[i] = 1-random.NextDouble();
+                this.W[i] = random.NextDouble() + 0.1;
+                this.H[i] = random.NextDouble() + 0.1;
             }
         }
     }

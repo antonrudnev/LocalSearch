@@ -7,7 +7,7 @@ using LocalSearchOptimization.Examples.Structures.Permutation;
 
 namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
 {
-    public class TspSolution : IPermutation, IGeometricalSolution
+    public class TspSolution : IPermutation
     {
         private TspProblem tspProblem;
 
@@ -25,7 +25,13 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
 
         public List<Tuple<string, int, double>> SolutionsHistory { get; set; }
 
-        public ProblemGeometry Details { get; private set; }
+        public double[] X { get; }
+        public double[] Y { get; }
+
+        public double MaxWidth { get; set; }
+        public double MaxHeight { get; set; }
+
+        public int NumberOfCities { get => tspProblem.Dimension; }
 
         public TspSolution(TspProblem tspProblem) : this(tspProblem, Enumerable.Range(0, tspProblem.Dimension).ToList(), "init")
         {
@@ -35,6 +41,8 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
         private TspSolution(TspProblem tspProblem, List<int> permutation, string operationName)
         {
             this.tspProblem = tspProblem;
+            this.X = tspProblem.X;
+            this.Y = tspProblem.Y;
             Order = permutation;
             OperatorTag = operationName;
             DecodeSolution(tspProblem);
@@ -53,43 +61,21 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
 
         private void DecodeSolution(TspProblem problem)
         {
+
             int city = Order[problem.Dimension - 1];
             int nextCity = Order[0];
             double cost = problem.Distance[city, nextCity];
-
-            var points = new List<Tuple<double, double>>{
-                new Tuple<double, double>(
-                    problem.X[city],
-                    problem.Y[city])};
-
+            MaxWidth = problem.X[city];
+            MaxHeight = problem.Y[city];
             for (int i = 0; i < problem.Dimension - 1; i++)
             {
                 city = Order[i];
                 nextCity = Order[i + 1];
                 cost += problem.Distance[city, nextCity];
-                points.Add(new Tuple<double, double>(
-                    problem.X[city],
-                    problem.Y[city]));
+                if (MaxWidth < problem.X[i]) MaxWidth = problem.X[i];
+                if (MaxHeight < problem.Y[i]) MaxHeight = problem.Y[i];
             }
-
-            Details = new ProblemGeometry()
-            {
-                Points = points,
-                MaxWidth = 1,
-                MaxHeight = 1,
-            };
-
             CostValue = cost;
-        }
-
-        public override string ToString()
-        {
-            StringBuilder s = new StringBuilder();
-            foreach (int i in Order)
-            {
-                s.Append(i + " ");
-            }
-            return s.ToString();
         }
     }
 }

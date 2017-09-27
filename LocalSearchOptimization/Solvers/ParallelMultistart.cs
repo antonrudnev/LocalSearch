@@ -44,7 +44,7 @@ namespace LocalSearchOptimization.Solvers
                 T2 instanceParameters = (T2)this.parameters.Clone();
                 instanceParameters.Name = i.ToString();
                 instanceParameters.Seed = random.Next();
-                ISolution startSolution = i == 0 ? solution : solution.Shuffle(instanceParameters.Seed);
+                ISolution startSolution = solution.Shuffle(instanceParameters.Seed);
                 solvers[i] = Task<int>.Factory.StartNew(() => Solve(instanceParameters, startSolution, solutions));
             }
             using (ManualResetEventSlim delay = new ManualResetEventSlim(initialState: false))

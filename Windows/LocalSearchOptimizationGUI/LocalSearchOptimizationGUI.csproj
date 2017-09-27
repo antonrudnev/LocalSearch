@@ -80,7 +80,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LocalSearchOptimization\LocalSearchOptimization.csproj">
+    <ProjectReference Include="..\..\LocalSearchOptimization\LocalSearchOptimization.csproj">
       <Project>{feebde62-8452-4e67-a7f9-9c521553e45c}</Project>
       <Name>LocalSearchOptimization</Name>
     </ProjectReference>
