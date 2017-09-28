@@ -10,7 +10,7 @@ namespace LocalSearchOptimization.Solvers
     {
         private SimulatedAnnealingParameters parameters;
 
-        private List<Tuple<string, int, double>> solutionsHistory = new List<Tuple<string, int, double>>();
+        private List<SolutionSummary> solutionsHistory = new List<SolutionSummary>();
 
         public SimulatedAnnealing(SimulatedAnnealingParameters parameters)
         {
@@ -30,25 +30,31 @@ namespace LocalSearchOptimization.Solvers
             solution.IsFinal = false;
             solution.InstanceTag = this.parameters.Name;
             solution.SolutionsHistory = solutionsHistory;
-            solutionsHistory.Add(new Tuple<string, int, double>(this.parameters.Name, currentSolution.IterationNumber, currentSolution.CostValue));
+            solutionsHistory.Add(new SolutionSummary
+            {
+                InstanceTag = this.parameters.Name,
+                OperatorTag = currentSolution.OperatorTag,
+                IterationNumber = currentSolution.IterationNumber,
+                CostValue = currentSolution.CostValue
+            });
             Neighborhood neighborhood = this.parameters.UseWeightedNeighborhood ?
                 new WeightedNeighborhood(solution, parameters.Operators, parameters.Seed) :
                     new Neighborhood(solution, parameters.Operators, parameters.Seed);
             double temperature = GetStartTemperature(parameters.InitProbability, neighborhood);
-            int maxIterationsForTemperatureValue = (int)(parameters.TemperatureLevelPasses * neighborhood.Power);
-            int maxIterationsSinceLastTransition = (int)(parameters.MaxPassesSinceLastTransition * neighborhood.Power);
-            int iterationsForTemperatureValue = 0;
-            int iterationsSinceLastTransition = 0;
-            while (iterationsSinceLastTransition < maxIterationsSinceLastTransition && temperature > 10E-5)
+            int maxIterationsByTemperature = (int)(parameters.TemperatureLevelPower * neighborhood.Power);
+            int iterationsByTemperature = 0;
+            int acceptedIterationsByTemperature = 0;
+            int frozenState = 0;
+            double costDeviation = 0;
+            while (frozenState < this.parameters.MaxFrozenLevels && temperature > 10E-5)
             {
                 iteration++;
-                iterationsForTemperatureValue++;
-                iterationsSinceLastTransition++;
+                iterationsByTemperature++;
                 ISolution randomNeighbour = neighborhood.GetRandom();
                 double costDifference = randomNeighbour.CostValue - currentSolution.CostValue;
                 if (costDifference < 0 || (costDifference > 0 && random.NextDouble() < Math.Exp(-costDifference / temperature)))
                 {
-                    iterationsSinceLastTransition = 0;
+                    acceptedIterationsByTemperature++;
                     currentSolution = randomNeighbour;
                     currentSolution.IterationNumber = iteration;
                     currentSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
@@ -56,7 +62,13 @@ namespace LocalSearchOptimization.Solvers
                     currentSolution.IsFinal = false;
                     currentSolution.InstanceTag = this.parameters.Name;
                     currentSolution.SolutionsHistory = solutionsHistory;
-                    solutionsHistory.Add(new Tuple<string, int, double>(this.parameters.Name, currentSolution.IterationNumber, currentSolution.CostValue));
+                    solutionsHistory.Add(new SolutionSummary
+                    {
+                        InstanceTag = this.parameters.Name,
+                        OperatorTag = currentSolution.OperatorTag,
+                        IterationNumber = currentSolution.IterationNumber,
+                        CostValue = currentSolution.CostValue
+                    });
                     if (currentSolution.CostValue < bestSolution.CostValue)
                     {
                         yield return bestSolution;
@@ -66,14 +78,17 @@ namespace LocalSearchOptimization.Solvers
                     else if (parameters.DetailedOutput) yield return currentSolution;
                     neighborhood.MoveToSolution(currentSolution);
                 }
-                if (iterationsForTemperatureValue >= maxIterationsForTemperatureValue)
+                if (iterationsByTemperature >= maxIterationsByTemperature)
                 {
-                    iterationsForTemperatureValue = 0;
                     temperature *= parameters.TemperatureCooling;
-                    Console.WriteLine("\tSA {0} cost {1}, temp {2}, iter {3}, reserve {4}", parameters.Name, currentSolution.CostValue, temperature, iteration, maxIterationsSinceLastTransition - iterationsSinceLastTransition);
+                    costDeviation = StandardDeviation(solutionsHistory.GetRange(solutionsHistory.Count - acceptedIterationsByTemperature, acceptedIterationsByTemperature).Select(x => x.CostValue));
+                    if (costDeviation <= this.parameters.MinCostDeviation) frozenState++;
+                    Console.WriteLine("\tSA {0} cost {1}, temp {2}, accepted {3}, deviation {4}", parameters.Name, currentSolution.CostValue, temperature, acceptedIterationsByTemperature, costDeviation);
+                    iterationsByTemperature = 0;
+                    acceptedIterationsByTemperature = 0;
                 }
             }
-            Console.WriteLine("\tSA {0} finished with cost {1} and temperature {2} at iteration {3}", parameters.Name, bestSolution.CostValue, temperature, iteration);
+            Console.WriteLine("\tSA {0} finished with cost {1}, temperature {2}, and deviation {3} at iteration {4}", parameters.Name, bestSolution.CostValue, temperature, costDeviation, iteration);
             bestSolution.IterationNumber = iteration;
             bestSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
             bestSolution.IsFinal = true;
@@ -105,6 +120,15 @@ namespace LocalSearchOptimization.Solvers
                 double d = n - k;
                 return sorted[k - 1] + d * (sorted[k] - sorted[k - 1]);
             }
+        }
+
+        private double StandardDeviation(IEnumerable<double> values)
+        {
+            int count = values.Count();
+            if (count == 0) return 0;
+            double average = values.Average();
+            double sqrDiff = values.Sum(x => Math.Pow(x - average, 2));
+            return Math.Sqrt(sqrDiff / count);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace LocalSearchOptimization.Solvers
 
         private MultistartOptions multistart;
 
-        private List<Tuple<string, int, double>> solutionsHistory = new List<Tuple<string, int, double>>();
+        private List<SolutionSummary> solutionsHistory = new List<SolutionSummary>();
 
         private object thisLock = new object();
 
@@ -59,7 +59,13 @@ namespace LocalSearchOptimization.Solvers
                             currentSolution.IsCurrentBest = false;
                             currentSolution.IsFinal = false;
                             currentSolution.SolutionsHistory = solutionsHistory;
-                            solutionsHistory.AddRange(solutions.Select(x => new Tuple<string, int, double>(x.InstanceTag, x.IterationNumber, x.CostValue)));
+                            solutionsHistory.AddRange(solutions.Select(x => new SolutionSummary
+                            {
+                                InstanceTag = x.InstanceTag,
+                                OperatorTag = x.OperatorTag,
+                                IterationNumber = x.IterationNumber,
+                                CostValue = x.CostValue
+                            }));
                             if (currentSolution.CostValue < bestSolution.CostValue)
                             {
                                 yield return bestSolution;

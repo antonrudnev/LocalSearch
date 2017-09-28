@@ -19,7 +19,7 @@ namespace LocalSearchOptimization.Components
 
         string InstanceTag { get; set; }
 
-        List<Tuple<string, int, double>> SolutionsHistory { get; set; }
+        List<SolutionSummary> SolutionsHistory { get; set; }
 
         ISolution Shuffle(int seed);
     }

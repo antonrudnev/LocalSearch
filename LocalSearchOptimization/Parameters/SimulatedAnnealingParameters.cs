@@ -6,9 +6,11 @@
 
         public double TemperatureCooling { get; set; } = 0.95;
 
-        public double TemperatureLevelPasses { get; set; } = 1;
+        public double TemperatureLevelPower { get; set; } = 1;
 
-        public double MaxPassesSinceLastTransition { get; set; } = 0.1;
+        public double MinCostDeviation { get; set; } = 10E-10;
+
+        public int MaxFrozenLevels { get; set; } = 3;
 
         public bool UseWeightedNeighborhood { get; set; } = false;
 
@@ -21,8 +23,9 @@
         {
             InitProbability = copy.InitProbability;
             TemperatureCooling = copy.TemperatureCooling;
-            TemperatureLevelPasses = copy.TemperatureLevelPasses;
-            MaxPassesSinceLastTransition = copy.MaxPassesSinceLastTransition;
+            TemperatureLevelPower = copy.TemperatureLevelPower;
+            MinCostDeviation = copy.MinCostDeviation;
+            MaxFrozenLevels = copy.MaxFrozenLevels;
             UseWeightedNeighborhood = copy.UseWeightedNeighborhood;
         }
 

@@ -9,7 +9,7 @@ namespace LocalSearchOptimization.Solvers
     {
         private LocalDescentParameters parameters;
 
-        private List<Tuple<string, int, double>> solutionsHistory = new List<Tuple<string, int, double>>();
+        private List<SolutionSummary> solutionsHistory = new List<SolutionSummary>();
 
         public LocalDescent(LocalDescentParameters parameters)
         {
@@ -28,7 +28,13 @@ namespace LocalSearchOptimization.Solvers
             solution.IsFinal = false;
             solution.InstanceTag = this.parameters.Name;
             solution.SolutionsHistory = solutionsHistory;
-            solutionsHistory.Add(new Tuple<string, int, double>(this.parameters.Name, currentSolution.IterationNumber, currentSolution.CostValue));
+            solutionsHistory.Add(new SolutionSummary
+            {
+                InstanceTag = this.parameters.Name,
+                OperatorTag = currentSolution.OperatorTag,
+                IterationNumber = currentSolution.IterationNumber,
+                CostValue = currentSolution.CostValue
+            });
             Neighborhood neighborhood = new Neighborhood(currentSolution, parameters.Operators, parameters.Seed);
             bool bestFound = false;
             while (!bestFound)
@@ -51,7 +57,13 @@ namespace LocalSearchOptimization.Solvers
                     currentSolution.IsFinal = false;
                     currentSolution.InstanceTag = this.parameters.Name;
                     currentSolution.SolutionsHistory = solutionsHistory;
-                    solutionsHistory.Add(new Tuple<string, int, double>(this.parameters.Name, currentSolution.IterationNumber, currentSolution.CostValue));
+                    solutionsHistory.Add(new SolutionSummary
+                    {
+                        InstanceTag = this.parameters.Name,
+                        OperatorTag = currentSolution.OperatorTag,
+                        IterationNumber = currentSolution.IterationNumber,
+                        CostValue = currentSolution.CostValue
+                    });
                     neighborhood.MoveToSolution(currentSolution);
                     bestSolution = currentSolution;
                 }

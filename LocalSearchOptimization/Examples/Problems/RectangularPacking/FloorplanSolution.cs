@@ -25,7 +25,7 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         public string InstanceTag { get; set; }
 
-        public List<Tuple<string, int, double>> SolutionsHistory { get; set; }
+        public List<SolutionSummary> SolutionsHistory { get; set; }
 
         public double[] X { get; }
         public double[] Y { get; }
@@ -134,7 +134,8 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                     contour.RemoveAt(0);
                 }
             }
-            CostValue = Math.Pow(MaxWidth + MaxHeight, 2);
+            //CostValue = Math.Pow(MaxWidth + MaxHeight, 2);
+            CostValue = MaxWidth * MaxHeight;
         }
 
         //public override string ToString()
