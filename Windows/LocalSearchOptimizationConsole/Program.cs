@@ -23,22 +23,22 @@ namespace LocalSearchOptimizationConsole
         {
 
 
-            //FloorplanProblem problem = new FloorplanProblem(50);
-            //FloorplanSolution solution = new FloorplanSolution(problem);
-            //Swap swap = new Swap(problem.Dimension, 10);
-            //Shift shift = new Shift(problem.Dimension, 1);
-            //Leaf leaf = new Leaf(problem.Dimension, 5);
-            //List<Operator> operations = new List<Operator> { swap, shift, leaf };
+            FloorplanProblem problem = new FloorplanProblem(20);
+            FloorplanSolution solution = new FloorplanSolution(problem);
+            Swap swap = new Swap(problem.Dimension, 10);
+            Shift shift = new Shift(problem.Dimension, 1);
+            Leaf leaf = new Leaf(problem.Dimension, 5);
+            List<Operator> operations = new List<Operator> { swap, shift, leaf };
 
 
 
 
-            TspProblem problem = new TspProblem(100);
-            TspSolution solution = new TspSolution(problem);
-            Swap swap = new Swap(problem.Dimension, 1);
-            Shift shift = new Shift(problem.Dimension, 2);
-            TwoOpt twoOpt = new TwoOpt(problem.Dimension, 3);
-            List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
+            //TspProblem problem = new TspProblem(100);
+            //TspSolution solution = new TspSolution(problem);
+            //Swap swap = new Swap(problem.Dimension, 1);
+            //Shift shift = new Shift(problem.Dimension, 2);
+            //TwoOpt twoOpt = new TwoOpt(problem.Dimension, 3);
+            //List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
 
 
 

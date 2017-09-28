@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using LocalSearchOptimization.Components;
 using LocalSearchOptimization.Examples.Structures.Permutation;
 using LocalSearchOptimization.Examples.Structures.Tree;
@@ -92,34 +93,100 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         public void DecodeSolution(FloorplanProblem problem)
         {
+            LinearDecoder(problem);
+        }
+
+        /// <summary>
+        /// Decodes the tree structure into a packing layout. Trick with the contour structure provides O(n) performance that is the most efficient.
+        /// </summary>
+        /// <param name="problem"></param>
+        public void LinearDecoder(FloorplanProblem problem)
+        {
             MaxWidth = 0;
             MaxHeight = 0;
             X[0] = 0;
             Y[0] = 0;
-            List<int> contour = new List<int> { 0 };
-            int currentBlock;
+            LinkedList<int> countour = new LinkedList<int>();
+            countour.AddLast(0);
+            LinkedListNode<int> currentContour = countour.First;
             int perm = 0;
             foreach (bool b in Branching)
             {
                 if (!b)
                 {
-                    int currentContour = contour[0];
-                    currentBlock = Order[perm];
-                    X[currentBlock] = X[currentContour] + W[currentContour];
+                    int parent = currentContour.Value;
+                    int current = Order[perm];
+                    X[current] = X[parent] + W[parent];
+                    LinkedListNode<int> currentTop = currentContour;
+                    double maxY = 0;
+                    bool topMostFound = false;
+                    double rightSide = X[current] + W[current];
+                    while (currentTop.Next != null && !topMostFound)
+                    {
+                        currentTop = currentTop.Next;
+                        int top = currentTop.Value;
+                        if (maxY < Y[top] + H[top]) maxY = Y[top] + H[top];
+
+                        if (X[top] + W[top] <= rightSide)
+                        {
+                            currentTop = currentTop.Previous;
+                            countour.Remove(top);
+                        }
+                        else topMostFound = true;
+                    }
+                    Y[current] = maxY;
+                    countour.AddAfter(currentContour, current);
+                    currentContour = currentContour.Next;
+                    perm++;
+                    double currentW = X[current] + W[current];
+                    double currentH = Y[current] + H[current];
+                    if (MaxWidth < currentW)
+                        MaxWidth = currentW;
+                    if (MaxHeight < currentH)
+                        MaxHeight = currentH;
+                }
+                else
+                {
+                    currentContour = currentContour.Previous;
+                }
+            }
+            CostValue = MaxWidth * MaxHeight;
+        }
+
+        /// <summary>
+        /// Decodes the tree structure into a packing layout. Straightforward implementation provides O(n^2) performance. Used for demonstration purposes only. 
+        /// </summary>
+        /// <param name="problem"></param>
+        public void QuadraticDecoder(FloorplanProblem problem)
+        {
+            MaxWidth = 0;
+            MaxHeight = 0;
+            X[0] = 0;
+            Y[0] = 0;
+            Stack<int> parents = new Stack<int>();
+            parents.Push(0);
+            int perm = 0;
+            foreach (bool b in Branching)
+            {
+                if (!b)
+                {
+                    int parent = parents.Peek();
+                    int current = Order[perm];
+                    X[current] = X[parent] + W[parent];
                     double maxY = 0;
                     for (int i = 0; i < perm; i++)
                     {
                         int p = Order[i];
-                        if ((X[p] < X[currentBlock] + W[currentBlock]) && (X[currentBlock] < X[p] + W[p]) && (maxY < Y[p] + H[p]))
+                        if ((X[p] < X[current] + W[current]) && (X[current] < X[p] + W[p]) && (maxY < Y[p] + H[p]))
                         {
                             maxY = Y[p] + H[p];
                         }
                     }
-                    Y[currentBlock] = maxY;
+                    Y[current] = maxY;
                     perm++;
-                    contour.Insert(0, currentBlock);
-                    double currentW = X[currentBlock] + W[currentBlock];
-                    double currentH = Y[currentBlock] + H[currentBlock];
+                    parents.Push(current);
+                    double currentW = X[current] + W[current];
+                    double currentH = Y[current] + H[current];
                     if (MaxWidth < currentW)
                     {
                         MaxWidth = currentW;
@@ -131,26 +198,25 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                 }
                 else
                 {
-                    contour.RemoveAt(0);
+                    parents.Pop();
                 }
             }
-            //CostValue = Math.Pow(MaxWidth + MaxHeight, 2);
             CostValue = MaxWidth * MaxHeight;
         }
 
-        //public override string ToString()
-        //{
-        //    StringBuilder s = new StringBuilder();
-        //    foreach (int i in Order)
-        //    {
-        //        s.Append(i + " ");
-        //    }
-        //    s.Append("\n");
-        //    foreach (bool i in Branching)
-        //    {
-        //        s.Append(i ? ")" : "(");
-        //    }
-        //    return s.ToString();
-        //}
+        public override string ToString()
+        {
+            StringBuilder s = new StringBuilder();
+            foreach (int i in Order)
+            {
+                s.Append(i + " ");
+            }
+            s.Append("\n");
+            foreach (bool i in Branching)
+            {
+                s.Append(i ? ")" : "(");
+            }
+            return s.ToString();
+        }
     }
 }

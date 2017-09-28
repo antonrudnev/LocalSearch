@@ -10,7 +10,7 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
         public static Bitmap Draw(this FloorplanSolution solution, BitmapStyle style = null)
         {
             if (style == null) style = new BitmapStyle();
-            Bitmap bitmap = new Bitmap(style.BitmapWidth, style.BitmapHeight, PixelFormat.Format32bppRgb);
+            Bitmap bitmap = new Bitmap(style.ImageWidth, style.ImageHeight, PixelFormat.Format32bppRgb);
             double maxSize = Math.Max(solution.MaxWidth, solution.MaxHeight);
             double scaleX = (bitmap.Width - style.MarginX) / maxSize;
             double scaleY = (bitmap.Height - style.MarginY) / maxSize;

@@ -4,8 +4,8 @@ namespace LocalSearchOptimization.Examples
 {
     public class BitmapStyle
     {
-        public int BitmapWidth { get; set; } = 3200;
-        public int BitmapHeight { get; set; } = 1800;
+        public int ImageWidth { get; set; } = 3200;
+        public int ImageHeight { get; set; } = 1800;
         public int MarginX { get; set; } = 0;
         public int MarginY { get; set; } = 150;
         public Font Font { get; set; } = new Font("Arial", 24);
