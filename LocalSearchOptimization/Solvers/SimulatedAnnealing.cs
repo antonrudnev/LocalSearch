@@ -88,7 +88,7 @@ namespace LocalSearchOptimization.Solvers
                     acceptedIterationsByTemperature = 0;
                 }
             }
-            Console.WriteLine("\tSA {0} finished with cost {1}, temperature {2}, and deviation {3} at iteration {4}", parameters.Name, bestSolution.CostValue, temperature, costDeviation, iteration);
+            Console.WriteLine("\t{0} finished with cost {1}, temperature {2}, and deviation {3} at iteration {4}", parameters.Name, bestSolution.CostValue, temperature, costDeviation, iteration);
             bestSolution.IterationNumber = iteration;
             bestSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
             bestSolution.IsFinal = true;

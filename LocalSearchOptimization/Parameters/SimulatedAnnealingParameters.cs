@@ -2,9 +2,9 @@
 {
     public class SimulatedAnnealingParameters : CoreParameters
     {
-        public double InitProbability { get; set; } = 0.5;
+        public double InitProbability { get; set; } = 0.3;
 
-        public double TemperatureCooling { get; set; } = 0.95;
+        public double TemperatureCooling { get; set; } = 0.97;
 
         public double TemperatureLevelPower { get; set; } = 1;
 

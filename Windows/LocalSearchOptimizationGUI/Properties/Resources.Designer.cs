@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TestForm.Properties
+namespace LocalSearchOptimizationGUI.Properties
 {
 
 

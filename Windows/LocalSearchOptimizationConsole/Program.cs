@@ -107,7 +107,7 @@ namespace LocalSearchOptimizationConsole
         {
             yield return (solution as TspSolution)?.Draw();
             yield return (solution as FloorplanSolution)?.Draw();
-            yield return DrawCostHistory.Draw(solution);
+            yield return DrawCostHistory.Draw(solution, new BitmapStyle());
         }
     }
 }

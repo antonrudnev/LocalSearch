@@ -15,9 +15,9 @@ namespace LocalSearchOptimization.Components
 
         bool IsFinal { get; set; }
 
-        string OperatorTag { get; }
-
         string InstanceTag { get; set; }
+
+        string OperatorTag { get; }
 
         List<SolutionSummary> SolutionsHistory { get; set; }
 

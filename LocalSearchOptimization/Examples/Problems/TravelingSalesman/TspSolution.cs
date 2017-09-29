@@ -19,9 +19,9 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
 
         public List<int> Order { get; }
 
-        public string OperatorTag { get; }
-
         public string InstanceTag { get; set; }
+
+        public string OperatorTag { get; }
 
         public List<SolutionSummary> SolutionsHistory { get; set; }
 

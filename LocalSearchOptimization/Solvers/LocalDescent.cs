@@ -74,7 +74,7 @@ namespace LocalSearchOptimization.Solvers
                     yield return bestSolution;
                 }
             }
-            Console.WriteLine("\tLD {0} finished with cost {1} at iteration {2}", parameters.Name, bestSolution.CostValue, iteration);
+            Console.WriteLine("\t{0} finished with cost {1} at iteration {2}", parameters.Name, bestSolution.CostValue, iteration);
         }
     }
 }

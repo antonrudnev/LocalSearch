@@ -22,9 +22,9 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         public List<bool> Branching { get; }
 
-        public string OperatorTag { get; }
-
         public string InstanceTag { get; set; }
+
+        public string OperatorTag { get; }
 
         public List<SolutionSummary> SolutionsHistory { get; set; }
 
@@ -150,7 +150,7 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                     currentContour = currentContour.Previous;
                 }
             }
-            CostValue = MaxWidth * MaxHeight;
+            CostValue = Math.Pow(MaxWidth + 1.05 * MaxHeight, 2);
         }
 
         /// <summary>

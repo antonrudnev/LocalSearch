@@ -2,15 +2,14 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using LocalSearchOptimization.Components;
 
 namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
 {
     public static class TspSolutionDraw
     {
-        public static Bitmap Draw(this TspSolution solution, BitmapStyle style = null)
+        public static Bitmap Draw(this TspSolution solution, BitmapStyle bitmapStyle = null)
         {
-            if (style == null) style = new BitmapStyle();
+            BitmapStyle style = bitmapStyle ?? new BitmapStyle();
             Bitmap bitmap = new Bitmap(style.ImageWidth, style.ImageHeight, PixelFormat.Format32bppRgb);
             double maxSize = Math.Max(solution.MaxWidth, solution.MaxHeight);
             double scaleX = (bitmap.Width - style.MarginX - 4 * style.CityRadius) / maxSize;
@@ -24,7 +23,8 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
             using (Graphics g = Graphics.FromImage(bitmap))
             {
                 g.Clear(style.Background);
-                if (solution.IsFinal) g.FillPolygon(style.Brush, points);
+                if (solution.IsFinal)
+                    g.FillPolygon(style.Brush, points);
                 g.DrawPolygon(style.Pen, points);
                 points.ToList().ForEach(x =>
                 {
@@ -36,9 +36,9 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
             return bitmap;
         }
 
-        public static Bitmap DrawCost(this ISolution solution, BitmapStyle style = null)
+        public static Bitmap DrawCost(this TspSolution solution, BitmapStyle bitmapStyle = null)
         {
-            return DrawCostHistory.Draw(solution, style);
+            return DrawCostHistory.Draw(solution, bitmapStyle);
         }
     }
 }

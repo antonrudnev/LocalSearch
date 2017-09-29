@@ -42,7 +42,7 @@ namespace LocalSearchOptimization.Solvers
             for (int i = 0; i < this.multistart.InstancesNumber; i++)
             {
                 T2 instanceParameters = (T2)this.parameters.Clone();
-                instanceParameters.Name = i.ToString();
+                instanceParameters.Name = this.parameters.Name + (this.multistart.InstancesNumber > 1 ? ":" + i : null);
                 instanceParameters.Seed = random.Next();
                 ISolution startSolution = solution.Shuffle(instanceParameters.Seed);
                 solvers[i] = Task<int>.Factory.StartNew(() => Solve(instanceParameters, startSolution, solutions));
@@ -68,9 +68,9 @@ namespace LocalSearchOptimization.Solvers
                             }));
                             if (currentSolution.CostValue < bestSolution.CostValue)
                             {
-                                yield return bestSolution;
                                 currentSolution.IsCurrentBest = true;
                                 bestSolution = currentSolution;
+                                yield return bestSolution;
                             }
                             else if (!this.multistart.ReturnImprovedOnly)
                                 yield return currentSolution;
