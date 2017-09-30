@@ -33,11 +33,13 @@ namespace LocalSearchOptimizationGUI
         {
             MarginX = 0,
             MarginY = 50,
-            Font = new Font("Microsoft Sans Serif", 10),
-            Pen = new Pen(Color.Green, 2),
-            Background = SystemColors.Control,
-            CostRadius = 1,
-            CityRadius = 4
+            FontName = "Microsoft Sans Serif",
+            FontSize = 10,
+            PenColor = "Green",
+            PenWidth = 2,
+            Radius = 4,
+            BackgroundColor = SystemColors.Control.Name,
+            CostRadius = 1
         };
 
         private Bitmap tspSolutionImage;
@@ -277,7 +279,7 @@ namespace LocalSearchOptimizationGUI
             if (tspCostDrawTask?.IsCompleted ?? true)
                 tspCostDrawTask = Task.Factory.StartNew(() =>
                 {
-                    tspCostImage = DrawCostDiagram.Draw(tspOptimizer, style);
+                    tspCostImage = DrawCostDiagram.Draw(tspOptimizer, style, 30000);
                     this.Invalidate();
                 });
         }
@@ -288,7 +290,7 @@ namespace LocalSearchOptimizationGUI
             if (floorplanCostDrawTask?.IsCompleted ?? true)
                 floorplanCostDrawTask = Task.Factory.StartNew(() =>
                 {
-                    floorplanCostImage = DrawCostDiagram.Draw(floorplanOptimizer, style);
+                    floorplanCostImage = DrawCostDiagram.Draw(floorplanOptimizer, style, 30000);
                     this.Invalidate();
                 });
         }

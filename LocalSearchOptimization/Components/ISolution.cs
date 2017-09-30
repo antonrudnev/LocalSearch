@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace LocalSearchOptimization.Components
+﻿namespace LocalSearchOptimization.Components
 {
     public interface ISolution
     {

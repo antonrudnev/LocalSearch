@@ -8,16 +8,14 @@ namespace LocalSearchOptimization.Examples
 {
     public static class DrawCostDiagram
     {
-        public static object thisLock = new object();
-
         private static List<Color> colors = new List<Color> { Color.Blue, Color.Green, Color.Purple, Color.Lime, Color.Magenta, Color.Maroon, Color.Navy, Color.Orange, Color.Purple, Color.Red, Color.Teal, Color.Yellow, Color.Cyan };
 
-        static public Bitmap Draw(IOptimizationAlgorithm optimizer, BitmapStyle bitmapStyle)
+        static public Bitmap Draw(IOptimizationAlgorithm optimizer, BitmapStyle bitmapStyle, int maxPoints = 0)
         {
-            BitmapStyle style = bitmapStyle ?? new BitmapStyle();
+            BitmapStyle style = bitmapStyle ?? bitmapStyle;
             if ((optimizer?.SearchHistory?.Count ?? 0) == 0) return null;
-            int n = optimizer.SearchHistory.Count / 30000 + 1;
-            List<SolutionSummary> prunedHistory = new List<SolutionSummary>();
+            int n = maxPoints == 0 ? 1 : optimizer.SearchHistory.Count / maxPoints + 1;
+            List<SolutionSummary> historyToDraw = maxPoints == 0 ? optimizer.SearchHistory : new List<SolutionSummary>();
             double minCost = int.MaxValue;
             double maxCost = 0;
             HashSet<string> instances = new HashSet<string>();
@@ -26,12 +24,11 @@ namespace LocalSearchOptimization.Examples
             {
                 if (minCost > optimizer.SearchHistory[i].CostValue) minCost = optimizer.SearchHistory[i].CostValue;
                 if (maxCost < optimizer.SearchHistory[i].CostValue) maxCost = optimizer.SearchHistory[i].CostValue;
-                if (i % n == 0)
+                if (maxPoints == 0 || i % n == 0)
                 {
-                    SolutionSummary solutionSummary = optimizer.SearchHistory[i];
-                    prunedHistory.Add(solutionSummary);
-                    instances.Add(solutionSummary.InstanceTag);
-                    operators.Add(solutionSummary.OperatorTag);
+                    if (maxPoints > 0) historyToDraw.Add(optimizer.SearchHistory[i]);
+                    instances.Add(optimizer.SearchHistory[i].InstanceTag);
+                    operators.Add(optimizer.SearchHistory[i].OperatorTag);
                 }
             }
             Dictionary<string, Brush> instanceBrush = new Dictionary<string, Brush>();
@@ -48,25 +45,24 @@ namespace LocalSearchOptimization.Examples
                 operatorBrush.Add(operation, new SolidBrush(colors[counter % colors.Count]));
                 if (operation != "init" && operation != "shuffle") counter++;
             }
-            double scaleX = (double)(style.ImageWidth - style.MarginX) / (prunedHistory.Count);
+            double scaleX = (double)(style.ImageWidth - style.MarginX) / (historyToDraw.Count);
             double scaleY = (style.ImageHeight - style.MarginY - 4 * style.CostRadius) / (maxCost - minCost);
-            lock (thisLock)
+            Bitmap bitmap = new Bitmap(style.ImageWidth, style.ImageHeight, PixelFormat.Format32bppRgb);
+            using (Graphics g = Graphics.FromImage(bitmap))
             {
-                Bitmap bitmap = new Bitmap(style.ImageWidth, style.ImageHeight, PixelFormat.Format32bppRgb);
-                using (Graphics g = Graphics.FromImage(bitmap))
+                Brush brushBlack = new SolidBrush(Color.Black);
+                Font font = new Font(style.FontName, style.FontSize);
+                g.Clear(Color.FromName(style.BackgroundColor));
+                for (int i = 0; i < historyToDraw.Count - 1; i++)
                 {
-                    g.Clear(style.Background);
-                    for (int i = 0; i < prunedHistory.Count - 1; i++)
-                    {
-                        float x = style.MarginX + (float)(i * scaleX);
-                        float y = bitmap.Height - 4 * style.CostRadius - (float)((prunedHistory[i].CostValue - minCost) * scaleY);
-                        g.FillEllipse(instanceBrush.Count > 1 ? instanceBrush[prunedHistory[i].InstanceTag] : operatorBrush[prunedHistory[i].OperatorTag], x, y, 2 * style.CostRadius, 2 * style.CostRadius);
-                    }
-                    string summary = String.Format("Max cost: {0:F4}\nMin cost: {1:F4}\nAccepted iterations: {2}\nTime: {3:f3}s", maxCost, minCost, optimizer.SearchHistory.Count, optimizer.CurrentSolution.TimeInSeconds);
-                    g.DrawString(summary, style.Font, new SolidBrush(Color.Black), 0, 0);
+                    float x = style.MarginX + (float)(i * scaleX);
+                    float y = bitmap.Height - 4 * style.CostRadius - (float)((historyToDraw[i].CostValue - minCost) * scaleY);
+                    g.FillEllipse(instanceBrush.Count > 1 ? instanceBrush[historyToDraw[i].InstanceTag] : operatorBrush[historyToDraw[i].OperatorTag], x, y, 2 * style.CostRadius, 2 * style.CostRadius);
                 }
-                return bitmap;
+                string summary = String.Format("Max cost: {0:F4}\nMin cost: {1:F4}\nAccepted iterations: {2}\nTime: {3:f3}s", maxCost, minCost, optimizer.SearchHistory.Count, optimizer.CurrentSolution.TimeInSeconds);
+                g.DrawString(summary, font, brushBlack, 0, 0);
             }
+            return bitmap;
         }
     }
 }

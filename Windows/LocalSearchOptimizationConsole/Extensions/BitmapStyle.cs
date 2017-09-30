@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace LocalSearchOptimization.Examples
+﻿namespace LocalSearchOptimization.Examples
 {
     public class BitmapStyle
     {
@@ -8,30 +6,14 @@ namespace LocalSearchOptimization.Examples
         public int ImageHeight { get; set; } = 1800;
         public int MarginX { get; set; } = 0;
         public int MarginY { get; set; } = 150;
-        public Font Font { get; set; } = new Font("Arial", 24);
-        public Pen Pen { get; set; } = new Pen(Color.Green, 5);
-        public Brush Brush { get; set; } = Brushes.LightGreen;
-        public Brush CostBrush { get; set; } = Brushes.Blue;
-        public Color Background { get; set; } = Color.White;
+        public string FontName { get; set; } = "Microsoft Sans Serif";
+        public int FontSize { get; set; } = 24;
+        public string PenColor { get; set; } = "Green";
+        public int PenWidth { get; set; } = 5;
+        public string BrushColor { get; set; } = "LightGreen";
+        public int Radius { get; set; } = 15;
+        public string BackgroundColor { get; set; } = "White";
+        public string CostColor { get; set; } = "Blue";
         public int CostRadius { get; set; } = 5;
-        public int CityRadius { get; set; } = 15;
-
-        public BitmapStyle Clone()
-        {
-            return new BitmapStyle
-            {
-                ImageWidth = ImageWidth,
-                ImageHeight = ImageHeight,
-                MarginX = MarginX,
-                MarginY = MarginY,
-                Font = Font,
-                Pen = new Pen(Pen.Color, Pen.Width),
-                Brush = Brush,
-                CostBrush = CostBrush,
-                Background = Background,
-                CostRadius = CostRadius,
-                CityRadius = CityRadius
-            };
-        }
     }
 }
