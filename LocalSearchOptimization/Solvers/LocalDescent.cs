@@ -9,7 +9,15 @@ namespace LocalSearchOptimization.Solvers
     {
         private LocalDescentParameters parameters;
 
-        private List<SolutionSummary> solutionsHistory = new List<SolutionSummary>();
+        private ISolution currentSolution;
+
+        private List<SolutionSummary> searchHistory;
+
+        private bool stopFlag = false;
+
+        public ISolution CurrentSolution { get => currentSolution; }
+
+        public List<SolutionSummary> SearchHistory { get => searchHistory; }
 
         public LocalDescent(LocalDescentParameters parameters)
         {
@@ -18,63 +26,68 @@ namespace LocalSearchOptimization.Solvers
 
         public IEnumerable<ISolution> Minimize(ISolution solution)
         {
+            this.stopFlag = false;
             int iteration = 0;
             DateTime startedAt = DateTime.Now;
-            ISolution bestSolution = solution;
-            ISolution currentSolution = solution;
+            currentSolution = solution;
             solution.IterationNumber = 0;
             solution.TimeInSeconds = 0;
             solution.IsCurrentBest = true;
             solution.IsFinal = false;
             solution.InstanceTag = this.parameters.Name;
-            solution.SolutionsHistory = solutionsHistory;
-            solutionsHistory.Add(new SolutionSummary
+            searchHistory = new List<SolutionSummary>
             {
-                InstanceTag = this.parameters.Name,
-                OperatorTag = currentSolution.OperatorTag,
-                IterationNumber = currentSolution.IterationNumber,
-                CostValue = currentSolution.CostValue
-            });
+                new SolutionSummary
+                {
+                    InstanceTag = this.parameters.Name,
+                    OperatorTag = currentSolution.OperatorTag,
+                    IterationNumber = currentSolution.IterationNumber,
+                    CostValue = currentSolution.CostValue
+                }
+            };
             Neighborhood neighborhood = new Neighborhood(currentSolution, parameters.Operators, parameters.Seed);
-            bool bestFound = false;
-            while (!bestFound)
+            bool bestFound;
+            do
             {
+                bestFound = true;
                 foreach (ISolution neighbor in neighborhood.Neighbors)
                 {
                     iteration++;
                     if (neighbor.CostValue < currentSolution.CostValue)
                     {
                         currentSolution = neighbor;
+                        bestFound = false;
                         if (!parameters.IsSteepestDescent) break;
                     }
                 }
-                if (currentSolution.CostValue < bestSolution.CostValue)
+                if (!bestFound)
                 {
-                    if (parameters.DetailedOutput) yield return bestSolution;
                     currentSolution.IterationNumber = iteration;
                     currentSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
                     currentSolution.IsCurrentBest = true;
                     currentSolution.IsFinal = false;
                     currentSolution.InstanceTag = this.parameters.Name;
-                    currentSolution.SolutionsHistory = solutionsHistory;
-                    solutionsHistory.Add(new SolutionSummary
+                    searchHistory.Add(new SolutionSummary
                     {
                         InstanceTag = this.parameters.Name,
                         OperatorTag = currentSolution.OperatorTag,
                         IterationNumber = currentSolution.IterationNumber,
                         CostValue = currentSolution.CostValue
                     });
+                    if (parameters.DetailedOutput) yield return currentSolution;
                     neighborhood.MoveToSolution(currentSolution);
-                    bestSolution = currentSolution;
                 }
-                else
-                {
-                    bestFound = true;
-                    bestSolution.IsFinal = true;
-                    yield return bestSolution;
-                }
-            }
-            Console.WriteLine("\t{0} finished with cost {1} at iteration {2}", parameters.Name, bestSolution.CostValue, iteration);
+            } while (!(bestFound || stopFlag));
+            currentSolution.IterationNumber = iteration;
+            currentSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
+            currentSolution.IsFinal = true;
+            yield return currentSolution;
+            Console.WriteLine("\t{0} finished with cost {1} at iteration {2}", parameters.Name, currentSolution.CostValue, iteration);
+        }
+
+        public void Stop()
+        {
+            this.stopFlag = true;
         }
     }
 }

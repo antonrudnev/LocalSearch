@@ -23,8 +23,6 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
 
         public string OperatorTag { get; }
 
-        public List<SolutionSummary> SolutionsHistory { get; set; }
-
         public double[] X { get; }
         public double[] Y { get; }
 

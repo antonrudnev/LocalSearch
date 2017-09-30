@@ -16,7 +16,15 @@ namespace LocalSearchOptimization.Solvers
 
         private MultistartOptions multistart;
 
-        private List<SolutionSummary> solutionsHistory = new List<SolutionSummary>();
+        private ISolution currentSolution;
+
+        private List<SolutionSummary> searchHistory;
+
+        private bool stopFlag = false;
+
+        public ISolution CurrentSolution { get => currentSolution; }
+
+        public List<SolutionSummary> SearchHistory { get => searchHistory; }
 
         private object thisLock = new object();
 
@@ -28,15 +36,17 @@ namespace LocalSearchOptimization.Solvers
 
         public IEnumerable<ISolution> Minimize(ISolution solution)
         {
+            this.stopFlag = false;
             Random random = new Random(this.parameters.Seed);
             DateTime startedAt = DateTime.Now;
             ISolution bestSolution = solution;
+            this.currentSolution = solution;
             solution.IterationNumber = 0;
             solution.TimeInSeconds = 0;
             solution.IsCurrentBest = false;
             solution.IsFinal = false;
             solution.InstanceTag = this.parameters.Name;
-            solution.SolutionsHistory = solutionsHistory;
+            searchHistory = new List<SolutionSummary>();
             List<ISolution> solutions = new List<ISolution>();
             Task<int>[] solvers = new Task<int>[this.multistart.InstancesNumber];
             for (int i = 0; i < this.multistart.InstancesNumber; i++)
@@ -58,8 +68,7 @@ namespace LocalSearchOptimization.Solvers
                             ISolution currentSolution = solutions.OrderBy(x => x.CostValue).First();
                             currentSolution.IsCurrentBest = false;
                             currentSolution.IsFinal = false;
-                            currentSolution.SolutionsHistory = solutionsHistory;
-                            solutionsHistory.AddRange(solutions.Select(x => new SolutionSummary
+                            searchHistory.AddRange(solutions.Select(x => new SolutionSummary
                             {
                                 InstanceTag = x.InstanceTag,
                                 OperatorTag = x.OperatorTag,
@@ -71,9 +80,13 @@ namespace LocalSearchOptimization.Solvers
                                 currentSolution.IsCurrentBest = true;
                                 bestSolution = currentSolution;
                                 yield return bestSolution;
+                                this.currentSolution = bestSolution;
                             }
                             else if (!this.multistart.ReturnImprovedOnly)
+                            {
                                 yield return currentSolution;
+                                this.currentSolution = currentSolution;
+                            }
                             solutions.Clear();
                         }
                 }
@@ -82,6 +95,12 @@ namespace LocalSearchOptimization.Solvers
             bestSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
             bestSolution.IsFinal = true;
             yield return bestSolution;
+            this.currentSolution = bestSolution;
+        }
+
+        public void Stop()
+        {
+            this.stopFlag = true;
         }
 
         private int Solve(T2 parameters, ISolution startSolution, List<ISolution> output)
@@ -92,6 +111,7 @@ namespace LocalSearchOptimization.Solvers
             {
                 lock (thisLock) output.Add(solution);
                 iteration = solution.IterationNumber;
+                if (stopFlag) solver.Stop();
             }
             return iteration;
         }

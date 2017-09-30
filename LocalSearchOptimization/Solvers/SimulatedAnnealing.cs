@@ -10,7 +10,15 @@ namespace LocalSearchOptimization.Solvers
     {
         private SimulatedAnnealingParameters parameters;
 
-        private List<SolutionSummary> solutionsHistory = new List<SolutionSummary>();
+        private ISolution currentSolution;
+
+        private List<SolutionSummary> searchHistory;
+
+        private bool stopFlag = false;
+
+        public ISolution CurrentSolution { get => currentSolution; }
+
+        public List<SolutionSummary> SearchHistory { get => searchHistory; }
 
         public SimulatedAnnealing(SimulatedAnnealingParameters parameters)
         {
@@ -19,24 +27,28 @@ namespace LocalSearchOptimization.Solvers
 
         public IEnumerable<ISolution> Minimize(ISolution solution)
         {
+            this.stopFlag = false;
             int iteration = 0;
             Random random = new Random(this.parameters.Seed);
             DateTime startedAt = DateTime.Now;
             ISolution bestSolution = solution;
             ISolution currentSolution = solution;
+            this.currentSolution = solution;
             solution.IterationNumber = 0;
             solution.TimeInSeconds = 0;
             solution.IsCurrentBest = false;
             solution.IsFinal = false;
             solution.InstanceTag = this.parameters.Name;
-            solution.SolutionsHistory = solutionsHistory;
-            solutionsHistory.Add(new SolutionSummary
+            searchHistory = new List<SolutionSummary>
             {
-                InstanceTag = this.parameters.Name,
-                OperatorTag = currentSolution.OperatorTag,
-                IterationNumber = currentSolution.IterationNumber,
-                CostValue = currentSolution.CostValue
-            });
+                new SolutionSummary
+                {
+                    InstanceTag = this.parameters.Name,
+                    OperatorTag = currentSolution.OperatorTag,
+                    IterationNumber = currentSolution.IterationNumber,
+                    CostValue = currentSolution.CostValue
+                }
+            };
             Neighborhood neighborhood = this.parameters.UseWeightedNeighborhood ?
                 new WeightedNeighborhood(solution, parameters.Operators, parameters.Seed) :
                     new Neighborhood(solution, parameters.Operators, parameters.Seed);
@@ -46,7 +58,7 @@ namespace LocalSearchOptimization.Solvers
             int acceptedIterationsByTemperature = 0;
             int frozenState = 0;
             double costDeviation = 0;
-            while (frozenState < this.parameters.MaxFrozenLevels && temperature > 10E-5)
+            while (!stopFlag && frozenState < this.parameters.MaxFrozenLevels && temperature > 10E-5)
             {
                 iteration++;
                 iterationsByTemperature++;
@@ -61,8 +73,7 @@ namespace LocalSearchOptimization.Solvers
                     currentSolution.IsCurrentBest = false;
                     currentSolution.IsFinal = false;
                     currentSolution.InstanceTag = this.parameters.Name;
-                    currentSolution.SolutionsHistory = solutionsHistory;
-                    solutionsHistory.Add(new SolutionSummary
+                    searchHistory.Add(new SolutionSummary
                     {
                         InstanceTag = this.parameters.Name,
                         OperatorTag = currentSolution.OperatorTag,
@@ -72,16 +83,21 @@ namespace LocalSearchOptimization.Solvers
                     if (currentSolution.CostValue < bestSolution.CostValue)
                     {
                         yield return bestSolution;
+                        this.currentSolution = bestSolution;
                         currentSolution.IsCurrentBest = true;
                         bestSolution = currentSolution;
                     }
-                    else if (parameters.DetailedOutput) yield return currentSolution;
+                    else if (parameters.DetailedOutput)
+                    {
+                        yield return currentSolution;
+                        this.currentSolution = currentSolution;
+                    }
                     neighborhood.MoveToSolution(currentSolution);
                 }
                 if (iterationsByTemperature >= maxIterationsByTemperature)
                 {
                     temperature *= parameters.TemperatureCooling;
-                    costDeviation = StandardDeviation(solutionsHistory.GetRange(solutionsHistory.Count - acceptedIterationsByTemperature, acceptedIterationsByTemperature).Select(x => x.CostValue));
+                    costDeviation = StandardDeviation(searchHistory.GetRange(searchHistory.Count - acceptedIterationsByTemperature, acceptedIterationsByTemperature).Select(x => x.CostValue));
                     if (costDeviation <= this.parameters.MinCostDeviation) frozenState++;
                     Console.WriteLine("\tSA {0} cost {1}, temp {2}, accepted {3}, deviation {4}", parameters.Name, currentSolution.CostValue, temperature, acceptedIterationsByTemperature, costDeviation);
                     iterationsByTemperature = 0;
@@ -93,6 +109,12 @@ namespace LocalSearchOptimization.Solvers
             bestSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
             bestSolution.IsFinal = true;
             yield return bestSolution;
+            this.currentSolution = bestSolution;
+        }
+
+        public void Stop()
+        {
+            this.stopFlag = true;
         }
 
         private double GetStartTemperature(double initProbability, Neighborhood neighborhood)

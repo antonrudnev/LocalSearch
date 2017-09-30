@@ -34,7 +34,6 @@
             this.simulatedAnnealingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusBar = new System.Windows.Forms.StatusStrip();
             this.algorithmStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.costValueStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuBar.SuspendLayout();
             this.statusBar.SuspendLayout();
             this.SuspendLayout();
@@ -56,20 +55,23 @@
             this.localDescentMenuItem,
             this.simulatedAnnealingMenuItem});
             this.solverToolStripMenuItem.Name = "solverToolStripMenuItem";
-            this.solverToolStripMenuItem.Size = new System.Drawing.Size(132, 36);
-            this.solverToolStripMenuItem.Text = "Optimizer";
+            this.solverToolStripMenuItem.Size = new System.Drawing.Size(93, 36);
+            this.solverToolStripMenuItem.Text = "Solver";
             // 
             // localDescentMenuItem
             // 
             this.localDescentMenuItem.Name = "localDescentMenuItem";
-            this.localDescentMenuItem.Size = new System.Drawing.Size(336, 38);
+            this.localDescentMenuItem.ShortcutKeyDisplayString = "";
+            this.localDescentMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
+            this.localDescentMenuItem.Size = new System.Drawing.Size(417, 38);
             this.localDescentMenuItem.Text = "Local Descent";
             this.localDescentMenuItem.Click += new System.EventHandler(this.localDescentMenuItem_Click);
             // 
             // simulatedAnnealingMenuItem
             // 
             this.simulatedAnnealingMenuItem.Name = "simulatedAnnealingMenuItem";
-            this.simulatedAnnealingMenuItem.Size = new System.Drawing.Size(336, 38);
+            this.simulatedAnnealingMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.simulatedAnnealingMenuItem.Size = new System.Drawing.Size(417, 38);
             this.simulatedAnnealingMenuItem.Text = "Simulated Annealing";
             this.simulatedAnnealingMenuItem.Click += new System.EventHandler(this.simulatedAnnealingMenuItem_Click);
             // 
@@ -77,8 +79,7 @@
             // 
             this.statusBar.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.algorithmStatus,
-            this.costValueStatus});
+            this.algorithmStatus});
             this.statusBar.Location = new System.Drawing.Point(0, 774);
             this.statusBar.Name = "statusBar";
             this.statusBar.Size = new System.Drawing.Size(1688, 38);
@@ -87,14 +88,7 @@
             // algorithmStatus
             // 
             this.algorithmStatus.Name = "algorithmStatus";
-            this.algorithmStatus.Size = new System.Drawing.Size(79, 33);
-            this.algorithmStatus.Text = "Status";
-            // 
-            // costValueStatus
-            // 
-            this.costValueStatus.Name = "costValueStatus";
-            this.costValueStatus.Size = new System.Drawing.Size(62, 33);
-            this.costValueStatus.Text = "Cost";
+            this.algorithmStatus.Size = new System.Drawing.Size(0, 33);
             // 
             // LocalSearchForm
             // 
@@ -105,9 +99,10 @@
             this.Controls.Add(this.menuBar);
             this.MainMenuStrip = this.menuBar;
             this.Name = "LocalSearchForm";
-            this.Text = "LocalSearchOptimizationGUI";
+            this.Text = "Local Search Optimization Framework Demo";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.LocalSearchForm_Paint);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LocalSearchForm_KeyDown);
             this.Resize += new System.EventHandler(this.LocalSearchForm_Resize);
             this.menuBar.ResumeLayout(false);
             this.menuBar.PerformLayout();
@@ -123,7 +118,6 @@
         private System.Windows.Forms.ToolStripMenuItem solverToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem simulatedAnnealingMenuItem;
         private System.Windows.Forms.StatusStrip statusBar;
-        private System.Windows.Forms.ToolStripStatusLabel costValueStatus;
         private System.Windows.Forms.ToolStripStatusLabel algorithmStatus;
         private System.Windows.Forms.ToolStripMenuItem localDescentMenuItem;
     }

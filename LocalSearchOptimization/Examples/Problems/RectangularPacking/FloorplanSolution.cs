@@ -26,8 +26,6 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         public string OperatorTag { get; }
 
-        public List<SolutionSummary> SolutionsHistory { get; set; }
-
         public double[] X { get; }
         public double[] Y { get; }
         public double[] W { get; }

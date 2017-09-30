@@ -19,8 +19,6 @@ namespace LocalSearchOptimization.Components
 
         string OperatorTag { get; }
 
-        List<SolutionSummary> SolutionsHistory { get; set; }
-
         ISolution Shuffle(int seed);
     }
 }

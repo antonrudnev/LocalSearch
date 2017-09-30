@@ -45,11 +45,11 @@ namespace LocalSearchOptimizationGUI
         private Bitmap floorplanSolutionImage;
         private Bitmap floorplanCostImage;
 
-        private TspSolution finalTspSolution;
-        private FloorplanSolution finalFloorplanSolution;
+        private IOptimizationAlgorithm tspOptimizer;
+        private IOptimizationAlgorithm floorplanOptimizer;
 
-        private BackgroundWorker bwTsp = new BackgroundWorker() { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
-        private BackgroundWorker bwFloorplan = new BackgroundWorker() { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
+        private BackgroundWorker bwTsp = new BackgroundWorker() { WorkerSupportsCancellation = true };
+        private BackgroundWorker bwFloorplan = new BackgroundWorker() {  WorkerSupportsCancellation = true };
         private bool stochasticOptimizer = true;
         private bool toRenderBackground = true;
 
@@ -61,11 +61,9 @@ namespace LocalSearchOptimizationGUI
             InitializeComponent();
 
             bwTsp.DoWork += new DoWorkEventHandler(bwTsp_DoWork);
-            bwTsp.ProgressChanged += new ProgressChangedEventHandler(bwTsp_ProgressChanged);
             bwTsp.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
 
             bwFloorplan.DoWork += new DoWorkEventHandler(bwFloorplan_DoWork);
-            bwFloorplan.ProgressChanged += new ProgressChangedEventHandler(bwFloorplan_ProgressChanged);
             bwFloorplan.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
         }
 
@@ -73,6 +71,7 @@ namespace LocalSearchOptimizationGUI
         private void bwTsp_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = (BackgroundWorker)sender;
+            this.algorithmStatus.Text = "Press ESC to cancel";
 
             TspProblem problem = new TspProblem(this.tspDimension);
             TspSolution startSolution = new TspSolution(problem);
@@ -82,8 +81,6 @@ namespace LocalSearchOptimizationGUI
             TwoOpt twoOpt = new TwoOpt(problem.Dimension, 3);
 
             List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
-
-            IOptimizationAlgorithm optimizer;
 
             if (stochasticOptimizer)
             {
@@ -96,7 +93,7 @@ namespace LocalSearchOptimizationGUI
                     DetailedOutput = true,
                     Operators = operations,
                 };
-                optimizer = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(saParameters, multistartOptions);
+                tspOptimizer = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(saParameters, multistartOptions);
             }
             else
             {
@@ -107,20 +104,29 @@ namespace LocalSearchOptimizationGUI
                     DetailedOutput = true,
                     Operators = operations,
                 };
-                optimizer = new ParallelMultistart<LocalDescent, LocalDescentParameters>(ldParameters, multistartOptions);
+                tspOptimizer = new ParallelMultistart<LocalDescent, LocalDescentParameters>(ldParameters, multistartOptions);
             }
 
             toRenderBackground = false;
 
-            foreach (ISolution solution in optimizer.Minimize(startSolution))
+            foreach (ISolution solution in tspOptimizer.Minimize(startSolution))
             {
-                worker.ReportProgress(solution.IsCurrentBest ? 1 : 0, solution);
+                if (worker.CancellationPending)
+                {
+                    tspOptimizer.Stop();
+                    e.Cancel = true;
+                }
+                if (e.Cancel) solution.IsFinal = false;
+                DrawTspCostAsync();
+                tspSolutionImage = (solution as TspSolution)?.Draw(style);
+                this.Invalidate();
             }
         }
 
         private void bwFloorplan_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = (BackgroundWorker)sender;
+            this.algorithmStatus.Text = "Press ESC to cancel";
 
             FloorplanProblem problem = new FloorplanProblem(this.floorplanDimension);
             FloorplanSolution startSolution = new FloorplanSolution(problem);
@@ -130,8 +136,6 @@ namespace LocalSearchOptimizationGUI
             Leaf leaf = new Leaf(problem.Dimension, 5);
 
             List<Operator> operations = new List<Operator> { swap, shift, leaf };
-
-            IOptimizationAlgorithm optimizer;
 
             if (stochasticOptimizer)
             {
@@ -145,7 +149,7 @@ namespace LocalSearchOptimizationGUI
                     DetailedOutput = true,
                     Operators = operations,
                 };
-                optimizer = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(saParameters, multistartOptions);
+                floorplanOptimizer = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(saParameters, multistartOptions);
             }
             else
             {
@@ -156,60 +160,35 @@ namespace LocalSearchOptimizationGUI
                     DetailedOutput = true,
                     Operators = operations,
                 };
-                optimizer = new ParallelMultistart<LocalDescent, LocalDescentParameters>(ldParameters, multistartOptions);
+                floorplanOptimizer = new ParallelMultistart<LocalDescent, LocalDescentParameters>(ldParameters, multistartOptions);
             }
 
             toRenderBackground = false;
 
-            foreach (ISolution solution in optimizer.Minimize(startSolution))
+            foreach (ISolution solution in floorplanOptimizer.Minimize(startSolution))
             {
-                worker.ReportProgress(solution.IsCurrentBest ? 1 : 0, solution);
+                if (worker.CancellationPending)
+                {
+                    floorplanOptimizer.Stop();
+                    e.Cancel = true;
+                }
+                DrawFloorplanCostAsync();
+                floorplanSolutionImage = (solution as FloorplanSolution)?.Draw(style);
+                this.Invalidate();
             }
-        }
-
-        private void bwTsp_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            TspSolution solution = (TspSolution)e.UserState;
-            if (e.ProgressPercentage == 1)
-            {
-                this.algorithmStatus.Text = solution.InstanceTag;
-                this.costValueStatus.Text = solution.CostValue.ToString("F4");
-            }
-            finalTspSolution = solution;
-            DrawTspCostAsync(finalTspSolution);
-            tspSolutionImage = finalTspSolution.Draw(style);
-            this.Invalidate();
-        }
-
-        private void bwFloorplan_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            FloorplanSolution solution = (FloorplanSolution)e.UserState;
-            if (e.ProgressPercentage == 1)
-            {
-                this.algorithmStatus.Text = solution.InstanceTag;
-                this.costValueStatus.Text = solution.CostValue.ToString("F4");
-            }
-            finalFloorplanSolution = solution;
-            DrawFloorplanCostAsync(finalFloorplanSolution);
-            floorplanSolutionImage = finalFloorplanSolution.Draw(style);
-            this.Invalidate();
         }
 
         private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Cancelled == true)
-            {
-                this.algorithmStatus.Text = "Canceled";
-            }
-            else if (e.Error != null)
-            {
-                this.algorithmStatus.Text = ("Error: " + e.Error.Message);
-            }
             if (!(bwTsp.IsBusy || bwFloorplan.IsBusy))
             {
-                this.algorithmStatus.Text = "Done";
-                this.costValueStatus.Text = "";
                 toRenderBackground = true;
+                if (e.Cancelled == true)
+                    this.algorithmStatus.Text = "Canceled";
+                else if (e.Error != null)
+                    this.algorithmStatus.Text = ("Error: " + e.Error.Message);
+                else
+                    this.algorithmStatus.Text = "Done";
             }
         }
 
@@ -250,33 +229,42 @@ namespace LocalSearchOptimizationGUI
         {
             style.ImageWidth = Math.Max(this.Width / 2 - 8, 10);
             style.ImageHeight = Math.Max((this.Height - 2 * (menuBar.Height + statusBar.Height) + 8) / 2, 10);
-            DrawTspCostAsync(finalTspSolution);
-            DrawFloorplanCostAsync(finalFloorplanSolution);
-            tspSolutionImage = finalTspSolution?.Draw(style);
-            floorplanSolutionImage = finalFloorplanSolution?.Draw(style);
+            DrawTspCostAsync();
+            DrawFloorplanCostAsync();
+            tspSolutionImage = (tspOptimizer?.CurrentSolution as TspSolution)?.Draw(style);
+            floorplanSolutionImage = (floorplanOptimizer?.CurrentSolution as FloorplanSolution)?.Draw(style);
             this.Invalidate();
         }
 
-        private void DrawTspCostAsync(TspSolution solution)
+        private void DrawTspCostAsync()
         {
-            if (solution?.IsFinal ?? false) tspCostDrawTask.Wait();
+            if (tspOptimizer?.CurrentSolution?.IsFinal ?? false) tspCostDrawTask.Wait();
             if (tspCostDrawTask?.IsCompleted ?? true)
                 tspCostDrawTask = Task.Factory.StartNew(() =>
                 {
-                    tspCostImage = solution?.DrawCost(style);
+                    tspCostImage = DrawCostDiagram.Draw(tspOptimizer, style);
                     this.Invalidate();
                 });
         }
 
-        private void DrawFloorplanCostAsync(FloorplanSolution solution)
+        private void DrawFloorplanCostAsync()
         {
-            if (solution?.IsFinal ?? false) floorplanCostDrawTask.Wait();
+            if (floorplanOptimizer?.CurrentSolution?.IsFinal ?? false) floorplanCostDrawTask.Wait();
             if (floorplanCostDrawTask?.IsCompleted ?? true)
                 floorplanCostDrawTask = Task.Factory.StartNew(() =>
                 {
-                    floorplanCostImage = solution?.DrawCost(style);
+                    floorplanCostImage = DrawCostDiagram.Draw(floorplanOptimizer, style);
                     this.Invalidate();
                 });
+        }
+
+        private void LocalSearchForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Escape)
+            {
+                bwTsp.CancelAsync();
+                bwFloorplan.CancelAsync();
+            }
         }
     }
 }

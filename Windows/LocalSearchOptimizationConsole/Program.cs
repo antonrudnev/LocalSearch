@@ -74,16 +74,16 @@ namespace LocalSearchOptimizationConsole
             SimulatedAnnealing sa = new SimulatedAnnealing(saParameters);
             ParallelMultistart<LocalDescent, LocalDescentParameters> pld = new ParallelMultistart<LocalDescent, LocalDescentParameters>(ldParameters, multistartOptions);
             ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters> psa = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(saParameters, multistartOptions);
-
+            IOptimizationAlgorithm optimizer = sa;
             ISolution bestSolution = solution;
-            foreach (ISolution s in sa.Minimize(solution))
+            foreach (ISolution s in optimizer.Minimize(solution))
             {
-                if (s.IsCurrentBest) Console.WriteLine("{0}, {1:f}s, {2}, {3}, {4}, {5}, {6}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, bestSolution.CostValue - s.CostValue, s.SolutionsHistory?.Count());
+                if (s.IsCurrentBest) Console.WriteLine("{0}, {1:f}s, {2}, {3}, {4}, {5}, {6}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, bestSolution.CostValue - s.CostValue, optimizer.SearchHistory?.Count());
                 bestSolution = s;
             }
 
 
-            var groups = bestSolution.SolutionsHistory.GroupBy(s => s.OperatorTag).Select(s => new { Operator = s.Key, Count = s.Count() });
+            var groups = optimizer.SearchHistory.GroupBy(s => s.OperatorTag).Select(s => new { Operator = s.Key, Count = s.Count() });
             var dictionary = groups.ToDictionary(g => g.Operator, g => g.Count);
 
             foreach (var o in groups)
@@ -94,7 +94,7 @@ namespace LocalSearchOptimizationConsole
             Console.WriteLine("Done");
 
 
-            foreach (var b in DrawSolution(bestSolution))
+            foreach (var b in DrawSolution(bestSolution, optimizer))
             {
                 b?.Save("solution" + DateTime.Now.Millisecond + ".jpg");
             }
@@ -103,11 +103,11 @@ namespace LocalSearchOptimizationConsole
         }
 
 
-        static private IEnumerable<Bitmap> DrawSolution(ISolution solution)
+        static private IEnumerable<Bitmap> DrawSolution(ISolution solution, IOptimizationAlgorithm optimizer)
         {
             yield return (solution as TspSolution)?.Draw();
             yield return (solution as FloorplanSolution)?.Draw();
-            yield return DrawCostHistory.Draw(solution, new BitmapStyle());
+            yield return DrawCostDiagram.Draw(optimizer, new BitmapStyle());
         }
     }
 }

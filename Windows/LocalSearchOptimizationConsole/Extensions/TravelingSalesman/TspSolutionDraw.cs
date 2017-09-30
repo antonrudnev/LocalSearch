@@ -9,36 +9,34 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
     {
         public static Bitmap Draw(this TspSolution solution, BitmapStyle bitmapStyle = null)
         {
-            BitmapStyle style = bitmapStyle ?? new BitmapStyle();
-            Bitmap bitmap = new Bitmap(style.ImageWidth, style.ImageHeight, PixelFormat.Format32bppRgb);
-            double maxSize = Math.Max(solution.MaxWidth, solution.MaxHeight);
-            double scaleX = (bitmap.Width - style.MarginX - 4 * style.CityRadius) / maxSize;
-            double scaleY = (bitmap.Height - style.MarginY - 4 * style.CityRadius) / maxSize;
-            PointF[] points = new PointF[solution.NumberOfCities];
-            for (int i = 0; i < solution.NumberOfCities; i++)
+            lock (DrawCostDiagram.thisLock)
             {
-                int n = solution.Order[i];
-                points[i] = new PointF(style.MarginX + 2 * style.CityRadius + (float)(solution.X[n] * scaleX), bitmap.Height - 2 * style.CityRadius - (float)(solution.Y[n] * scaleY));
-            }
-            using (Graphics g = Graphics.FromImage(bitmap))
-            {
-                g.Clear(style.Background);
-                if (solution.IsFinal)
-                    g.FillPolygon(style.Brush, points);
-                g.DrawPolygon(style.Pen, points);
-                points.ToList().ForEach(x =>
+                BitmapStyle style = bitmapStyle ?? new BitmapStyle();
+                Bitmap bitmap = new Bitmap(style.ImageWidth, style.ImageHeight, PixelFormat.Format32bppRgb);
+                double maxSize = Math.Max(solution.MaxWidth, solution.MaxHeight);
+                double scaleX = (bitmap.Width - style.MarginX - 4 * style.CityRadius) / maxSize;
+                double scaleY = (bitmap.Height - style.MarginY - 4 * style.CityRadius) / maxSize;
+                PointF[] points = new PointF[solution.NumberOfCities];
+                for (int i = 0; i < solution.NumberOfCities; i++)
                 {
-                    g.FillEllipse(style.Brush, x.X - style.CityRadius, x.Y - style.CityRadius, 2 * style.CityRadius, 2 * style.CityRadius);
-                    g.DrawEllipse(style.Pen, x.X - style.CityRadius, x.Y - style.CityRadius, 2 * style.CityRadius, 2 * style.CityRadius);
-                });
-                g.DrawString(String.Format("Tour lenght: {0}\nIterations: {1}\nTime: {2}s", Math.Round(solution.CostValue, 4), solution.IterationNumber, Math.Round(solution.TimeInSeconds, 3)), style.Font, new SolidBrush(Color.Black), 0, 0);
+                    int n = solution.Order[i];
+                    points[i] = new PointF(style.MarginX + 2 * style.CityRadius + (float)(solution.X[n] * scaleX), bitmap.Height - 2 * style.CityRadius - (float)(solution.Y[n] * scaleY));
+                }
+                using (Graphics g = Graphics.FromImage(bitmap))
+                {
+                    g.Clear(style.Background);
+                    if (solution.IsFinal)
+                        g.FillPolygon(style.Brush, points);
+                    g.DrawPolygon(style.Pen, points);
+                    points.ToList().ForEach(x =>
+                    {
+                        g.FillEllipse(style.Brush, x.X - style.CityRadius, x.Y - style.CityRadius, 2 * style.CityRadius, 2 * style.CityRadius);
+                        g.DrawEllipse(style.Pen, x.X - style.CityRadius, x.Y - style.CityRadius, 2 * style.CityRadius, 2 * style.CityRadius);
+                    });
+                    g.DrawString(String.Format("Tour lenght: {0}\nIterations: {1}\nTime: {2}s", Math.Round(solution.CostValue, 4), solution.IterationNumber, Math.Round(solution.TimeInSeconds, 3)), style.Font, new SolidBrush(Color.Black), 0, 0);
+                }
+                return bitmap;
             }
-            return bitmap;
-        }
-
-        public static Bitmap DrawCost(this TspSolution solution, BitmapStyle bitmapStyle = null)
-        {
-            return DrawCostHistory.Draw(solution, bitmapStyle);
         }
     }
 }
