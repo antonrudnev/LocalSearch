@@ -25,7 +25,7 @@ namespace LocalSearchOptimizationGUI
         private MultistartOptions multistartOptions = new MultistartOptions()
         {
             InstancesNumber = 3,
-            OutputFrequency = 100,
+            OutputFrequency = 200,
             ReturnImprovedOnly = false
         };
 
@@ -33,7 +33,7 @@ namespace LocalSearchOptimizationGUI
         {
             MarginX = 0,
             MarginY = 50,
-            Font = new Font("Arial", 10),
+            Font = new Font("Microsoft Sans Serif", 10),
             Pen = new Pen(Color.Green, 2),
             Background = SystemColors.Control,
             CostRadius = 1,
@@ -48,11 +48,13 @@ namespace LocalSearchOptimizationGUI
         private IOptimizationAlgorithm tspOptimizer;
         private IOptimizationAlgorithm floorplanOptimizer;
 
-        private BackgroundWorker bwTsp = new BackgroundWorker() { WorkerSupportsCancellation = true };
-        private BackgroundWorker bwFloorplan = new BackgroundWorker() {  WorkerSupportsCancellation = true };
+        private BackgroundWorker bwTsp = new BackgroundWorker() { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
+        private BackgroundWorker bwFloorplan = new BackgroundWorker() { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
         private bool stochasticOptimizer = true;
         private bool toRenderBackground = true;
 
+        Task tspSolutionDrawTask;
+        Task floorplanSolutionDrawTask;
         Task tspCostDrawTask;
         Task floorplanCostDrawTask;
 
@@ -61,9 +63,11 @@ namespace LocalSearchOptimizationGUI
             InitializeComponent();
 
             bwTsp.DoWork += new DoWorkEventHandler(bwTsp_DoWork);
+            bwTsp.ProgressChanged += new ProgressChangedEventHandler(bwTsp_ProgressChanged);
             bwTsp.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
 
             bwFloorplan.DoWork += new DoWorkEventHandler(bwFloorplan_DoWork);
+            bwFloorplan.ProgressChanged += new ProgressChangedEventHandler(bwFloorplan_ProgressChanged);
             bwFloorplan.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
         }
 
@@ -87,7 +91,7 @@ namespace LocalSearchOptimizationGUI
                 SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
                 {
                     Name = "TSP SA",
-                    InitProbability = 0.2,
+                    InitProbability = 0.3,
                     MinCostDeviation = 10E-5,
                     Seed = this.seed,
                     DetailedOutput = true,
@@ -117,9 +121,7 @@ namespace LocalSearchOptimizationGUI
                     e.Cancel = true;
                 }
                 if (e.Cancel) solution.IsFinal = false;
-                DrawTspCostAsync();
-                tspSolutionImage = (solution as TspSolution)?.Draw(style);
-                this.Invalidate();
+                worker.ReportProgress(0);
             }
         }
 
@@ -135,14 +137,15 @@ namespace LocalSearchOptimizationGUI
             Shift shift = new Shift(problem.Dimension, 1);
             Leaf leaf = new Leaf(problem.Dimension, 5);
 
-            List<Operator> operations = new List<Operator> { swap, shift, leaf };
+            List<Operator> operations = new List<Operator> { swap, leaf };
 
             if (stochasticOptimizer)
             {
                 SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
                 {
                     Name = "VLSI SA",
-                    InitProbability = 0.05,
+                    InitProbability = 0.1,
+                    TemperatureCooling = 0.97,
                     TemperatureLevelPower = 1,
                     MinCostDeviation = 0,
                     Seed = this.seed,
@@ -172,10 +175,20 @@ namespace LocalSearchOptimizationGUI
                     floorplanOptimizer.Stop();
                     e.Cancel = true;
                 }
-                DrawFloorplanCostAsync();
-                floorplanSolutionImage = (solution as FloorplanSolution)?.Draw(style);
-                this.Invalidate();
+                worker.ReportProgress(0);
             }
+        }
+
+        private void bwTsp_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            DrawTspSolutionAsync();
+            DrawTspCostAsync();
+        }
+
+        private void bwFloorplan_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            DrawFloorplanSolutionAsync();
+            DrawFloorplanCostAsync();
         }
 
         private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -229,11 +242,33 @@ namespace LocalSearchOptimizationGUI
         {
             style.ImageWidth = Math.Max(this.Width / 2 - 8, 10);
             style.ImageHeight = Math.Max((this.Height - 2 * (menuBar.Height + statusBar.Height) + 8) / 2, 10);
+            DrawTspSolutionAsync();
+            DrawFloorplanSolutionAsync();
             DrawTspCostAsync();
             DrawFloorplanCostAsync();
-            tspSolutionImage = (tspOptimizer?.CurrentSolution as TspSolution)?.Draw(style);
-            floorplanSolutionImage = (floorplanOptimizer?.CurrentSolution as FloorplanSolution)?.Draw(style);
             this.Invalidate();
+        }
+
+        private void DrawTspSolutionAsync()
+        {
+            if (tspOptimizer?.CurrentSolution?.IsFinal ?? false) tspSolutionDrawTask.Wait();
+            if (tspSolutionDrawTask?.IsCompleted ?? true)
+                tspSolutionDrawTask = Task.Factory.StartNew(() =>
+                {
+                    tspSolutionImage = (tspOptimizer?.CurrentSolution as TspSolution)?.Draw(style);
+                    this.Invalidate();
+                });
+        }
+
+        private void DrawFloorplanSolutionAsync()
+        {
+            if (floorplanOptimizer?.CurrentSolution?.IsFinal ?? false) floorplanSolutionDrawTask.Wait();
+            if (floorplanSolutionDrawTask?.IsCompleted ?? true)
+                floorplanSolutionDrawTask = Task.Factory.StartNew(() =>
+                {
+                    floorplanSolutionImage = (floorplanOptimizer?.CurrentSolution as FloorplanSolution)?.Draw(style);
+                    this.Invalidate();
+                });
         }
 
         private void DrawTspCostAsync()
@@ -260,7 +295,7 @@ namespace LocalSearchOptimizationGUI
 
         private void LocalSearchForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Escape)
+            if (e.KeyCode == Keys.Escape)
             {
                 bwTsp.CancelAsync();
                 bwFloorplan.CancelAsync();

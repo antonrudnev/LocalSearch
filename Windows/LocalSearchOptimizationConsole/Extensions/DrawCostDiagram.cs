@@ -14,45 +14,45 @@ namespace LocalSearchOptimization.Examples
 
         static public Bitmap Draw(IOptimizationAlgorithm optimizer, BitmapStyle bitmapStyle)
         {
+            BitmapStyle style = bitmapStyle ?? new BitmapStyle();
+            if ((optimizer?.SearchHistory?.Count ?? 0) == 0) return null;
+            int n = optimizer.SearchHistory.Count / 30000 + 1;
+            List<SolutionSummary> prunedHistory = new List<SolutionSummary>();
+            double minCost = int.MaxValue;
+            double maxCost = 0;
+            HashSet<string> instances = new HashSet<string>();
+            HashSet<string> operators = new HashSet<string>();
+            for (int i = 0; i < optimizer.SearchHistory.Count; i++)
+            {
+                if (minCost > optimizer.SearchHistory[i].CostValue) minCost = optimizer.SearchHistory[i].CostValue;
+                if (maxCost < optimizer.SearchHistory[i].CostValue) maxCost = optimizer.SearchHistory[i].CostValue;
+                if (i % n == 0)
+                {
+                    SolutionSummary solutionSummary = optimizer.SearchHistory[i];
+                    prunedHistory.Add(solutionSummary);
+                    instances.Add(solutionSummary.InstanceTag);
+                    operators.Add(solutionSummary.OperatorTag);
+                }
+            }
+            Dictionary<string, Brush> instanceBrush = new Dictionary<string, Brush>();
+            int counter = 0;
+            foreach (string instance in instances)
+            {
+                instanceBrush.Add(instance, new SolidBrush(colors[counter % colors.Count]));
+                counter++;
+            }
+            Dictionary<string, Brush> operatorBrush = new Dictionary<string, Brush>();
+            counter = 0;
+            foreach (string operation in operators)
+            {
+                operatorBrush.Add(operation, new SolidBrush(colors[counter % colors.Count]));
+                if (operation != "init" && operation != "shuffle") counter++;
+            }
+            double scaleX = (double)(style.ImageWidth - style.MarginX) / (prunedHistory.Count);
+            double scaleY = (style.ImageHeight - style.MarginY - 4 * style.CostRadius) / (maxCost - minCost);
             lock (thisLock)
             {
-                BitmapStyle style = bitmapStyle ?? new BitmapStyle();
-                if ((optimizer?.SearchHistory?.Count ?? 0) == 0) return null;
-                int n = optimizer.SearchHistory.Count / 100000 + 1;
-                List<SolutionSummary> prunedHistory = new List<SolutionSummary>();
-                double minCost = int.MaxValue;
-                double maxCost = 0;
-                HashSet<string> instances = new HashSet<string>();
-                HashSet<string> operators = new HashSet<string>();
-                for (int i = 0; i < optimizer.SearchHistory.Count; i++)
-                {
-                    if (minCost > optimizer.SearchHistory[i].CostValue) minCost = optimizer.SearchHistory[i].CostValue;
-                    if (maxCost < optimizer.SearchHistory[i].CostValue) maxCost = optimizer.SearchHistory[i].CostValue;
-                    if (i % n == 0)
-                    {
-                        SolutionSummary solutionSummary = optimizer.SearchHistory[i];
-                        prunedHistory.Add(solutionSummary);
-                        instances.Add(solutionSummary.InstanceTag);
-                        operators.Add(solutionSummary.OperatorTag);
-                    }
-                }
-                Dictionary<string, Brush> instanceBrush = new Dictionary<string, Brush>();
-                int counter = 0;
-                foreach (string instance in instances)
-                {
-                    instanceBrush.Add(instance, new SolidBrush(colors[counter % colors.Count]));
-                    counter++;
-                }
-                Dictionary<string, Brush> operatorBrush = new Dictionary<string, Brush>();
-                counter = 0;
-                foreach (string operation in operators)
-                {
-                    operatorBrush.Add(operation, new SolidBrush(colors[counter % colors.Count]));
-                    if (operation != "init" && operation != "shuffle") counter++;
-                }
                 Bitmap bitmap = new Bitmap(style.ImageWidth, style.ImageHeight, PixelFormat.Format32bppRgb);
-                double scaleX = (double)(bitmap.Width - style.MarginX) / (prunedHistory.Count);
-                double scaleY = (bitmap.Height - style.MarginY - 4 * style.CostRadius) / (maxCost - minCost);
                 using (Graphics g = Graphics.FromImage(bitmap))
                 {
                     g.Clear(style.Background);

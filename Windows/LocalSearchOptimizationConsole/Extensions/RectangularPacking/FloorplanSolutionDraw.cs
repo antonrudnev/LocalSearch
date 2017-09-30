@@ -8,13 +8,13 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
     {
         public static Bitmap Draw(this FloorplanSolution solution, BitmapStyle bitmapStyle = null)
         {
+            BitmapStyle style = bitmapStyle ?? new BitmapStyle();
+            double maxSize = Math.Max(solution.MaxWidth, solution.MaxHeight);
             lock (DrawCostDiagram.thisLock)
             {
-                BitmapStyle style = bitmapStyle ?? new BitmapStyle();
+                double scaleX = (style.ImageWidth - style.MarginX - 2 * style.Pen.Width) / maxSize;
+                double scaleY = (style.ImageHeight - style.MarginY - style.Pen.Width) / maxSize;
                 Bitmap bitmap = new Bitmap(style.ImageWidth, style.ImageHeight, PixelFormat.Format32bppRgb);
-                double maxSize = Math.Max(solution.MaxWidth, solution.MaxHeight);
-                double scaleX = (bitmap.Width - style.MarginX - 2 * style.Pen.Width) / maxSize;
-                double scaleY = (bitmap.Height - style.MarginY - style.Pen.Width) / maxSize;
                 using (Graphics g = Graphics.FromImage(bitmap))
                 {
                     g.Clear(style.Background);
@@ -29,7 +29,7 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                         float h = (float)(solution.H[n] * scaleY);
                         g.FillRectangle(style.Brush, x, y, w, h);
                         g.DrawRectangle(style.Pen, x, y, w, h);
-                        g.DrawString(string.Format("{0}", n - 1), style.Font, new SolidBrush(style.Pen.Color), x + w / 2 - style.Font.SizeInPoints, y + h / 2 - style.Font.SizeInPoints);
+                        g.DrawString(string.Format("{0}", n), new Font(style.Font.Name, style.Font.Size - 2), new SolidBrush(style.Pen.Color), x + w / 2 - style.Font.SizeInPoints, y + h / 2 - style.Font.SizeInPoints);
                     }
                     g.DrawString(String.Format("Packing area: {0} (cost: {1})\nIterations: {2}\nTime: {3}s", Math.Round(solution.MaxWidth * solution.MaxHeight, 4), Math.Round(solution.CostValue, 4), solution.IterationNumber, Math.Round(solution.TimeInSeconds, 3)), style.Font, new SolidBrush(Color.Black), 0, 0);
                 }
