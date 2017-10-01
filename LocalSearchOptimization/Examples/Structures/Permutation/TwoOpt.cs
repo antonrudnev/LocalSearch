@@ -15,20 +15,20 @@ namespace LocalSearchOptimization.Examples.Structures.Permutation
         public override ISolution Apply(ISolution solution, Configuration configuration)
         {
             IPermutation permutation = (IPermutation)solution;
-            TwoOperands pair = (TwoOperands)configuration;
+            TwoOperands operands = (TwoOperands)configuration;
 
             List<int> twoOpted;
 
-            if (pair.Operand1 < pair.Operand2)
+            if (operands.First < operands.Second)
             {
                 twoOpted = new List<int>(permutation.Order);
-                twoOpted.Reverse(pair.Operand1, pair.Operand2 - pair.Operand1 + 1);
+                twoOpted.Reverse(operands.First, operands.Second - operands.First + 1);
             }
             else
             {
-                twoOpted = permutation.Order.GetRange(pair.Operand1, permutation.Order.Count - pair.Operand1);
-                twoOpted.AddRange(permutation.Order.GetRange(0, pair.Operand1));
-                twoOpted.Reverse(0, pair.Operand2 + twoOpted.Count - pair.Operand1 + 1);
+                twoOpted = permutation.Order.GetRange(operands.First, permutation.Order.Count - operands.First);
+                twoOpted.AddRange(permutation.Order.GetRange(0, operands.First));
+                twoOpted.Reverse(0, operands.Second + twoOpted.Count - operands.First + 1);
             }
 
             return permutation.FetchPermutation(twoOpted, "2opt");

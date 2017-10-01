@@ -7,6 +7,6 @@ namespace LocalSearchOptimization.Examples.Structures.Permutation
     {
         List<int> Order { get; }
 
-        IPermutation FetchPermutation(List<int> permutation, string operationName);
+        IPermutation FetchPermutation(List<int> order, string operationName);
     }
 }

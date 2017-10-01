@@ -15,12 +15,12 @@ namespace LocalSearchOptimization.Examples.Structures.Permutation
         public override ISolution Apply(ISolution solution, Configuration configuration)
         {
             IPermutation permutation = (IPermutation)solution;
-            TwoOperands pair = (TwoOperands)configuration;
+            TwoOperands operands = (TwoOperands)configuration;
 
             List<int> swapped = new List<int>(permutation.Order)
             {
-                [pair.Operand1] = permutation.Order[pair.Operand2],
-                [pair.Operand2] = permutation.Order[pair.Operand1]
+                [operands.First] = permutation.Order[operands.Second],
+                [operands.Second] = permutation.Order[operands.First]
             };
 
             return permutation.FetchPermutation(swapped, "swap");

@@ -98,10 +98,14 @@ namespace LocalSearchOptimization.Solvers
                 {
                     temperature *= parameters.TemperatureCooling;
                     costDeviation = StandardDeviation(searchHistory.GetRange(searchHistory.Count - acceptedIterationsByTemperature, acceptedIterationsByTemperature).Select(x => x.CostValue));
-                    if (costDeviation <= this.parameters.MinCostDeviation) frozenState++;
+                    if (costDeviation <= this.parameters.MinCostDeviation)
+                        frozenState++;
+                    else
+                        frozenState = 0;
                     Console.WriteLine("\tSA {0} cost {1}, temp {2}, accepted {3}, deviation {4}", parameters.Name, currentSolution.CostValue, temperature, acceptedIterationsByTemperature, costDeviation);
                     iterationsByTemperature = 0;
                     acceptedIterationsByTemperature = 0;
+                    currentSolution = currentSolution.Transcode();
                 }
             }
             Console.WriteLine("\t{0} finished with cost {1}, temperature {2}, and deviation {3} at iteration {4}", parameters.Name, bestSolution.CostValue, temperature, costDeviation, iteration);

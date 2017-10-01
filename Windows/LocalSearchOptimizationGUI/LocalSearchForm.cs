@@ -17,14 +17,14 @@ namespace LocalSearchOptimizationGUI
 {
     public partial class LocalSearchForm : Form
     {
-        private int tspDimension = 150;
+        private int tspDimension = 170;
         private int floorplanDimension = 70;
 
         private int seed = 0;
 
         private MultistartOptions multistartOptions = new MultistartOptions()
         {
-            InstancesNumber = 3,
+            InstancesNumber = 1,
             OutputFrequency = 200,
             ReturnImprovedOnly = false
         };
@@ -137,17 +137,18 @@ namespace LocalSearchOptimizationGUI
 
             Swap swap = new Swap(problem.Dimension, 10);
             Shift shift = new Shift(problem.Dimension, 1);
-            Leaf leaf = new Leaf(problem.Dimension, 5);
+            EmptyLeafMove eLeaf = new EmptyLeafMove(problem.Dimension, 5);
+            FullLeafMove fLeaf = new FullLeafMove(problem.Dimension, 5);
+            FullNodeMove node = new FullNodeMove(problem.Dimension, 5);
 
-            List<Operator> operations = new List<Operator> { swap, leaf };
+            List<Operator> operations = new List<Operator> { swap , fLeaf};
 
             if (stochasticOptimizer)
             {
                 SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
                 {
                     Name = "VLSI SA",
-                    InitProbability = 0.1,
-                    TemperatureCooling = 0.97,
+                    InitProbability = 0.3,
                     TemperatureLevelPower = 1,
                     MinCostDeviation = 0,
                     Seed = this.seed,
@@ -221,10 +222,8 @@ namespace LocalSearchOptimizationGUI
 
         private void StartDemo()
         {
-            if (!bwTsp.IsBusy)
-                bwTsp.RunWorkerAsync();
-            if (!bwFloorplan.IsBusy)
-                bwFloorplan.RunWorkerAsync();
+            if (!bwTsp.IsBusy) bwTsp.RunWorkerAsync();
+            if (!bwFloorplan.IsBusy) bwFloorplan.RunWorkerAsync();
         }
 
         private void LocalSearchForm_Paint(object sender, PaintEventArgs e)

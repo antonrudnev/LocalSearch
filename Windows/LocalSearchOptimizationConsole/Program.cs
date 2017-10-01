@@ -22,15 +22,30 @@ namespace LocalSearchOptimizationConsole
         static void Main(string[] args)
         {
 
+            FloorplanProblem problem = new FloorplanProblem(5);
+            ISolution solution = new FloorplanSolution(problem).Shuffle(1);
 
-            FloorplanProblem problem = new FloorplanProblem(20);
-            FloorplanSolution solution = new FloorplanSolution(problem);
             Swap swap = new Swap(problem.Dimension, 10);
             Shift shift = new Shift(problem.Dimension, 1);
-            Leaf leaf = new Leaf(problem.Dimension, 5);
+            FullLeafMove leaf = new FullLeafMove(problem.Dimension, 5);
+            FullNodeMove move = new FullNodeMove(problem.Dimension, 5);
             List<Operator> operations = new List<Operator> { swap, shift, leaf };
 
 
+            for (int j = 0; j < 2 * problem.Dimension; j++)
+            {
+                Console.Write(j + "   ");
+                Console.WriteLine(solution);
+                for (int i = 0; i < 2 * problem.Dimension - 1; i++)
+                {
+                    Console.Write(i + " = ");
+                    Console.WriteLine(leaf.Apply(solution, new TwoOperands(j, i, leaf)));
+                    //Console.WriteLine();
+                }
+                Console.WriteLine();
+            }
+            Console.ReadLine();
+            return;
 
 
             //TspProblem problem = new TspProblem(100);

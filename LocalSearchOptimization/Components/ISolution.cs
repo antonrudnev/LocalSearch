@@ -17,5 +17,7 @@
         string OperatorTag { get; }
 
         ISolution Shuffle(int seed);
+
+        ISolution Transcode();
     }
 }

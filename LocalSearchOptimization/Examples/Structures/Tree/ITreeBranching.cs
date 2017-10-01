@@ -3,10 +3,10 @@ using LocalSearchOptimization.Components;
 
 namespace LocalSearchOptimization.Examples.Structures.Tree
 {
-    public interface ITreeStructure : ISolution
+    public interface ITreeBranching : ISolution
     {
         List<bool> Branching { get; }
 
-        ITreeStructure FetchBranching(List<bool> branching, string operationName);
+        ITreeBranching FetchBranching(List<bool> branching, string operationName);
     }
 }

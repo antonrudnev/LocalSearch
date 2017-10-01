@@ -16,16 +16,16 @@ namespace LocalSearchOptimization.Examples.Structures.Permutation
         public override ISolution Apply(ISolution solution, Configuration configuration)
         {
             IPermutation permutation = (IPermutation)solution;
-            TwoOperands pair = (TwoOperands)configuration;
+            TwoOperands operands = (TwoOperands)configuration;
 
             List<int> shifted = new List<int>(permutation.Order);
 
-            int shiftedItem = shifted[pair.Operand1];
-            shifted.RemoveAt(pair.Operand1);
-            if (pair.Operand2 <= pair.Operand1)
-                shifted.Insert(pair.Operand2, shiftedItem);
+            int shiftedItem = shifted[operands.First];
+            shifted.RemoveAt(operands.First);
+            if (operands.Second <= operands.First)
+                shifted.Insert(operands.Second, shiftedItem);
             else
-                shifted.Insert(pair.Operand2 - 1, shiftedItem);
+                shifted.Insert(operands.Second - 1, shiftedItem);
 
             return permutation.FetchPermutation(shifted, "shift");
         }

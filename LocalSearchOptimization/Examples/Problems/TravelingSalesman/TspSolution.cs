@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using LocalSearchOptimization.Components;
 using LocalSearchOptimization.Examples.Structures.Permutation;
 
@@ -36,19 +35,19 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
 
         }
 
-        private TspSolution(TspProblem tspProblem, List<int> permutation, string operationName)
+        private TspSolution(TspProblem tspProblem, List<int> order, string operationName)
         {
             this.tspProblem = tspProblem;
             this.X = tspProblem.X;
             this.Y = tspProblem.Y;
-            Order = permutation;
+            Order = order;
             OperatorTag = operationName;
             DecodeSolution(tspProblem);
         }
 
-        public IPermutation FetchPermutation(List<int> permutation, string operationName)
+        public IPermutation FetchPermutation(List<int> order, string operationName)
         {
-            return new TspSolution(this.tspProblem, permutation, operationName);
+            return new TspSolution(this.tspProblem, order, operationName);
         }
 
         public ISolution Shuffle(int seed)
@@ -57,9 +56,13 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
             return new TspSolution(this.tspProblem, Order.OrderBy(x => random.Next()).ToList(), "shuffle");
         }
 
+        public ISolution Transcode()
+        {
+            return this;
+        }
+
         private void DecodeSolution(TspProblem problem)
         {
-
             int city = Order[problem.Dimension - 1];
             int nextCity = Order[0];
             double cost = problem.Distance[city, nextCity];

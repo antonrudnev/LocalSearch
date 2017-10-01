@@ -8,7 +8,7 @@ using LocalSearchOptimization.Examples.Structures.Tree;
 
 namespace LocalSearchOptimization.Examples.RectangularPacking
 {
-    public class FloorplanSolution : IPermutation, ITreeStructure
+    public class FloorplanSolution : IOrientedTree
     {
         private FloorplanProblem floorplanProblem;
 
@@ -41,33 +41,37 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         }
 
-        private FloorplanSolution(FloorplanProblem floorplanProblem, List<int> permutation, List<bool> branching, string operationName)
+        private FloorplanSolution(FloorplanProblem floorplanProblem, List<int> order, List<bool> branching, string operationName)
         {
             this.floorplanProblem = floorplanProblem;
             this.X = new double[floorplanProblem.Dimension + 1];
             this.Y = new double[floorplanProblem.Dimension + 1];
             this.W = floorplanProblem.W;
             this.H = floorplanProblem.H;
-            Order = permutation;
+            Order = order;
             Branching = branching;
             OperatorTag = operationName;
             DecodeSolution(floorplanProblem);
         }
 
-        public IPermutation FetchPermutation(List<int> permutation, string operationName)
+        public IPermutation FetchPermutation(List<int> order, string operationName)
         {
-            return new FloorplanSolution(this.floorplanProblem, permutation, Branching, operationName);
+            return new FloorplanSolution(this.floorplanProblem, order, Branching, operationName);
         }
 
-        public ITreeStructure FetchBranching(List<bool> branching, string operationName)
+        public ITreeBranching FetchBranching(List<bool> branching, string operationName)
         {
             return new FloorplanSolution(this.floorplanProblem, Order, branching, operationName);
+        }
+
+        public IOrientedTree FetchOrientedTree(List<int> order, List<bool> branching, string operationName)
+        {
+            return new FloorplanSolution(this.floorplanProblem, order, branching, operationName);
         }
 
         public ISolution Shuffle(int seed)
         {
             Random random = new Random(seed);
-
             List<bool> branching = new List<bool>();
             int opened = 0;
             int completed = 0;
@@ -85,8 +89,12 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                     opened--;
                 }
             }
-
             return new FloorplanSolution(this.floorplanProblem, Order.OrderBy(x => random.Next()).ToList(), branching, "shuffle");
+        }
+
+        public ISolution Transcode()
+        {
+            return this;
         }
 
         public void DecodeSolution(FloorplanProblem problem)
@@ -148,7 +156,8 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                     currentContour = currentContour.Previous;
                 }
             }
-            CostValue = Math.Pow(MaxWidth + 1.05 * MaxHeight, 2);
+            //CostValue = Math.Pow(MaxWidth + 1.05 * MaxHeight, 2);
+            CostValue = MaxWidth*MaxHeight;
         }
 
         /// <summary>
@@ -205,15 +214,21 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
         public override string ToString()
         {
             StringBuilder s = new StringBuilder();
+            StringBuilder b = new StringBuilder();
+            StringBuilder t = new StringBuilder();
             foreach (int i in Order)
             {
                 s.Append(i + " ");
             }
-            s.Append("\n");
+
+            int node = 0;
             foreach (bool i in Branching)
             {
-                s.Append(i ? ")" : "(");
+                b.Append(i ? ")" : "(o");
+                t.Append(i ? ")" : "(" + Order[node]);
+                if (!i) node++;
             }
+            s.Append(" <-> ").Append(b).Append(" <-> ").Append(t);
             return s.ToString();
         }
     }
