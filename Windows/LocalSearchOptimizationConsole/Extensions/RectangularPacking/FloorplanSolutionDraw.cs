@@ -43,8 +43,8 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                     g.DrawString(string.Format("{0}", n), fontSmall, penBrush, x + w / 2 - style.FontSize, y + h / 2 - style.FontSize);
                 }
                 string summary = solution.CostValue == maxWidth * maxHeight
-                    ? String.Format("Packing area: {0}\nIterations: {1}\nTime: {2}s", Math.Round(solution.CostValue, 4), solution.IterationNumber, Math.Round(solution.TimeInSeconds, 3))
-                    : String.Format("Packing area: {0} (cost: {1})\nIterations: {2}\nTime: {3}s", Math.Round(solution.MaxWidth * solution.MaxHeight, 4), Math.Round(solution.CostValue, 4), solution.IterationNumber, Math.Round(solution.TimeInSeconds, 3));
+                    ? String.Format("Packing area: {0:F4}{3}\nIterations: {1}\nTime: {2:F3}s", solution.CostValue, solution.IterationNumber, solution.TimeInSeconds, solution.IsCurrentBest ? " <<<" : "")
+                    : String.Format("Packing cost: {0:F4} (area: {1:F4}){4}\nIterations: {2}\nTime: {3:F3}s", solution.CostValue, solution.MaxWidth * solution.MaxHeight, solution.IterationNumber, solution.TimeInSeconds, solution.IsCurrentBest ? " <<<" : "");
                 g.DrawString(summary, font, brushBlack, 0, 0);
             }
             return bitmap;

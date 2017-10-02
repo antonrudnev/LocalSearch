@@ -66,6 +66,7 @@ namespace LocalSearchOptimization.Solvers
                         if (solutions.Count > 0)
                         {
                             ISolution currentSolution = solutions.OrderBy(x => x.CostValue).First();
+                            currentSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
                             currentSolution.IsCurrentBest = false;
                             currentSolution.IsFinal = false;
                             searchHistory.AddRange(solutions.Select(x => new SolutionSummary

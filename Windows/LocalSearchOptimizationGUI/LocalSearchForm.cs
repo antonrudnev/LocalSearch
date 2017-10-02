@@ -17,7 +17,7 @@ namespace LocalSearchOptimizationGUI
 {
     public partial class LocalSearchForm : Form
     {
-        private int tspDimension = 170;
+        private int tspDimension = 180;
         private int floorplanDimension = 70;
 
         private int seed = 0;
@@ -114,8 +114,8 @@ namespace LocalSearchOptimizationGUI
                 SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
                 {
                     Name = "TSP SA",
-                    InitProbability = 0.3,
-                    TemperatureCooling = 0.955,
+                    InitProbability = 0.5,
+                    TemperatureCooling = 0.94,
                     MinCostDeviation = 10E-5,
                     Seed = this.seed,
                     DetailedOutput = true,
@@ -170,7 +170,8 @@ namespace LocalSearchOptimizationGUI
                 SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
                 {
                     Name = "VLSI SA",
-                    InitProbability = 0.3,
+                    InitProbability = 0.5,
+                    TemperatureCooling = 0.96,
                     MinCostDeviation = 0,
                     Seed = this.seed,
                     DetailedOutput = true,

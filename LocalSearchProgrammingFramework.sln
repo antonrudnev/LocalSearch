@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalSearchOptimization", "LocalSearchOptimization\LocalSearchOptimization.csproj", "{FEEBDE62-8452-4E67-A7F9-9C521553E45C}"
 EndProject
@@ -10,6 +10,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalSearchOptimizationConsole", "Windows\LocalSearchOptimizationConsole\LocalSearchOptimizationConsole.csproj", "{4A8FDBBB-FF11-4C47-8B8D-8F7D2CEE3AAA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalSearchOptimizationGUI", "Windows\LocalSearchOptimizationGUI\LocalSearchOptimizationGUI.csproj", "{C9632116-3E84-4E91-A19A-7E54123F26C8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Linux", "Linux", "{5B4CE6FE-1469-426A-A9CD-41A1CFDD9873}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalSearchOptimizationConsole", "Linux\LocalSearchOptimizationConsole\LocalSearchOptimizationConsole.csproj", "{AE26F6A2-FDA6-46F4-A600-D48B0057908A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +33,10 @@ Global
 		{C9632116-3E84-4E91-A19A-7E54123F26C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9632116-3E84-4E91-A19A-7E54123F26C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9632116-3E84-4E91-A19A-7E54123F26C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE26F6A2-FDA6-46F4-A600-D48B0057908A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE26F6A2-FDA6-46F4-A600-D48B0057908A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE26F6A2-FDA6-46F4-A600-D48B0057908A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE26F6A2-FDA6-46F4-A600-D48B0057908A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -36,6 +44,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4A8FDBBB-FF11-4C47-8B8D-8F7D2CEE3AAA} = {38DE504B-B1E2-4FB0-99FA-BE913AC00CFF}
 		{C9632116-3E84-4E91-A19A-7E54123F26C8} = {38DE504B-B1E2-4FB0-99FA-BE913AC00CFF}
+		{AE26F6A2-FDA6-46F4-A600-D48B0057908A} = {5B4CE6FE-1469-426A-A9CD-41A1CFDD9873}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2AC4C41F-8E50-4309-976D-1C043DAE0A1E}

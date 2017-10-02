@@ -61,7 +61,7 @@ namespace LocalSearchOptimization.Examples
                     float y = bitmap.Height - 4 * style.CostRadius - (float)((historyToDraw[i].CostValue - minCost) * scaleY);
                     g.FillEllipse(instanceBrush.Count > 1 ? instanceBrush[historyToDraw[i].InstanceTag] : operatorBrush[historyToDraw[i].OperatorTag], x, y, 2 * style.CostRadius, 2 * style.CostRadius);
                 }
-                string summary = String.Format("Max cost: {0:F4}\nMin cost: {1:F4}\nAccepted iterations: {2}\nTime: {3:f3}s", maxCost, minCost, optimizer.SearchHistory.Count, optimizer.CurrentSolution.TimeInSeconds);
+                string summary = String.Format("Max cost: {0:F4}\nMin cost: {1:F4}\nAccepted iterations: {2}\nTime: {3:F3}s", maxCost, minCost, optimizer.SearchHistory.Count, optimizer.CurrentSolution.TimeInSeconds);
                 g.DrawString(summary, font, brushBlack, 0, 0);
             }
             return bitmap;

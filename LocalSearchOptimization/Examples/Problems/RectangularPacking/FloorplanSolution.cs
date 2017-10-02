@@ -200,8 +200,8 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                     currentContour = currentContour.Previous;
                 }
             }
-            //CostValue = Math.Pow(MaxWidth + 1.05 * MaxHeight, 2);
-            CostValue = MaxWidth * MaxHeight;
+            CostValue = Math.Pow(MaxWidth + 1.05 * MaxHeight, 2);
+            //CostValue = MaxWidth * MaxHeight;
         }
 
         /// <summary>
