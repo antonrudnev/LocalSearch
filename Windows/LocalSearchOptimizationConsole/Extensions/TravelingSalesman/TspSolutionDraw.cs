@@ -9,7 +9,7 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
     {
         public static Bitmap Draw(this TspSolution solution, BitmapStyle bitmapStyle = null)
         {
-            BitmapStyle style = bitmapStyle ?? bitmapStyle;
+            BitmapStyle style = bitmapStyle ?? new BitmapStyle();
             double maxSize = Math.Max(solution.MaxWidth, solution.MaxHeight);
             double scaleX = (style.ImageWidth - style.MarginX - 8 * style.Radius) / maxSize;
             double scaleY = (style.ImageHeight - style.MarginY - 4 * style.Radius) / maxSize;

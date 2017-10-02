@@ -149,7 +149,6 @@ namespace LocalSearchOptimizationGUI
                 {
                     Name = "VLSI SA",
                     InitProbability = 0.3,
-                    TemperatureLevelPower = 1,
                     MinCostDeviation = 0,
                     Seed = this.seed,
                     DetailedOutput = true,

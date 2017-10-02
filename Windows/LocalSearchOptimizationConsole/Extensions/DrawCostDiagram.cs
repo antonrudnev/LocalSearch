@@ -10,9 +10,11 @@ namespace LocalSearchOptimization.Examples
     {
         private static List<Color> colors = new List<Color> { Color.Blue, Color.Green, Color.Purple, Color.Lime, Color.Magenta, Color.Maroon, Color.Navy, Color.Orange, Color.Purple, Color.Red, Color.Teal, Color.Yellow, Color.Cyan };
 
+        private static List<string> notNeighborOperators = new List<string> { "init", "shuffle", "transcode" };
+
         static public Bitmap Draw(IOptimizationAlgorithm optimizer, BitmapStyle bitmapStyle, int maxPoints = 0)
         {
-            BitmapStyle style = bitmapStyle ?? bitmapStyle;
+            BitmapStyle style = bitmapStyle ?? new BitmapStyle();
             if ((optimizer?.SearchHistory?.Count ?? 0) == 0) return null;
             int n = maxPoints == 0 ? 1 : optimizer.SearchHistory.Count / maxPoints + 1;
             List<SolutionSummary> historyToDraw = maxPoints == 0 ? optimizer.SearchHistory : new List<SolutionSummary>();
@@ -43,7 +45,7 @@ namespace LocalSearchOptimization.Examples
             foreach (string operation in operators)
             {
                 operatorBrush.Add(operation, new SolidBrush(colors[counter % colors.Count]));
-                if (operation != "init" && operation != "shuffle") counter++;
+                if (!notNeighborOperators.Contains(operation)) counter++;
             }
             double scaleX = (double)(style.ImageWidth - style.MarginX) / (historyToDraw.Count);
             double scaleY = (style.ImageHeight - style.MarginY - 4 * style.CostRadius) / (maxCost - minCost);

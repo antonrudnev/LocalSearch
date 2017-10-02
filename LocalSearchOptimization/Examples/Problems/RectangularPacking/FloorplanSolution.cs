@@ -12,6 +12,8 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
     {
         private FloorplanProblem floorplanProblem;
 
+        public int Transcoder { get; }
+
         public double CostValue { get; private set; }
         public int IterationNumber { get; set; }
         public double TimeInSeconds { get; set; }
@@ -24,7 +26,7 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         public string InstanceTag { get; set; }
 
-        public string OperatorTag { get; }
+        public string OperatorTag { get; set; }
 
         public double[] X { get; }
         public double[] Y { get; }
@@ -41,32 +43,33 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         }
 
-        private FloorplanSolution(FloorplanProblem floorplanProblem, List<int> order, List<bool> branching, string operationName)
+        public FloorplanSolution(FloorplanProblem floorplanProblem, List<int> order, List<bool> branching, string operatorName, int transcoder = 0)
         {
             this.floorplanProblem = floorplanProblem;
-            this.X = new double[floorplanProblem.Dimension + 1];
-            this.Y = new double[floorplanProblem.Dimension + 1];
-            this.W = floorplanProblem.W;
-            this.H = floorplanProblem.H;
+            Transcoder = transcoder;
+            X = new double[floorplanProblem.Dimension + 1];
+            Y = new double[floorplanProblem.Dimension + 1];
+            W = transcoder % 2 == 0 ? floorplanProblem.W : floorplanProblem.H;
+            H = transcoder % 2 == 0 ? floorplanProblem.H : floorplanProblem.W;
             Order = order;
             Branching = branching;
-            OperatorTag = operationName;
-            DecodeSolution(floorplanProblem);
+            OperatorTag = operatorName;
+            DecodeSolution();
         }
 
-        public IPermutation FetchPermutation(List<int> order, string operationName)
+        public IPermutation FetchPermutation(List<int> order, string operatorName)
         {
-            return new FloorplanSolution(this.floorplanProblem, order, Branching, operationName);
+            return new FloorplanSolution(this.floorplanProblem, order, Branching, operatorName, Transcoder);
         }
 
-        public ITreeBranching FetchBranching(List<bool> branching, string operationName)
+        public ITreeBranching FetchBranching(List<bool> branching, string operatorName)
         {
-            return new FloorplanSolution(this.floorplanProblem, Order, branching, operationName);
+            return new FloorplanSolution(this.floorplanProblem, Order, branching, operatorName, Transcoder);
         }
 
-        public IOrientedTree FetchOrientedTree(List<int> order, List<bool> branching, string operationName)
+        public IOrientedTree FetchOrientedTree(List<int> order, List<bool> branching, string operatorName)
         {
-            return new FloorplanSolution(this.floorplanProblem, order, branching, operationName);
+            return new FloorplanSolution(this.floorplanProblem, order, branching, operatorName, Transcoder);
         }
 
         public ISolution Shuffle(int seed)
@@ -89,29 +92,70 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                     opened--;
                 }
             }
-            return new FloorplanSolution(this.floorplanProblem, Order.OrderBy(x => random.Next()).ToList(), branching, "shuffle");
+            return new FloorplanSolution(this.floorplanProblem, Order.OrderBy(x => random.Next()).ToList(), branching, "shuffle", Transcoder);
         }
 
         public ISolution Transcode()
         {
-            return this;
+            Stack<int> parents = new Stack<int>();
+            parents.Push(0);
+            List<int> uncoded = new List<int>(Order);
+            List<int> order = new List<int>();
+            List<bool> branching = new List<bool>();
+            int opened = 0;
+            while (uncoded.Count > 0)
+            {
+                int parent = parents.Peek();
+                int next = 0;
+                double nextX = int.MaxValue;
+                foreach (int item in uncoded)
+                {
+                    if ((Y[item] == Y[parent] + H[parent])
+                        && (X[parent] < X[item] + W[item])
+                        && (X[item] < X[parent] + (parent > 0 ? W[parent] : MaxWidth))
+                        && (X[item] < nextX))
+                    {
+                        next = item;
+                    }
+                }
+                if (next > 0)
+                {
+                    order.Add(next);
+                    branching.Add(false);
+                    parents.Push(next);
+                    uncoded.Remove(next);
+                    opened++;
+                }
+                else
+                {
+                    branching.Add(true);
+                    parents.Pop();
+                    opened--;
+                }
+            }
+            for (int i = 0; i < opened; i++)
+            {
+                branching.Add(true);
+            }
+            return new FloorplanSolution(this.floorplanProblem, order, branching, "transcode", (Transcoder + 1) % 4);
         }
 
-        public void DecodeSolution(FloorplanProblem problem)
+        private void DecodeSolution()
         {
-            LinearDecoder(problem);
+            LinearDecoder();
         }
 
         /// <summary>
         /// Decodes the tree structure into a packing layout. Trick with the contour structure provides O(n) performance that is the most efficient.
         /// </summary>
-        /// <param name="problem"></param>
-        public void LinearDecoder(FloorplanProblem problem)
+        private void LinearDecoder()
         {
             MaxWidth = 0;
             MaxHeight = 0;
             X[0] = 0;
             Y[0] = 0;
+            W[0] = 0;
+            H[0] = 0;
             LinkedList<int> countour = new LinkedList<int>();
             countour.AddLast(0);
             LinkedListNode<int> currentContour = countour.First;
@@ -157,14 +201,13 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                 }
             }
             //CostValue = Math.Pow(MaxWidth + 1.05 * MaxHeight, 2);
-            CostValue = MaxWidth*MaxHeight;
+            CostValue = MaxWidth * MaxHeight;
         }
 
         /// <summary>
         /// Decodes the tree structure into a packing layout. Straightforward implementation provides O(n^2) performance. Used for demonstration purposes only. 
         /// </summary>
-        /// <param name="problem"></param>
-        public void QuadraticDecoder(FloorplanProblem problem)
+        private void QuadraticDecoder()
         {
             MaxWidth = 0;
             MaxHeight = 0;
@@ -218,17 +261,17 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
             StringBuilder t = new StringBuilder();
             foreach (int i in Order)
             {
-                s.Append(i + " ");
+                s.Append(i + ",");
             }
 
             int node = 0;
             foreach (bool i in Branching)
             {
-                b.Append(i ? ")" : "(o");
+                b.Append(i ? "true," : "false,");
                 t.Append(i ? ")" : "(" + Order[node]);
                 if (!i) node++;
             }
-            s.Append(" <-> ").Append(b).Append(" <-> ").Append(t);
+            s.Append("\n").Append(b);
             return s.ToString();
         }
     }
