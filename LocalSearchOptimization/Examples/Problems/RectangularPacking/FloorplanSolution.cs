@@ -40,7 +40,7 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         public FloorplanSolution(FloorplanProblem floorplanProblem) : this(floorplanProblem, Enumerable.Range(1, floorplanProblem.Dimension).ToList(), Enumerable.Repeat(false, floorplanProblem.Dimension).ToList().Concat(Enumerable.Repeat(true, floorplanProblem.Dimension)).ToList(), "init")
         {
-
+            
         }
 
         public FloorplanSolution(FloorplanProblem floorplanProblem, List<int> order, List<bool> branching, string operatorName, int transcoder = 0)

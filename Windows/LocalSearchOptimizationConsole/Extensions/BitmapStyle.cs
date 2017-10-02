@@ -15,5 +15,27 @@
         public string BackgroundColor { get; set; } = "White";
         public string CostColor { get; set; } = "Blue";
         public int CostRadius { get; set; } = 5;
+
+        public BitmapStyle()
+        {
+
+        }
+
+        public BitmapStyle(BitmapStyle style)
+        {
+            ImageWidth = style.ImageWidth;
+            ImageHeight = style.ImageHeight;
+            MarginX = style.MarginX;
+            MarginY = style.MarginY;
+            FontName = style.FontName;
+            FontSize = style.FontSize;
+            PenColor = style.PenColor;
+            PenWidth = style.PenWidth;
+            BrushColor = style.BrushColor;
+            Radius = style.Radius;
+            BackgroundColor = style.BackgroundColor;
+            CostColor = style.CostColor;
+            CostRadius = style.CostRadius;
+        }
     }
 }

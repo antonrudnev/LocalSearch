@@ -31,7 +31,7 @@ namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
                 g.Clear(Color.FromName(style.BackgroundColor));
                 if (solution.IsFinal)
                     g.FillPolygon(brush, points);
-                g.DrawPolygon(pen, points);
+                if (solution.OperatorTag != "init") g.DrawPolygon(pen, points);
                 for (int i = 0; i < points.Length; i++)
                 {
                     g.FillEllipse(brush, points[i].X - style.Radius, points[i].Y - style.Radius, 2 * style.Radius, 2 * style.Radius);

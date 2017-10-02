@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using LocalSearchOptimization.Examples.Problems.TravelingSalesman;
 using LocalSearchOptimization.Components;
@@ -11,7 +12,6 @@ using LocalSearchOptimization.Parameters;
 using LocalSearchOptimization.Examples.RectangularPacking;
 using LocalSearchOptimization.Examples.Structures.Tree;
 using LocalSearchOptimization.Examples;
-using System.Threading.Tasks;
 
 namespace LocalSearchOptimizationGUI
 {
@@ -35,17 +35,24 @@ namespace LocalSearchOptimizationGUI
             MarginY = 50,
             FontName = "Microsoft Sans Serif",
             FontSize = 10,
-            PenColor = "Green",
+            BrushColor = "SpringGreen",
+            PenColor = "DarkGreen",
             PenWidth = 2,
             Radius = 4,
             BackgroundColor = SystemColors.Control.Name,
             CostRadius = 1
         };
 
+        private BitmapStyle solutionStyle;
+        private BitmapStyle costStyle;
+
         private Bitmap tspSolutionImage;
         private Bitmap tspCostImage;
         private Bitmap floorplanSolutionImage;
         private Bitmap floorplanCostImage;
+
+        private TspSolution tspSolution;
+        private FloorplanSolution floorplanSolution;
 
         private IOptimizationAlgorithm tspOptimizer;
         private IOptimizationAlgorithm floorplanOptimizer;
@@ -62,7 +69,8 @@ namespace LocalSearchOptimizationGUI
 
         public LocalSearchForm()
         {
-            InitializeComponent();
+            solutionStyle = new BitmapStyle(style);
+            costStyle = new BitmapStyle(style);
 
             bwTsp.DoWork += new DoWorkEventHandler(bwTsp_DoWork);
             bwTsp.ProgressChanged += new ProgressChangedEventHandler(bwTsp_ProgressChanged);
@@ -71,8 +79,21 @@ namespace LocalSearchOptimizationGUI
             bwFloorplan.DoWork += new DoWorkEventHandler(bwFloorplan_DoWork);
             bwFloorplan.ProgressChanged += new ProgressChangedEventHandler(bwFloorplan_ProgressChanged);
             bwFloorplan.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
+
+            InitializeComponent();
+
+            GetInitialSolutions();
         }
 
+        private void GetInitialSolutions()
+        {
+            tspSolution = new TspSolution(new TspProblem(this.tspDimension));
+            floorplanSolution = new FloorplanSolution(new FloorplanProblem(this.floorplanDimension)).Shuffle(1) as FloorplanSolution;
+            for (int i = 0; i < 12; i++)
+            {
+                floorplanSolution = floorplanSolution.Transcode() as FloorplanSolution;
+            }
+        }
 
         private void bwTsp_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -94,6 +115,7 @@ namespace LocalSearchOptimizationGUI
                 {
                     Name = "TSP SA",
                     InitProbability = 0.3,
+                    TemperatureCooling = 0.955,
                     MinCostDeviation = 10E-5,
                     Seed = this.seed,
                     DetailedOutput = true,
@@ -141,7 +163,7 @@ namespace LocalSearchOptimizationGUI
             FullLeafMove fLeaf = new FullLeafMove(problem.Dimension, 5);
             FullNodeMove node = new FullNodeMove(problem.Dimension, 5);
 
-            List<Operator> operations = new List<Operator> { swap , fLeaf};
+            List<Operator> operations = new List<Operator> { swap, fLeaf };
 
             if (stochasticOptimizer)
             {
@@ -197,13 +219,13 @@ namespace LocalSearchOptimizationGUI
         {
             if (!(bwTsp.IsBusy || bwFloorplan.IsBusy))
             {
-                toRenderBackground = true;
                 if (e.Cancelled == true)
                     this.algorithmStatus.Text = "Canceled";
                 else if (e.Error != null)
                     this.algorithmStatus.Text = ("Error: " + e.Error.Message);
                 else
                     this.algorithmStatus.Text = "Done";
+                toRenderBackground = true;
             }
         }
 
@@ -228,9 +250,9 @@ namespace LocalSearchOptimizationGUI
         private void LocalSearchForm_Paint(object sender, PaintEventArgs e)
         {
             if (tspSolutionImage != null) e.Graphics.DrawImage(tspSolutionImage, 0, menuBar.Height);
-            if (tspCostImage != null) e.Graphics.DrawImage(tspCostImage, 0, menuBar.Height + style.ImageHeight);
-            if (floorplanSolutionImage != null) e.Graphics.DrawImage(floorplanSolutionImage, style.ImageWidth, menuBar.Height);
-            if (floorplanCostImage != null) e.Graphics.DrawImage(floorplanCostImage, style.ImageWidth, menuBar.Height + style.ImageHeight);
+            if (tspCostImage != null) e.Graphics.DrawImage(tspCostImage, 0, menuBar.Height + solutionStyle.ImageHeight);
+            if (floorplanSolutionImage != null) e.Graphics.DrawImage(floorplanSolutionImage, solutionStyle.ImageWidth, menuBar.Height);
+            if (floorplanCostImage != null) e.Graphics.DrawImage(floorplanCostImage, solutionStyle.ImageWidth, menuBar.Height + solutionStyle.ImageHeight);
         }
 
         protected override void OnPaintBackground(PaintEventArgs e)
@@ -240,8 +262,15 @@ namespace LocalSearchOptimizationGUI
 
         private void LocalSearchForm_Resize(object sender, EventArgs e)
         {
-            style.ImageWidth = Math.Max(this.Width / 2 - 8, 10);
-            style.ImageHeight = Math.Max((this.Height - 2 * (menuBar.Height + statusBar.Height) + 8) / 2, 10);
+            int imageWidth = Math.Max(this.Width / 2 - 8, 10);
+            int imageHeight = Math.Max((this.Height - 2 * (menuBar.Height + statusBar.Height) + 8) / 3, 10);
+
+            solutionStyle.ImageWidth = imageWidth;
+            solutionStyle.ImageHeight = imageHeight * 2;
+
+            costStyle.ImageWidth = imageWidth;
+            costStyle.ImageHeight = imageHeight;
+
             DrawTspSolutionAsync();
             DrawFloorplanSolutionAsync();
             DrawTspCostAsync();
@@ -255,7 +284,7 @@ namespace LocalSearchOptimizationGUI
             if (tspSolutionDrawTask?.IsCompleted ?? true)
                 tspSolutionDrawTask = Task.Factory.StartNew(() =>
                 {
-                    tspSolutionImage = (tspOptimizer?.CurrentSolution as TspSolution)?.Draw(style);
+                    tspSolutionImage = ((tspOptimizer?.CurrentSolution ?? tspSolution) as TspSolution)?.Draw(solutionStyle);
                     this.Invalidate();
                 });
         }
@@ -266,7 +295,7 @@ namespace LocalSearchOptimizationGUI
             if (floorplanSolutionDrawTask?.IsCompleted ?? true)
                 floorplanSolutionDrawTask = Task.Factory.StartNew(() =>
                 {
-                    floorplanSolutionImage = (floorplanOptimizer?.CurrentSolution as FloorplanSolution)?.Draw(style);
+                    floorplanSolutionImage = ((floorplanOptimizer?.CurrentSolution ?? floorplanSolution) as FloorplanSolution)?.Draw(solutionStyle);
                     this.Invalidate();
                 });
         }
@@ -277,7 +306,7 @@ namespace LocalSearchOptimizationGUI
             if (tspCostDrawTask?.IsCompleted ?? true)
                 tspCostDrawTask = Task.Factory.StartNew(() =>
                 {
-                    tspCostImage = DrawCostDiagram.Draw(tspOptimizer, style, 30000);
+                    tspCostImage = DrawCostDiagram.Draw(tspOptimizer, costStyle, 30000);
                     this.Invalidate();
                 });
         }
@@ -288,7 +317,7 @@ namespace LocalSearchOptimizationGUI
             if (floorplanCostDrawTask?.IsCompleted ?? true)
                 floorplanCostDrawTask = Task.Factory.StartNew(() =>
                 {
-                    floorplanCostImage = DrawCostDiagram.Draw(floorplanOptimizer, style, 30000);
+                    floorplanCostImage = DrawCostDiagram.Draw(floorplanOptimizer, costStyle, 30000);
                     this.Invalidate();
                 });
         }
