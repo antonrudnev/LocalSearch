@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 
-namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
+namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
 {
     public static class TspSolutionDraw
     {

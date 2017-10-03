@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LocalSearchOptimization.Components;
-using LocalSearchOptimization.Examples.Problems.TravelingSalesman;
+using LocalSearchOptimization.Examples.Problems.TravellingSalesman;
 using LocalSearchOptimization.Parameters;
 using LocalSearchOptimization.Examples.Structures.Permutation;
 using LocalSearchOptimization.Examples.RectangularPacking;
@@ -21,7 +21,7 @@ namespace LocalSearch
             FloorplanSolution solution = new FloorplanSolution(problem);
             Swap swap = new Swap(problem.Dimension);
             Shift shift = new Shift(problem.Dimension);
-            Leaf leaf = new Leaf(problem.Dimension);
+            FullLeafMove leaf = new FullLeafMove(problem.Dimension);
             List<Operator> operations = new List<Operator> { swap, shift, leaf };
 
 
@@ -60,7 +60,6 @@ namespace LocalSearch
             {
                 InitProbability = 0.1,
                 TemperatureCooling = 0.97,
-                MaxPassesSinceLastTransition = 0.01,
                 UseWeightedNeighborhood = true,
                 DetailedOutput = false,
                 Seed = 0,

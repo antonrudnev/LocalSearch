@@ -4,7 +4,7 @@ using System.Linq;
 using LocalSearchOptimization.Components;
 using LocalSearchOptimization.Examples.Structures.Permutation;
 
-namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
+namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
 {
     public class TspSolution : IPermutation
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LocalSearchOptimization.Examples.Problems.TravelingSalesman
+namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
 {
     public class TspProblem
     {

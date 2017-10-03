@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using LocalSearchOptimization.Examples.Problems.TravelingSalesman;
+using LocalSearchOptimization.Examples.Problems.TravellingSalesman;
 using LocalSearchOptimization.Components;
 using LocalSearchOptimization.Examples.Structures.Permutation;
 using LocalSearchOptimization.Solvers;
