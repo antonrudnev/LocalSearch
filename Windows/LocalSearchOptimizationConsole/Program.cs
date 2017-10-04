@@ -21,23 +21,23 @@ namespace LocalSearchOptimizationConsole
     {
         static void Main(string[] args)
         {
-            FloorplanProblem problem = new FloorplanProblem(50);
-            FloorplanSolution solution = new FloorplanSolution(problem);
-            Swap swap = new Swap(problem.Dimension, 10);
-            Shift shift = new Shift(problem.Dimension, 1);
-            EmptyLeafMove eLeaf = new EmptyLeafMove(problem.Dimension, 5);
-            FullLeafMove fLeaf = new FullLeafMove(problem.Dimension, 5);
-            FullNodeMove node = new FullNodeMove(problem.Dimension, 5);
-            List<Operator> operations = new List<Operator> { swap, fLeaf };
+            //FloorplanProblem problem = new FloorplanProblem(500);
+            //FloorplanSolution solution = new FloorplanSolution(problem);
+            //Swap swap = new Swap(problem.Dimension, 10);
+            //Shift shift = new Shift(problem.Dimension, 1);
+            //EmptyLeafMove eLeaf = new EmptyLeafMove(problem.Dimension, 5);
+            //FullLeafMove fLeaf = new FullLeafMove(problem.Dimension, 5);
+            //FullNodeMove node = new FullNodeMove(problem.Dimension, 5);
+            //List<Operator> operations = new List<Operator> { swap, fLeaf };
 
 
 
-            //TspProblem problem = new TspProblem(100);
-            //TspSolution solution = new TspSolution(problem);
-            //Swap swap = new Swap(problem.Dimension, 1);
-            //Shift shift = new Shift(problem.Dimension, 2);
-            //TwoOpt twoOpt = new TwoOpt(problem.Dimension, 3);
-            //List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
+            TspProblem problem = new TspProblem(100);
+            TspSolution solution = new TspSolution(problem);
+            Swap swap = new Swap(problem.Dimension, 1);
+            Shift shift = new Shift(problem.Dimension, 2);
+            TwoOpt twoOpt = new TwoOpt(problem.Dimension, 3);
+            List<Operator> operations = new List<Operator> { shift, twoOpt };
 
 
 
@@ -45,8 +45,8 @@ namespace LocalSearchOptimizationConsole
 
             MultistartOptions multistartOptions = new MultistartOptions()
             {
-                InstancesNumber = 20,
-                OutputFrequency = 100,
+                InstancesNumber = 50,
+                OutputFrequency = 1000,
                 ReturnImprovedOnly = true
             };
 
@@ -62,7 +62,7 @@ namespace LocalSearchOptimizationConsole
             {
                 InitProbability = 0.3,
                 TemperatureCooling = 0.97,
-                MinCostDeviation = 10E-10,
+                MinCostDeviation = 10E-5,
                 UseWeightedNeighborhood = false,
                 DetailedOutput = true,
                 Seed = 0,
@@ -73,7 +73,7 @@ namespace LocalSearchOptimizationConsole
             SimulatedAnnealing sa = new SimulatedAnnealing(saParameters);
             ParallelMultistart<LocalDescent, LocalDescentParameters> pld = new ParallelMultistart<LocalDescent, LocalDescentParameters>(ldParameters, multistartOptions);
             ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters> psa = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(saParameters, multistartOptions);
-            IOptimizationAlgorithm optimizer = sa;
+            IOptimizationAlgorithm optimizer = psa;
             ISolution bestSolution = solution;
             foreach (ISolution s in optimizer.Minimize(solution))
             {

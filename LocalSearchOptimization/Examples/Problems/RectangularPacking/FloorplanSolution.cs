@@ -202,6 +202,7 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
             }
             CostValue = Math.Pow(MaxWidth + 1.05 * MaxHeight, 2);
             //CostValue = MaxWidth * MaxHeight;
+            //CostValue = (CostValue - this.floorplanProblem.TotalArea) / CostValue;
         }
 
         /// <summary>

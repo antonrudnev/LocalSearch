@@ -17,34 +17,30 @@ namespace LocalSearch
         static void Main(string[] args)
         {
 
-            FloorplanProblem problem = new FloorplanProblem(50);
-            FloorplanSolution solution = new FloorplanSolution(problem);
-            Swap swap = new Swap(problem.Dimension);
-            Shift shift = new Shift(problem.Dimension);
-            FullLeafMove leaf = new FullLeafMove(problem.Dimension);
-            List<Operator> operations = new List<Operator> { swap, shift, leaf };
+            //FloorplanProblem problem = new FloorplanProblem(50);
+            //FloorplanSolution solution = new FloorplanSolution(problem);
+            //Swap swap = new Swap(problem.Dimension);
+            //Shift shift = new Shift(problem.Dimension);
+            //FullLeafMove leaf = new FullLeafMove(problem.Dimension);
+            //List<Operator> operations = new List<Operator> { swap, shift, leaf };
 
 
 
 
-            //TspProblem problem = new TspProblem(100);
-            //TspSolution solution = new TspSolution(problem);
-            //Swap swap = new Swap(problem.NumberOfCities, 1);
-            //Shift shift = new Shift(problem.NumberOfCities, 2);
-            //TwoOpt twoOpt = new TwoOpt(problem.NumberOfCities, 3);
-            //List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
-
-
-
-
+            TspProblem problem = new TspProblem(100);
+            TspSolution solution = new TspSolution(problem);
+            Swap swap = new Swap(problem.Dimension, 1);
+            Shift shift = new Shift(problem.Dimension, 2);
+            TwoOpt twoOpt = new TwoOpt(problem.Dimension, 3);
+            List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
 
 
 
 
             MultistartOptions multistartOptions = new MultistartOptions()
             {
-                InstancesNumber = 10,
-                OutputFrequency = 100,
+                InstancesNumber = 1,
+                OutputFrequency = 500,
                 ReturnImprovedOnly = true
             };
 
@@ -58,7 +54,7 @@ namespace LocalSearch
 
             SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
             {
-                InitProbability = 0.1,
+                InitProbability = 0.3,
                 TemperatureCooling = 0.97,
                 UseWeightedNeighborhood = true,
                 DetailedOutput = false,
