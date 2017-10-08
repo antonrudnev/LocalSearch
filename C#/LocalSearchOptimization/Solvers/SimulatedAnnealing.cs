@@ -50,7 +50,7 @@ namespace LocalSearchOptimization.Solvers
                 }
             };
             Neighborhood neighborhood = this.parameters.UseWeightedNeighborhood ?
-                new WeightedNeighborhood(solution, parameters.Operators, parameters.Seed) :
+                new NeighborhoodWeighted(solution, parameters.Operators, parameters.Seed) :
                     new Neighborhood(solution, parameters.Operators, parameters.Seed);
             double temperature = GetStartTemperature(parameters.InitProbability, neighborhood);
             int maxIterationsByTemperature = (int)(parameters.TemperatureLevelPower * neighborhood.Power);

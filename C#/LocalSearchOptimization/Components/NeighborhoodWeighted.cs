@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace LocalSearchOptimization.Components
 {
-    public class WeightedNeighborhood : Neighborhood
+    public class NeighborhoodWeighted : Neighborhood
     {
-        public WeightedNeighborhood(ISolution solution, List<Operator> operators, int seed) : base(solution, operators, seed)
+        public NeighborhoodWeighted(ISolution solution, List<Operator> operators, int seed) : base(solution, operators, seed)
         {
             double sumOperationsWeight = this.operators.Sum(x => x.Weight);
             this.operators.ForEach(x =>
@@ -25,7 +25,7 @@ namespace LocalSearchOptimization.Components
                 bound += operation.Weight;
             }
             Operator lastOperation = operators.Last();
-            return lastOperation.Apply(CurrentSolution, this.random.Next(lastOperation.Configurations.Count));
+            return lastOperation.Apply(CurrentSolution, this.random.Next(lastOperation.Power));
         }
     }
 }
