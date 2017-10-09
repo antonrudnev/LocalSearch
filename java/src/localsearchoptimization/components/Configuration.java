@@ -8,6 +8,6 @@ public abstract class Configuration {
     }
 
     public Solution Apply(Solution solution) {
-        return this.operation.Apply(solution, this);
+        return this.operation.apply(solution, this);
     }
 }

@@ -14,10 +14,10 @@ public class NeighborhoodWeighted extends Neighborhood {
         double bound = 0;
         for (Operator operation : operators) {
             if (rand < operation.weight + bound)
-                return operation.Apply(currentSolution, random.nextInt(operation.power()));
+                return operation.apply(currentSolution, random.nextInt(operation.power()));
             bound += operation.weight;
         }
         Operator lastOperation = operators.get(operators.size() - 1);
-        return lastOperation.Apply(currentSolution, random.nextInt(lastOperation.power()));
+        return lastOperation.apply(currentSolution, random.nextInt(lastOperation.power()));
     }
 }

@@ -17,9 +17,9 @@ public abstract class Operator {
         configurations = new ArrayList<Configuration>();
     }
 
-    public abstract Solution Apply(Solution solution, Configuration configuration);
+    public abstract Solution apply(Solution solution, Configuration configuration);
 
-    public Solution Apply(Solution solution, int configuration) {
-        return this.Apply(solution, configurations.get(configuration));
+    public Solution apply(Solution solution, int configuration) {
+        return this.apply(solution, configurations.get(configuration));
     }
 }
