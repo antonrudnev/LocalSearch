@@ -8,7 +8,7 @@ import java.util.Random;
 public class Neighborhood {
     protected Random random;
 
-    protected List<Operator> operators = new ArrayList<Operator>();
+    protected Operator[] operators;
 
     protected List<Configuration> configurations = new ArrayList<Configuration>();
 
@@ -16,10 +16,10 @@ public class Neighborhood {
 
     protected int currentConfiguration;
 
-    public Neighborhood(Solution solution, List<Operator> operators, int seed) {
+    public Neighborhood(Solution solution, Operator[] operators, int seed) {
         random = new Random(seed);
         currentSolution = solution;
-        this.operators.addAll(operators);
+        this.operators = operators;
         for (Operator operation : this.operators)
             configurations.addAll(operation.configurations);
         randomize();

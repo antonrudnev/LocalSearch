@@ -2,8 +2,6 @@ package localsearchoptimization.parameters;
 
 import localsearchoptimization.components.Operator;
 
-import java.util.List;
-
 public class CoreParameters {
     public String name = "core";
 
@@ -11,7 +9,7 @@ public class CoreParameters {
 
     public boolean isDetailedOutput = true;
 
-    public List<Operator> Operators;
+    public Operator[] operators;
 
     public CoreParameters() {
 
@@ -21,7 +19,7 @@ public class CoreParameters {
         name = copy.name;
         seed = copy.seed;
         isDetailedOutput = copy.isDetailedOutput;
-        Operators = copy.Operators;
+        operators = copy.operators;
     }
 
     public CoreParameters Clone() {

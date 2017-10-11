@@ -17,7 +17,7 @@ public class TwoOpt extends Operator {
         super(elementsNumber, weight);
         for (int i = 0; i < elementsNumber; i++)
             for (int j = 0; j < elementsNumber; j++)
-                if (j - i >= 3 || (i > j && elementsNumber - i + j >= 3))
+                if (Math.abs(j - i) >= 3)
                     configurations.add(new TwoOperands(i, j, this));
     }
 
@@ -29,7 +29,7 @@ public class TwoOpt extends Operator {
             twoOpted = new ArrayList<Integer>(permutation.order());
             reverse(twoOpted, operands.first, operands.second - operands.first);
         } else {
-            twoOpted = permutation.order().subList(operands.first, permutation.order().size());
+            twoOpted = new ArrayList<Integer>(permutation.order().subList(operands.first, permutation.order().size()));
             twoOpted.addAll(permutation.order().subList(0, operands.first));
             reverse(twoOpted, 0, operands.second + twoOpted.size() - operands.first);
         }

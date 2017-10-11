@@ -1,12 +1,14 @@
 package localsearchoptimization.components;
 
-import java.util.List;
+import java.util.Arrays;
 
 public class NeighborhoodWeighted extends Neighborhood {
-    public NeighborhoodWeighted(Solution solution, List<Operator> operators, int seed) {
+    public NeighborhoodWeighted(Solution solution, Operator[] operators, int seed) {
         super(solution, operators, seed);
-        double sumOperationsWeight = this.operators.stream().mapToDouble(x -> x.weight).sum();
-        this.operators.forEach(x -> x.weight = x.weight / sumOperationsWeight);
+        double sumOperationsWeight = Arrays.stream(this.operators).mapToDouble(x -> x.weight).sum();
+        for (Operator operator : operators) {
+            operator.weight /= sumOperationsWeight;
+        }
     }
 
     public Solution nextRandom() {
@@ -17,7 +19,7 @@ public class NeighborhoodWeighted extends Neighborhood {
                 return operation.apply(currentSolution, random.nextInt(operation.power()));
             bound += operation.weight;
         }
-        Operator lastOperation = operators.get(operators.size() - 1);
+        Operator lastOperation = operators[operators.length - 1];
         return lastOperation.apply(currentSolution, random.nextInt(lastOperation.power()));
     }
 }

@@ -126,6 +126,20 @@ public class TspSolution implements Permutation {
         this.cost = cost;
     }
 
+    public double gapToLowerBound() {
+        int n = tspProblem.dimension;
+        double lb1 = (5.0 / 8 + 19.0 / 5184) * Math.sqrt(n);
+        double lb2 = 0.7080 * Math.sqrt(n) + 0.522;
+        double lb3 = 0.7078 * Math.sqrt(n) + 0.551;
+        double g1 = cost / lb1 - 1;
+        double g2 = cost / lb2 - 1;
+        double g3 = cost / lb3 - 1;
+        g1 = g1 * (1 + Math.signum(g1)) / 2 + n * (1 - Math.signum(g1)) / 2;
+        g2 = g2 * (1 + Math.signum(g2)) / 2 + n * (1 - Math.signum(g2)) / 2;
+        g3 = g3 * (1 + Math.signum(g3)) / 2 + n * (1 - Math.signum(g3)) / 2;
+        return Math.min(g1, Math.min(g1, g3)) * 100;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
