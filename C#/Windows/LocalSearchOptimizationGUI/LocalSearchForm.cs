@@ -17,7 +17,7 @@ namespace LocalSearchOptimizationGUI
 {
     public partial class LocalSearchForm : Form
     {
-        private int tspDimension = 180;
+        private int tspDimension = 185;
         private int floorplanDimension = 70;
 
         private int seed = 0;
