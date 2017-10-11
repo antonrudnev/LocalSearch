@@ -38,7 +38,7 @@ namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
                     g.DrawEllipse(pen, points[i].X - style.Radius, points[i].Y - style.Radius, 2 * style.Radius, 2 * style.Radius);
                     g.DrawString(string.Format("{0}", solution.Order[i] + 1), fontSmall, penBrush, points[i].X, points[i].Y);
                 }
-                g.DrawString(String.Format("Tour lenght: {0:F4} (gap {1:F2}%){4}\nIterations: {2}\nTime: {3:F3}s", solution.CostValue, solution.LowerBoundGap, solution.IterationNumber, solution.TimeInSeconds, solution.IsCurrentBest ? " <<<" : ""), font, brushBlack, 0, 0);
+                g.DrawString(String.Format("Tour lenght: {0:F4} (lower bound gap {1:F2}%){4}\nIterations: {2}\nTime: {3:F3}s", solution.CostValue, solution.LowerBoundGap, solution.IterationNumber, solution.TimeInSeconds, solution.IsCurrentBest ? " <<<" : ""), font, brushBlack, 0, 0);
             }
             return bitmap;
         }
