@@ -38,6 +38,10 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         public int NumberOfRectangles { get => floorplanProblem.Dimension; }
 
+        public double ItemsArea { get => floorplanProblem.TotalArea; }
+
+        public double Utilization { get => floorplanProblem.TotalArea * 100 / (MaxWidth * MaxHeight); }
+
         public FloorplanSolution(FloorplanProblem floorplanProblem) : this(floorplanProblem, Enumerable.Range(1, floorplanProblem.Dimension).ToList(), Enumerable.Repeat(false, floorplanProblem.Dimension).ToList().Concat(Enumerable.Repeat(true, floorplanProblem.Dimension)).ToList(), "init")
         {
             
