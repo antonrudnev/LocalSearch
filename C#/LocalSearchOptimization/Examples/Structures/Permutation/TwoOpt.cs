@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using LocalSearchOptimization.Components;
 
 namespace LocalSearchOptimization.Examples.Structures.Permutation
@@ -9,7 +10,7 @@ namespace LocalSearchOptimization.Examples.Structures.Permutation
         {
             for (int i = 0; i < elementsNumber; i++)
                 for (int j = 0; j < elementsNumber; j++)
-                    if (j - i >= 3 || (i > j && elementsNumber - i + j >= 3)) Configurations.Add(new TwoOperands(i, j, this));
+                    if (Math.Abs(i - j) >= 3) Configurations.Add(new TwoOperands(i, j, this));
         }
 
         public override ISolution Apply(ISolution solution, Configuration configuration)

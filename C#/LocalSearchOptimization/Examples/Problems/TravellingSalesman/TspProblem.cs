@@ -6,9 +6,11 @@ namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
     {
         public double[] X { get; }
         public double[] Y { get; }
-        public double[,] Distance { get;}
+        public double[,] Distance { get; }
 
         public int Dimension { get; }
+
+        public double LowerBound { get; }
 
         public TspProblem(int numberOfCities, int seed = 3)
         {
@@ -31,6 +33,10 @@ namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
                     this.Distance[i, j] = Math.Sqrt(Math.Pow(this.X[i] - this.X[j], 2) + Math.Pow(this.Y[i] - this.Y[j], 2));
                     this.Distance[j, i] = this.Distance[i, j];
                 }
+
+            double lb1 = 0.7080 * Math.Sqrt(Dimension) + 0.522;
+            double lb2 = 0.7078 * Math.Sqrt(Dimension) + 0.551;
+            LowerBound = Math.Max(lb1, lb2);
         }
     }
 }

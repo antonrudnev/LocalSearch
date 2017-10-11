@@ -30,6 +30,8 @@ namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
 
         public int NumberOfCities { get => tspProblem.Dimension; }
 
+        public double LowerBoundGap { get => (CostValue / tspProblem.LowerBound - 1) * 100; }
+
         public TspSolution(TspProblem tspProblem) : this(tspProblem, Enumerable.Range(0, tspProblem.Dimension).ToList(), "init")
         {
 
