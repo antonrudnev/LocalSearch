@@ -25,101 +25,101 @@ namespace LocalSearchOptimization.Solvers
             this.parameters = parameters;
         }
 
-        public IEnumerable<ISolution> Minimize(ISolution solution)
+        public IEnumerable<ISolution> Minimize(ISolution startSolution)
         {
-            this.stopFlag = false;
+            stopFlag = false;
             int iteration = 0;
-            Random random = new Random(this.parameters.Seed);
+            Random random = new Random(parameters.Seed);
             DateTime startedAt = DateTime.Now;
-            ISolution bestSolution = solution;
-            ISolution currentSolution = solution;
-            this.currentSolution = solution;
-            solution.IterationNumber = 0;
-            solution.TimeInSeconds = 0;
-            solution.IsCurrentBest = false;
-            solution.IsFinal = false;
-            solution.InstanceTag = this.parameters.Name;
+            ISolution bestSolution = startSolution;
+            ISolution current = startSolution;
+            currentSolution = startSolution;
+            startSolution.IterationNumber = 0;
+            startSolution.TimeInSeconds = 0;
+            startSolution.IsCurrentBest = false;
+            startSolution.IsFinal = false;
+            startSolution.InstanceTag = parameters.Name;
             searchHistory = new List<SolutionSummary>
             {
                 new SolutionSummary
                 {
-                    InstanceTag = this.parameters.Name,
-                    OperatorTag = currentSolution.OperatorTag,
-                    IterationNumber = currentSolution.IterationNumber,
-                    CostValue = currentSolution.CostValue
+                    InstanceTag = parameters.Name,
+                    OperatorTag = current.OperatorTag,
+                    IterationNumber = current.IterationNumber,
+                    CostValue = current.CostValue
                 }
             };
-            Neighborhood neighborhood = this.parameters.UseWeightedNeighborhood ?
-                new NeighborhoodWeighted(solution, parameters.Operators, parameters.Seed) :
-                    new Neighborhood(solution, parameters.Operators, parameters.Seed);
+            Neighborhood neighborhood = parameters.UseWeightedNeighborhood ?
+                new NeighborhoodWeighted(startSolution, parameters.Operators, parameters.Seed) :
+                    new Neighborhood(startSolution, parameters.Operators, parameters.Seed);
             double temperature = GetStartTemperature(parameters.InitProbability, neighborhood);
             int maxIterationsByTemperature = (int)(parameters.TemperatureLevelPower * neighborhood.Power);
             int iterationsByTemperature = 0;
             int acceptedIterationsByTemperature = 0;
             int frozenState = 0;
             double costDeviation = 0;
-            while (!stopFlag && frozenState < this.parameters.MaxFrozenLevels && temperature > 10E-5)
+            while (!stopFlag && frozenState < parameters.MaxFrozenLevels && temperature > 10E-5)
             {
                 iteration++;
                 iterationsByTemperature++;
                 ISolution randomNeighbour = neighborhood.GetRandom();
-                double costDifference = randomNeighbour.CostValue - currentSolution.CostValue;
+                double costDifference = randomNeighbour.CostValue - current.CostValue;
                 if (costDifference < 0 || (costDifference > 0 && random.NextDouble() < Math.Exp(-costDifference / temperature)))
                 {
                     acceptedIterationsByTemperature++;
-                    currentSolution = randomNeighbour;
-                    currentSolution.IterationNumber = iteration;
-                    currentSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
-                    currentSolution.IsCurrentBest = false;
-                    currentSolution.IsFinal = false;
-                    currentSolution.InstanceTag = this.parameters.Name;
+                    current = randomNeighbour;
+                    current.IterationNumber = iteration;
+                    current.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
+                    current.IsCurrentBest = false;
+                    current.IsFinal = false;
+                    current.InstanceTag = parameters.Name;
                     searchHistory.Add(new SolutionSummary
                     {
-                        InstanceTag = this.parameters.Name,
-                        OperatorTag = currentSolution.OperatorTag,
-                        IterationNumber = currentSolution.IterationNumber,
-                        CostValue = currentSolution.CostValue
+                        InstanceTag = parameters.Name,
+                        OperatorTag = current.OperatorTag,
+                        IterationNumber = current.IterationNumber,
+                        CostValue = current.CostValue
                     });
-                    if (currentSolution.CostValue < bestSolution.CostValue)
+                    if (current.CostValue < bestSolution.CostValue)
                     {
+                        current.IsCurrentBest = true;
+                        bestSolution = current;
+                        currentSolution = bestSolution;
                         yield return bestSolution;
-                        this.currentSolution = bestSolution;
-                        currentSolution.IsCurrentBest = true;
-                        bestSolution = currentSolution;
                     }
                     else if (parameters.DetailedOutput)
                     {
-                        yield return currentSolution;
-                        this.currentSolution = currentSolution;
+                        currentSolution = current;
+                        yield return current;
                     }
-                    neighborhood.MoveToSolution(currentSolution);
+                    neighborhood.MoveToSolution(current);
                 }
                 if (iterationsByTemperature >= maxIterationsByTemperature)
                 {
                     temperature *= parameters.TemperatureCooling;
                     costDeviation = StandardDeviation(searchHistory.GetRange(searchHistory.Count - acceptedIterationsByTemperature, acceptedIterationsByTemperature).Select(x => x.CostValue));
-                    if (costDeviation <= this.parameters.MinCostDeviation)
+                    if (costDeviation <= parameters.MinCostDeviation)
                         frozenState++;
                     else
                         frozenState = 0;
-                    Console.WriteLine("\tSA {0} cost {1}, temp {2}, accepted {3}, deviation {4}", parameters.Name, currentSolution.CostValue, temperature, acceptedIterationsByTemperature, costDeviation);
+                    Console.WriteLine("\tSA {0} cost {1}, temp {2}, accepted {3}, deviation {4}", parameters.Name, current.CostValue, temperature, acceptedIterationsByTemperature, costDeviation);
                     iterationsByTemperature = 0;
                     acceptedIterationsByTemperature = 0;
-                    currentSolution = currentSolution.Transcode();
-                    neighborhood.MoveToSolution(currentSolution);
+                    current = current.Transcode();
+                    neighborhood.MoveToSolution(current);
                 }
             }
             Console.WriteLine("\t{0} finished with cost {1}, temperature {2}, and deviation {3} at iteration {4}", parameters.Name, bestSolution.CostValue, temperature, costDeviation, iteration);
             bestSolution.IterationNumber = iteration;
             bestSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
             bestSolution.IsFinal = true;
+            currentSolution = bestSolution;
             yield return bestSolution;
-            this.currentSolution = bestSolution;
         }
 
         public void Stop()
         {
-            this.stopFlag = true;
+            stopFlag = true;
         }
 
         private double GetStartTemperature(double initProbability, Neighborhood neighborhood)

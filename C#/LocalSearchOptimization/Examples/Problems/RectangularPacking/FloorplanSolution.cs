@@ -63,17 +63,17 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
 
         public IPermutation FetchPermutation(List<int> order, string operatorName)
         {
-            return new FloorplanSolution(this.floorplanProblem, order, Branching, operatorName, Transcoder);
+            return new FloorplanSolution(floorplanProblem, order, Branching, operatorName, Transcoder);
         }
 
         public ITreeBranching FetchBranching(List<bool> branching, string operatorName)
         {
-            return new FloorplanSolution(this.floorplanProblem, Order, branching, operatorName, Transcoder);
+            return new FloorplanSolution(floorplanProblem, Order, branching, operatorName, Transcoder);
         }
 
         public IOrientedTree FetchOrientedTree(List<int> order, List<bool> branching, string operatorName)
         {
-            return new FloorplanSolution(this.floorplanProblem, order, branching, operatorName, Transcoder);
+            return new FloorplanSolution(floorplanProblem, order, branching, operatorName, Transcoder);
         }
 
         public ISolution Shuffle(int seed)
@@ -82,9 +82,9 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
             List<bool> branching = new List<bool>();
             int opened = 0;
             int completed = 0;
-            for (int i = 0; i < 2 * this.floorplanProblem.Dimension; i++)
+            for (int i = 0; i < 2 * floorplanProblem.Dimension; i++)
             {
-                if (completed < this.floorplanProblem.Dimension && (opened == 0 || random.NextDouble() < 0.5))
+                if (completed < floorplanProblem.Dimension && (opened == 0 || random.NextDouble() < 0.5))
                 {
                     branching.Add(false);
                     opened++;
@@ -96,7 +96,7 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                     opened--;
                 }
             }
-            return new FloorplanSolution(this.floorplanProblem, Order.OrderBy(x => random.Next()).ToList(), branching, "shuffle", Transcoder);
+            return new FloorplanSolution(floorplanProblem, Order.OrderBy(x => random.Next()).ToList(), branching, "shuffle", Transcoder);
         }
 
         public ISolution Transcode()
@@ -141,7 +141,7 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
             {
                 branching.Add(true);
             }
-            return new FloorplanSolution(this.floorplanProblem, order, branching, "transcode", (Transcoder + 1) % 4);
+            return new FloorplanSolution(floorplanProblem, order, branching, "transcode", (Transcoder + 1) % 4);
         }
 
         private void DecodeSolution()

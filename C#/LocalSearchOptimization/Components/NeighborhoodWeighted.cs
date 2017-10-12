@@ -16,16 +16,16 @@ namespace LocalSearchOptimization.Components
 
         public override ISolution GetRandom()
         {
-            double rand = this.random.NextDouble();
+            double rand = random.NextDouble();
             double bound = 0;
             foreach (Operator operation in operators)
             {
                 if (rand < operation.Weight + bound)
-                    return operation.Apply(CurrentSolution, this.random.Next(operation.Power));
+                    return operation.Apply(CurrentSolution, random.Next(operation.Power));
                 bound += operation.Weight;
             }
             Operator lastOperation = operators.Last();
-            return lastOperation.Apply(CurrentSolution, this.random.Next(lastOperation.Power));
+            return lastOperation.Apply(CurrentSolution, random.Next(lastOperation.Power));
         }
     }
 }

@@ -34,41 +34,41 @@ namespace LocalSearchOptimization.Solvers
             this.multistart = multistart;
         }
 
-        public IEnumerable<ISolution> Minimize(ISolution solution)
+        public IEnumerable<ISolution> Minimize(ISolution startSolution)
         {
-            this.stopFlag = false;
-            Random random = new Random(this.parameters.Seed);
+            stopFlag = false;
+            Random random = new Random(parameters.Seed);
             DateTime startedAt = DateTime.Now;
-            ISolution bestSolution = solution;
-            this.currentSolution = solution;
-            solution.IterationNumber = 0;
-            solution.TimeInSeconds = 0;
-            solution.IsCurrentBest = false;
-            solution.IsFinal = false;
-            solution.InstanceTag = this.parameters.Name;
+            ISolution bestSolution = startSolution;
+            currentSolution = startSolution;
+            startSolution.IterationNumber = 0;
+            startSolution.TimeInSeconds = 0;
+            startSolution.IsCurrentBest = false;
+            startSolution.IsFinal = false;
+            startSolution.InstanceTag = parameters.Name;
             searchHistory = new List<SolutionSummary>();
             List<ISolution> solutions = new List<ISolution>();
-            Task<int>[] solvers = new Task<int>[this.multistart.InstancesNumber];
-            for (int i = 0; i < this.multistart.InstancesNumber; i++)
+            Task<int>[] solvers = new Task<int>[multistart.InstancesNumber];
+            for (int i = 0; i < multistart.InstancesNumber; i++)
             {
-                T2 instanceParameters = (T2)this.parameters.Clone();
-                instanceParameters.Name = this.parameters.Name + (this.multistart.InstancesNumber > 1 ? ":" + i : null);
+                T2 instanceParameters = (T2)parameters.Clone();
+                instanceParameters.Name = parameters.Name + (multistart.InstancesNumber > 1 ? ":" + i : null);
                 instanceParameters.Seed = random.Next();
-                ISolution startSolution = solution.Shuffle(instanceParameters.Seed);
-                solvers[i] = Task<int>.Factory.StartNew(() => Solve(instanceParameters, startSolution, solutions));
+                ISolution instanceStartSolution = startSolution.Shuffle(instanceParameters.Seed);
+                solvers[i] = Task<int>.Factory.StartNew(() => Solve(instanceParameters, instanceStartSolution, solutions));
             }
             using (ManualResetEventSlim delay = new ManualResetEventSlim(initialState: false))
             {
                 while (solvers.Any(x => !x.IsCompleted) || solutions.Count() > 0)
                 {
-                    delay.Wait(this.multistart.OutputFrequency);
+                    delay.Wait(multistart.OutputFrequency);
                     lock (thisLock)
                         if (solutions.Count > 0)
                         {
-                            ISolution currentSolution = solutions.OrderBy(x => x.CostValue).First();
-                            currentSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
-                            currentSolution.IsCurrentBest = false;
-                            currentSolution.IsFinal = false;
+                            ISolution current = solutions.OrderBy(x => x.CostValue).First();
+                            current.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
+                            current.IsCurrentBest = false;
+                            current.IsFinal = false;
                             searchHistory.AddRange(solutions.Select(x => new SolutionSummary
                             {
                                 InstanceTag = x.InstanceTag,
@@ -76,17 +76,17 @@ namespace LocalSearchOptimization.Solvers
                                 IterationNumber = x.IterationNumber,
                                 CostValue = x.CostValue
                             }));
-                            if (currentSolution.CostValue < bestSolution.CostValue)
+                            if (current.CostValue < bestSolution.CostValue)
                             {
-                                currentSolution.IsCurrentBest = true;
-                                bestSolution = currentSolution;
+                                current.IsCurrentBest = true;
+                                currentSolution = current;
+                                bestSolution = current;
                                 yield return bestSolution;
-                                this.currentSolution = bestSolution;
                             }
-                            else if (!this.multistart.ReturnImprovedOnly)
+                            else if (!multistart.ReturnImprovedOnly)
                             {
-                                yield return currentSolution;
-                                this.currentSolution = currentSolution;
+                                currentSolution = current;
+                                yield return current;
                             }
                             solutions.Clear();
                         }
@@ -94,14 +94,15 @@ namespace LocalSearchOptimization.Solvers
             }
             bestSolution.IterationNumber = solvers.Sum(x => x.Result);
             bestSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
+            bestSolution.IsCurrentBest = true;
             bestSolution.IsFinal = true;
+            currentSolution = bestSolution;
             yield return bestSolution;
-            this.currentSolution = bestSolution;
         }
 
         public void Stop()
         {
-            this.stopFlag = true;
+            stopFlag = true;
         }
 
         private int Solve(T2 parameters, ISolution startSolution, List<ISolution> output)

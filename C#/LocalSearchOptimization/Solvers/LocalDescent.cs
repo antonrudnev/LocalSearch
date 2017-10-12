@@ -24,22 +24,22 @@ namespace LocalSearchOptimization.Solvers
             this.parameters = parameters;
         }
 
-        public IEnumerable<ISolution> Minimize(ISolution solution)
+        public IEnumerable<ISolution> Minimize(ISolution startSolution)
         {
-            this.stopFlag = false;
+            stopFlag = false;
             int iteration = 0;
             DateTime startedAt = DateTime.Now;
-            currentSolution = solution;
-            solution.IterationNumber = 0;
-            solution.TimeInSeconds = 0;
-            solution.IsCurrentBest = true;
-            solution.IsFinal = false;
-            solution.InstanceTag = this.parameters.Name;
+            currentSolution = startSolution;
+            startSolution.IterationNumber = 0;
+            startSolution.TimeInSeconds = 0;
+            startSolution.IsCurrentBest = true;
+            startSolution.IsFinal = false;
+            startSolution.InstanceTag = parameters.Name;
             searchHistory = new List<SolutionSummary>
             {
                 new SolutionSummary
                 {
-                    InstanceTag = this.parameters.Name,
+                    InstanceTag = parameters.Name,
                     OperatorTag = currentSolution.OperatorTag,
                     IterationNumber = currentSolution.IterationNumber,
                     CostValue = currentSolution.CostValue
@@ -66,10 +66,10 @@ namespace LocalSearchOptimization.Solvers
                     currentSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
                     currentSolution.IsCurrentBest = true;
                     currentSolution.IsFinal = false;
-                    currentSolution.InstanceTag = this.parameters.Name;
+                    currentSolution.InstanceTag = parameters.Name;
                     searchHistory.Add(new SolutionSummary
                     {
-                        InstanceTag = this.parameters.Name,
+                        InstanceTag = parameters.Name,
                         OperatorTag = currentSolution.OperatorTag,
                         IterationNumber = currentSolution.IterationNumber,
                         CostValue = currentSolution.CostValue
@@ -87,7 +87,7 @@ namespace LocalSearchOptimization.Solvers
 
         public void Stop()
         {
-            this.stopFlag = true;
+            stopFlag = true;
         }
     }
 }

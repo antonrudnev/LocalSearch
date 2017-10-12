@@ -8,7 +8,7 @@ namespace LocalSearchOptimization.Components
 
         List<SolutionSummary> SearchHistory { get; }
 
-        IEnumerable<ISolution> Minimize(ISolution solution);
+        IEnumerable<ISolution> Minimize(ISolution startSolution);
 
         void Stop();
     }

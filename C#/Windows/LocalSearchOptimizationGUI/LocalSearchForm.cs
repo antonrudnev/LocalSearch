@@ -87,8 +87,8 @@ namespace LocalSearchOptimizationGUI
 
         private void GetInitialSolutions()
         {
-            tspSolution = new TspSolution(new TspProblem(this.tspDimension));
-            floorplanSolution = new FloorplanSolution(new FloorplanProblem(this.floorplanDimension)).Shuffle(1) as FloorplanSolution;
+            tspSolution = new TspSolution(new TspProblem(tspDimension));
+            floorplanSolution = new FloorplanSolution(new FloorplanProblem(floorplanDimension)).Shuffle(1) as FloorplanSolution;
             for (int i = 0; i < 12; i++)
             {
                 floorplanSolution = floorplanSolution.Transcode() as FloorplanSolution;
@@ -98,9 +98,9 @@ namespace LocalSearchOptimizationGUI
         private void bwTsp_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = (BackgroundWorker)sender;
-            this.algorithmStatus.Text = "Press ESC to cancel";
+            algorithmStatus.Text = "Press ESC to cancel";
 
-            TspProblem problem = new TspProblem(this.tspDimension);
+            TspProblem problem = new TspProblem(tspDimension);
             TspSolution startSolution = new TspSolution(problem);
 
             Swap swap = new Swap(problem.Dimension, 1);
@@ -117,7 +117,7 @@ namespace LocalSearchOptimizationGUI
                     InitProbability = 0.5,
                     TemperatureCooling = 0.94,
                     MinCostDeviation = 10E-5,
-                    Seed = this.seed,
+                    Seed = seed,
                     DetailedOutput = true,
                     Operators = operations,
                 };
@@ -128,7 +128,7 @@ namespace LocalSearchOptimizationGUI
                 LocalDescentParameters ldParameters = new LocalDescentParameters()
                 {
                     Name = "TSP LD",
-                    Seed = this.seed,
+                    Seed = seed,
                     DetailedOutput = true,
                     Operators = operations,
                 };
@@ -152,9 +152,9 @@ namespace LocalSearchOptimizationGUI
         private void bwFloorplan_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = (BackgroundWorker)sender;
-            this.algorithmStatus.Text = "Press ESC to cancel";
+            algorithmStatus.Text = "Press ESC to cancel";
 
-            FloorplanProblem problem = new FloorplanProblem(this.floorplanDimension);
+            FloorplanProblem problem = new FloorplanProblem(floorplanDimension);
             FloorplanSolution startSolution = new FloorplanSolution(problem);
 
             Swap swap = new Swap(problem.Dimension, 10);
@@ -173,7 +173,7 @@ namespace LocalSearchOptimizationGUI
                     InitProbability = 0.5,
                     TemperatureCooling = 0.96,
                     MinCostDeviation = 0,
-                    Seed = this.seed,
+                    Seed = seed,
                     DetailedOutput = true,
                     Operators = operations,
                 };
@@ -184,7 +184,7 @@ namespace LocalSearchOptimizationGUI
                 LocalDescentParameters ldParameters = new LocalDescentParameters()
                 {
                     Name = "VLSI LD",
-                    Seed = this.seed,
+                    Seed = seed,
                     DetailedOutput = true,
                     Operators = operations,
                 };
@@ -221,11 +221,11 @@ namespace LocalSearchOptimizationGUI
             if (!(bwTsp.IsBusy || bwFloorplan.IsBusy))
             {
                 if (e.Cancelled == true)
-                    this.algorithmStatus.Text = "Canceled";
+                    algorithmStatus.Text = "Canceled";
                 else if (e.Error != null)
-                    this.algorithmStatus.Text = ("Error: " + e.Error.Message);
+                    algorithmStatus.Text = ("Error: " + e.Error.Message);
                 else
-                    this.algorithmStatus.Text = "Done";
+                    algorithmStatus.Text = "Done";
                 toRenderBackground = true;
             }
         }
@@ -263,8 +263,8 @@ namespace LocalSearchOptimizationGUI
 
         private void LocalSearchForm_Resize(object sender, EventArgs e)
         {
-            int imageWidth = Math.Max(this.Width / 2 - 8, 10);
-            int imageHeight = Math.Max((this.Height - 2 * (menuBar.Height + statusBar.Height) + 8) / 3, 10);
+            int imageWidth = Math.Max(Width / 2 - 8, 10);
+            int imageHeight = Math.Max((Height - 2 * (menuBar.Height + statusBar.Height) + 8) / 3, 10);
 
             solutionStyle.ImageWidth = imageWidth;
             solutionStyle.ImageHeight = imageHeight * 2;
@@ -276,7 +276,7 @@ namespace LocalSearchOptimizationGUI
             DrawFloorplanSolutionAsync();
             DrawTspCostAsync();
             DrawFloorplanCostAsync();
-            this.Invalidate();
+            Invalidate();
         }
 
         private void DrawTspSolutionAsync()
@@ -286,7 +286,7 @@ namespace LocalSearchOptimizationGUI
                 tspSolutionDrawTask = Task.Factory.StartNew(() =>
                 {
                     tspSolutionImage = ((tspOptimizer?.CurrentSolution ?? tspSolution) as TspSolution)?.Draw(solutionStyle);
-                    this.Invalidate();
+                    Invalidate();
                 });
         }
 
@@ -297,7 +297,7 @@ namespace LocalSearchOptimizationGUI
                 floorplanSolutionDrawTask = Task.Factory.StartNew(() =>
                 {
                     floorplanSolutionImage = ((floorplanOptimizer?.CurrentSolution ?? floorplanSolution) as FloorplanSolution)?.Draw(solutionStyle);
-                    this.Invalidate();
+                    Invalidate();
                 });
         }
 
@@ -308,7 +308,7 @@ namespace LocalSearchOptimizationGUI
                 tspCostDrawTask = Task.Factory.StartNew(() =>
                 {
                     tspCostImage = DrawCostDiagram.Draw(tspOptimizer, costStyle, 30000);
-                    this.Invalidate();
+                    Invalidate();
                 });
         }
 
@@ -319,7 +319,7 @@ namespace LocalSearchOptimizationGUI
                 floorplanCostDrawTask = Task.Factory.StartNew(() =>
                 {
                     floorplanCostImage = DrawCostDiagram.Draw(floorplanOptimizer, costStyle, 30000);
-                    this.Invalidate();
+                    Invalidate();
                 });
         }
 

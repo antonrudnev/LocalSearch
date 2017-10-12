@@ -26,7 +26,7 @@ namespace LocalSearchOptimization.Components
         {
             get
             {
-                foreach (Configuration configuration in this.configurations)
+                foreach (Configuration configuration in configurations)
                 {
                     yield return configuration.Apply(CurrentSolution);
                 }
@@ -39,13 +39,13 @@ namespace LocalSearchOptimization.Components
             CurrentSolution = solution;
             this.operators.AddRange(operators);
             foreach (Operator operation in operators)
-                this.configurations.AddRange(operation.Configurations);
+                configurations.AddRange(operation.Configurations);
             Randomize();
         }
 
         public virtual ISolution GetRandom()
         {
-            return configurations[this.random.Next(Power)].Apply(CurrentSolution);
+            return configurations[random.Next(Power)].Apply(CurrentSolution);
         }
 
         public void MoveToSolution(ISolution solution)
@@ -55,7 +55,7 @@ namespace LocalSearchOptimization.Components
 
         public void Randomize()
         {
-            configurations = configurations.OrderBy(x => this.random.Next()).ToList();
+            configurations = configurations.OrderBy(x => random.Next()).ToList();
         }
     }
 }

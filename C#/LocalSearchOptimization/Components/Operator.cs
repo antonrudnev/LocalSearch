@@ -26,7 +26,7 @@ namespace LocalSearchOptimization.Components
 
         public ISolution Apply(ISolution solution, int configuration)
         {
-            return this.Apply(solution, Configurations[configuration]);
+            return Apply(solution, Configurations[configuration]);
         }
     }
 }

@@ -40,8 +40,8 @@ namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
         private TspSolution(TspProblem tspProblem, List<int> order, string operatorName)
         {
             this.tspProblem = tspProblem;
-            this.X = tspProblem.X;
-            this.Y = tspProblem.Y;
+            X = tspProblem.X;
+            Y = tspProblem.Y;
             Order = order;
             OperatorTag = operatorName;
             DecodeSolution(tspProblem);
@@ -49,13 +49,13 @@ namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
 
         public IPermutation FetchPermutation(List<int> order, string operatorName)
         {
-            return new TspSolution(this.tspProblem, order, operatorName);
+            return new TspSolution(tspProblem, order, operatorName);
         }
 
         public ISolution Shuffle(int seed)
         {
             Random random = new Random(seed);
-            return new TspSolution(this.tspProblem, Order.OrderBy(x => random.Next()).ToList(), "shuffle");
+            return new TspSolution(tspProblem, Order.OrderBy(x => random.Next()).ToList(), "shuffle");
         }
 
         public ISolution Transcode()

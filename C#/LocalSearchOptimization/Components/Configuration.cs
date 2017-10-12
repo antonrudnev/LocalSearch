@@ -11,7 +11,7 @@
 
         public ISolution Apply(ISolution solution)
         {
-            return this.operation.Apply(solution, this);
+            return operation.Apply(solution, this);
         }
     }
 }
