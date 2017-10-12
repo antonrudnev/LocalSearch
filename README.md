@@ -2,7 +2,7 @@
 
 #### Demonstration of solving travelling salesman and rectangular packing problems:
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=Okt8E3Y6TJU" target="_blank"><img src="http://img.youtube.com/vi/Okt8E3Y6TJU/0.jpg" alt="Travelling salesman and rectangular packing" width="240" height="180" border="10" /></a>
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=tRpdhmKa3FA" target="_blank"><img src="http://img.youtube.com/vi/tRpdhmKa3FA/0.jpg" alt="Travelling salesman and rectangular packing demo video" width="240" height="180" border="10" /></a>
 
 #### Autoscheduled multistart of 50 Simulated Annealing instances:
 
