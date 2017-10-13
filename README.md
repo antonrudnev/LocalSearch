@@ -8,9 +8,9 @@
 
 ![/img/PMultistart.jpg](/img/PMultistart.jpg?raw=true "Autoscheduled multistart of 50 Simulated Annealing instances")
 
-#### 500 cities Travelling Salesman:
+#### 1000 cities Travelling Salesman:
 
-![/img/TSP500.jpg](/img/TSP500.jpg?raw=true "500 cities Travelling Salesman")
+![/img/TSP1000.jpg](/img/TSP1000.jpg?raw=true "1000 cities Travelling Salesman")
 
 #### 500 items Rectangular Packing:
 
