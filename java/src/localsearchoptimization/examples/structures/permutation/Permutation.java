@@ -5,7 +5,7 @@ import localsearchoptimization.components.Solution;
 import java.util.List;
 
 public interface Permutation extends Solution {
-    List<Integer> order();
+    int[] order();
 
-    Permutation fetchPermutation(List<Integer> order, String operationName);
+    Permutation fetchPermutation(int[] order, String operationName);
 }

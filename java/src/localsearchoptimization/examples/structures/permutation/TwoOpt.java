@@ -24,23 +24,28 @@ public class TwoOpt extends Operator {
     public Solution apply(Solution solution, Configuration configuration) {
         Permutation permutation = (Permutation) solution;
         TwoOperands operands = (TwoOperands) configuration;
-        List<Integer> twoOpted;
-        if (operands.first < operands.second) {
-            twoOpted = new ArrayList<Integer>(permutation.order());
-            reverse(twoOpted, operands.first, operands.second - operands.first);
-        } else {
-            twoOpted = new ArrayList<Integer>(permutation.order().subList(operands.first, permutation.order().size()));
-            twoOpted.addAll(permutation.order().subList(0, operands.first));
-            reverse(twoOpted, 0, operands.second + twoOpted.size() - operands.first);
-        }
-        return permutation.fetchPermutation(twoOpted, "2opt");
-    }
+        int[] twoOpt = new int[permutation.order().length];
 
-    private static void reverse(List<Integer> list, int index, int count) {
-        for (int i = 0; i <= count / 2; i++) {
-            Integer item = list.get(index + i);
-            list.set(index + i, list.get(index + count - i));
-            list.set(index + count - i, item);
+        if (operands.first < operands.second) {
+            for (int i = 0; i < Math.min(operands.first, operands.second); i++)
+                twoOpt[i] = permutation.order()[i];
+
+            for (int i = Math.max(operands.first, operands.second) + 1; i < twoOpt.length; i++)
+                twoOpt[i] = permutation.order()[i];
+
+            for (int i = operands.first; i <= operands.second; i++)
+                twoOpt[i] = permutation.order()[operands.second - (i - operands.first)];
+        } else {
+            for (int i = operands.second + 1; i < operands.first; i++)
+                twoOpt[i - operands.second - 1] = permutation.order()[i];
+
+            for (int i = 0; i <= operands.second; i++)
+                twoOpt[operands.first - i - 1] = permutation.order()[i];
+
+            for (int i = operands.first; i < twoOpt.length; i++)
+                twoOpt[operands.first - 1 + twoOpt.length - i] = permutation.order()[i];
         }
+
+        return permutation.fetchPermutation(twoOpt, "2opt");
     }
 }

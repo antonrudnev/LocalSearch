@@ -11,7 +11,7 @@ public class NeighborhoodWeighted extends Neighborhood {
         }
     }
 
-    public Solution nextRandom() {
+    public Solution getRandom() {
         double rand = random.nextDouble();
         double bound = 0;
         for (Operator operation : operators) {

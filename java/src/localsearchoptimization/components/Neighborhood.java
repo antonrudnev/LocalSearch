@@ -41,7 +41,7 @@ public class Neighborhood {
         return currentConfiguration < configurations.size();
     }
 
-    public Solution nextRandom() {
+    public Solution getRandom() {
         return configurations.get(random.nextInt(power())).Apply(currentSolution);
     }
 
@@ -53,5 +53,9 @@ public class Neighborhood {
     public void randomize() {
         currentConfiguration = 0;
         Collections.shuffle(configurations, random);
+    }
+
+    public void reset() {
+        currentConfiguration = 0;
     }
 }

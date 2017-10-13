@@ -1,13 +1,10 @@
 package localsearchoptimization.components;
 
 public class SolutionSummary {
-    public String instance;
-
-    public String operator;
-
-    public int iteration;
-
-    public double cost;
+    public final String instance;
+    public final String operator;
+    public final int iteration;
+    public final double cost;
 
     public SolutionSummary(String instance, String operator, int iteration, double cost) {
         this.instance = instance;

@@ -5,9 +5,6 @@ import localsearchoptimization.components.Operator;
 import localsearchoptimization.components.Solution;
 import localsearchoptimization.examples.structures.TwoOperands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Swap extends Operator {
     public Swap(int elementsNumber) {
         this(elementsNumber, 1);
@@ -23,9 +20,12 @@ public class Swap extends Operator {
     public Solution apply(Solution solution, Configuration configuration) {
         Permutation permutation = (Permutation) solution;
         TwoOperands operands = (TwoOperands) configuration;
-        List<Integer> swapped = new ArrayList<Integer>(permutation.order());
-        swapped.set(operands.first, permutation.order().get(operands.second));
-        swapped.set(operands.second, permutation.order().get(operands.first));
+
+        int[] swapped = permutation.order().clone();
+
+        swapped[operands.first] = permutation.order()[operands.second];
+        swapped[operands.second] = permutation.order()[operands.first];
+
         return permutation.fetchPermutation(swapped, "swap");
     }
 }

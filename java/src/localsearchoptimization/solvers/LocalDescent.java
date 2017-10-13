@@ -21,21 +21,20 @@ public class LocalDescent implements OptimizationAlgorithm {
 
     private boolean stopFlag = false;
 
-
     public LocalDescent(LocalDescentParameters parameters) {
         this.parameters = parameters;
     }
 
-    public Solution minimize(Solution solution) {
+    public Solution minimize(Solution startSolution) {
         stopFlag = false;
         int iteration = 0;
         LocalDateTime startedAt = LocalDateTime.now();
-        currentSolution = solution;
-        solution.iterationNumber(0);
-        solution.elapsedTime(0);
-        solution.isCurrentBest(true);
-        solution.isFinal(false);
-        solution.instanceTag(parameters.name);
+        currentSolution = startSolution;
+        startSolution.iterationNumber(0);
+        startSolution.elapsedTime(0);
+        startSolution.isCurrentBest(true);
+        startSolution.isFinal(false);
+        startSolution.instanceTag(parameters.name);
         searchHistory = new ArrayList<SolutionSummary>(
                 Arrays.asList(new SolutionSummary(parameters.name,
                         currentSolution.operatorTag(),
@@ -56,7 +55,7 @@ public class LocalDescent implements OptimizationAlgorithm {
             }
             if (!bestFound) {
                 currentSolution.iterationNumber(iteration);
-                currentSolution.elapsedTime(Duration.between(startedAt, LocalDateTime.now()).toMillis() / 100.0);
+                currentSolution.elapsedTime(Duration.between(startedAt, LocalDateTime.now()).toMillis() / 1000.0);
                 currentSolution.isCurrentBest(true);
                 currentSolution.isFinal(false);
                 currentSolution.instanceTag(parameters.name);
@@ -72,7 +71,7 @@ public class LocalDescent implements OptimizationAlgorithm {
             }
         } while (!(bestFound || stopFlag));
         currentSolution.iterationNumber(iteration);
-        currentSolution.elapsedTime(Duration.between(startedAt, LocalDateTime.now()).toMillis() / 100.0);
+        currentSolution.elapsedTime(Duration.between(startedAt, LocalDateTime.now()).toMillis() / 1000.0);
         currentSolution.isFinal(true);
         System.out.printf("\t%1$s finished with cost %2$.4f at iteration %3$d\n", parameters.name, currentSolution.cost(), iteration);
         return currentSolution;

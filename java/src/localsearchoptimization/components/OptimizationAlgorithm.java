@@ -7,7 +7,7 @@ public interface OptimizationAlgorithm {
 
     List<SolutionSummary> searchHistory();
 
-    Solution minimize(Solution solution);
+    Solution minimize(Solution startSolution);
 
     void stop();
 }

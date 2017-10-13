@@ -23,13 +23,24 @@ public class Shift extends Operator {
     public Solution apply(Solution solution, Configuration configuration) {
         Permutation permutation = (Permutation) solution;
         TwoOperands operands = (TwoOperands) configuration;
-        List<Integer> shifted = new ArrayList<Integer>(permutation.order());
-        Integer shiftedItem = shifted.get(operands.first);
-        shifted.remove(operands.first);
-        if (operands.second <= operands.first)
-            shifted.add(operands.second, shiftedItem);
+
+        int[] shifted = new int[permutation.order().length];
+
+        shifted[operands.second] = permutation.order()[operands.first];
+
+        for (int i = 0; i < Math.min(operands.first, operands.second); i++)
+            shifted[i] = permutation.order()[i];
+
+        for (int i = Math.max(operands.first, operands.second) + 1; i < shifted.length; i++)
+            shifted[i] = permutation.order()[i];
+
+        if (operands.first < operands.second)
+            for (int i = operands.first; i < operands.second; i++)
+                shifted[i] = permutation.order()[i + 1];
         else
-            shifted.add(operands.second - 1, shiftedItem);
+            for (int i = operands.first; i > operands.second; i--)
+                shifted[i] = permutation.order()[i - 1];
+
         return permutation.fetchPermutation(shifted, "shift");
     }
 }

@@ -3,10 +3,11 @@ package localsearchoptimization.examples.problems.travellingsalesman;
 import java.util.Random;
 
 public class TspProblem {
-    public double[] x;
-    public double[] y;
-    public double[][] distance;
-    public int dimension;
+    public final double[] x;
+    public final double[] y;
+    public final double[][] distance;
+    public final int dimension;
+    public final double lowerBound;
 
     public TspProblem(int numberOfCities) {
         this(numberOfCities, 3);
@@ -30,5 +31,9 @@ public class TspProblem {
                 distance[i][j] = Math.sqrt(Math.pow(x[i] - x[j], 2) + Math.pow(y[i] - y[j], 2));
                 distance[j][i] = distance[i][j];
             }
+
+        double lb1 = 0.7080 * Math.sqrt(dimension) + 0.522;
+        double lb2 = 0.7078 * Math.sqrt(dimension) + 0.551;
+        lowerBound = Math.max(lb1, lb2);
     }
 }
