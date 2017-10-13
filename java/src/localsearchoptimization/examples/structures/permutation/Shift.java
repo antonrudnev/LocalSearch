@@ -5,9 +5,6 @@ import localsearchoptimization.components.Operator;
 import localsearchoptimization.components.Solution;
 import localsearchoptimization.examples.structures.TwoOperands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Shift extends Operator {
     public Shift(int elementsNumber) {
         this(elementsNumber, 1);
