@@ -32,15 +32,27 @@ namespace LocalSearchOptimizationConsole
 
 
 
-            TspProblem problem = new TspProblem(100);
+            TspProblem problem = new TspProblem(200);
             TspSolution solution = new TspSolution(problem);
             Swap swap = new Swap(problem.Dimension, 1);
             Shift shift = new Shift(problem.Dimension, 2);
             TwoOpt twoOpt = new TwoOpt(problem.Dimension, 3);
-            List<Operator> operations = new List<Operator> { shift, twoOpt };
+            List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
 
 
+            //foreach (Configuration c in twoOpt.Configurations)
+            //{
+            //    TwoOperands t = (TwoOperands)c;
+            //    if (t.First > t.Second)
+            //    {
+            //        Console.WriteLine("    " + solution);
+            //        Console.WriteLine(t.First + " " + t.Second + " " + t.Apply(solution));
+            //    }
+            //}
 
+            //Console.ReadLine();
+
+            //return;
 
 
             MultistartOptions multistartOptions = new MultistartOptions()
@@ -60,11 +72,11 @@ namespace LocalSearchOptimizationConsole
 
             SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
             {
-                InitProbability = 0.3,
-                TemperatureCooling = 0.97,
+                InitProbability = 0.5,
+                TemperatureCooling = 0.94,
                 MinCostDeviation = 10E-5,
                 UseWeightedNeighborhood = false,
-                DetailedOutput = true,
+                DetailedOutput = false,
                 Seed = 0,
                 Operators = operations,
             };
@@ -73,30 +85,31 @@ namespace LocalSearchOptimizationConsole
             SimulatedAnnealing sa = new SimulatedAnnealing(saParameters);
             ParallelMultistart<LocalDescent, LocalDescentParameters> pld = new ParallelMultistart<LocalDescent, LocalDescentParameters>(ldParameters, multistartOptions);
             ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters> psa = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(saParameters, multistartOptions);
-            IOptimizationAlgorithm optimizer = psa;
+            IOptimizationAlgorithm optimizer = sa;
             ISolution bestSolution = solution;
             foreach (ISolution s in optimizer.Minimize(solution))
             {
-                if (s.IsCurrentBest) Console.WriteLine("{0}, {1:f}s, {2}, {3}, {4}, {5}, {6}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, bestSolution.CostValue - s.CostValue, optimizer.SearchHistory?.Count());
+                //if (s.IsCurrentBest) Console.WriteLine("{0}, {1:f}s, {2}, {3}, {4}, {5}, {6}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, bestSolution.CostValue - s.CostValue, optimizer.SearchHistory?.Count());
                 bestSolution = s;
             }
 
+            Console.WriteLine(bestSolution.TimeInSeconds + "s");
 
-            var groups = optimizer.SearchHistory.GroupBy(s => s.OperatorTag).Select(s => new { Operator = s.Key, Count = s.Count() });
-            var dictionary = groups.ToDictionary(g => g.Operator, g => g.Count);
+            //var groups = optimizer.SearchHistory.GroupBy(s => s.OperatorTag).Select(s => new { Operator = s.Key, Count = s.Count() });
+            //var dictionary = groups.ToDictionary(g => g.Operator, g => g.Count);
 
-            foreach (var o in groups)
-            {
-                Console.WriteLine("{0} = {1}", o.Operator, o.Count);
-            }
+            //foreach (var o in groups)
+            //{
+            //    Console.WriteLine("{0} = {1}", o.Operator, o.Count);
+            //}
 
-            Console.WriteLine("Done");
+            //Console.WriteLine("Done");
 
 
-            foreach (var b in DrawSolution(bestSolution, optimizer))
-            {
-                b?.Save("solution" + DateTime.Now.Millisecond + ".jpg");
-            }
+            //foreach (var b in DrawSolution(bestSolution, optimizer))
+            //{
+            //    b?.Save("solution" + DateTime.Now.Millisecond + ".jpg");
+            //}
 
             Console.ReadLine();
         }

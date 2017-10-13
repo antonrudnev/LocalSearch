@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LocalSearchOptimization.Components;
 using LocalSearchOptimization.Examples.Structures.Permutation;
+using System.Text;
 
 namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
 {
@@ -79,6 +80,16 @@ namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
                 if (MaxHeight < problem.Y[i]) MaxHeight = problem.Y[i];
             }
             CostValue = cost;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (int i in Order)
+            {
+                builder.Append(i).Append("->");
+            }
+            return builder.ToString();
         }
     }
 }
