@@ -13,8 +13,6 @@
         public string BrushColor { get; set; } = "LightGreen";
         public int Radius { get; set; } = 15;
         public string BackgroundColor { get; set; } = "White";
-        public string CostColor { get; set; } = "Blue";
-        public int CostRadius { get; set; } = 5;
 
         public BitmapStyle()
         {
@@ -34,8 +32,6 @@
             BrushColor = style.BrushColor;
             Radius = style.Radius;
             BackgroundColor = style.BackgroundColor;
-            CostColor = style.CostColor;
-            CostRadius = style.CostRadius;
         }
     }
 }

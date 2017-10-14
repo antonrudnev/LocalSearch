@@ -17,7 +17,7 @@ namespace LocalSearchOptimizationGUI
 {
     public partial class LocalSearchForm : Form
     {
-        private int tspDimension = 185;
+        private int tspDimension = 210;
         private int floorplanDimension = 70;
 
         private int seed = 0;
@@ -40,7 +40,6 @@ namespace LocalSearchOptimizationGUI
             PenWidth = 2,
             Radius = 4,
             BackgroundColor = SystemColors.Control.Name,
-            CostRadius = 1
         };
 
         private BitmapStyle solutionStyle;

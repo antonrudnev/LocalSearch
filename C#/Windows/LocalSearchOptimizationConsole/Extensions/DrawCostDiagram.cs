@@ -48,7 +48,7 @@ namespace LocalSearchOptimization.Examples
                 if (!notNeighborOperators.Contains(operation)) counter++;
             }
             double scaleX = (double)(style.ImageWidth - style.MarginX) / (historyToDraw.Count);
-            double scaleY = (style.ImageHeight - style.MarginY - 4 * style.CostRadius) / (maxCost - minCost);
+            double scaleY = (style.ImageHeight - style.MarginY - 4 * style.PenWidth) / (maxCost - minCost);
             Bitmap bitmap = new Bitmap(style.ImageWidth, style.ImageHeight, PixelFormat.Format32bppRgb);
             using (Graphics g = Graphics.FromImage(bitmap))
             {
@@ -58,8 +58,8 @@ namespace LocalSearchOptimization.Examples
                 for (int i = 0; i < historyToDraw.Count - 1; i++)
                 {
                     float x = style.MarginX + (float)(i * scaleX);
-                    float y = bitmap.Height - 4 * style.CostRadius - (float)((historyToDraw[i].CostValue - minCost) * scaleY);
-                    g.FillEllipse(instanceBrush.Count > 1 ? instanceBrush[historyToDraw[i].InstanceTag] : operatorBrush[historyToDraw[i].OperatorTag], x, y, 2 * style.CostRadius, 2 * style.CostRadius);
+                    float y = bitmap.Height - 4 * style.PenWidth - (float)((historyToDraw[i].CostValue - minCost) * scaleY);
+                    g.FillEllipse(instanceBrush.Count > 1 ? instanceBrush[historyToDraw[i].InstanceTag] : operatorBrush[historyToDraw[i].OperatorTag], x, y, 2 * style.PenWidth, 2 * style.PenWidth);
                 }
                 string summary = String.Format("Max cost: {0:F4}\nMin cost: {1:F4}\nAccepted iterations: {2}\nTime: {3:F3}s", maxCost, minCost, optimizer.SearchHistory.Count, optimizer.CurrentSolution.TimeInSeconds);
                 g.DrawString(summary, font, brushBlack, 0, 0);
