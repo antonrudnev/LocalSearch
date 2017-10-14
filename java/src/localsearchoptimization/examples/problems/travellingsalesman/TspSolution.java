@@ -1,8 +1,11 @@
 package localsearchoptimization.examples.problems.travellingsalesman;
 
+import localsearchoptimization.components.ImageStyle;
 import localsearchoptimization.components.Solution;
 import localsearchoptimization.examples.structures.permutation.Permutation;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
@@ -126,6 +129,46 @@ public class TspSolution implements Permutation {
 
     public double lowerBoundGap() {
         return (cost / tspProblem.lowerBound - 1) * 100;
+    }
+
+    public BufferedImage draw(ImageStyle style) {
+        double maxSize = Math.max(maxWidth, maxHeight);
+        double scaleX = (style.imageWidth - style.marginX - 8 * style.radius) / maxSize;
+        double scaleY = (style.imageHeight - style.marginY - 4 * style.radius) / maxSize;
+        int[] xPoints = new int[tspProblem.dimension];
+        int[] yPoints = new int[tspProblem.dimension];
+        for (int i = 0; i < tspProblem.dimension; i++) {
+            xPoints[i] = (int) (style.marginX + 2 * style.radius + x[order[i]] * scaleX);
+            yPoints[i] = (int) (style.imageHeight - 2 * style.radius - y[order[i]] * scaleY);
+        }
+        BufferedImage bitmap = new BufferedImage(style.imageWidth, style.imageHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = bitmap.createGraphics();
+        g.setPaint(style.backgroundColor);
+        g.fillRect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        g.setStroke(new BasicStroke(style.penWidth));
+        if (isFinal) {
+            g.setPaint(new GradientPaint(0, 0, style.fillColor, bitmap.getWidth(), bitmap.getHeight(), style.backgroundColor));
+            g.fillPolygon(xPoints, yPoints, tspProblem.dimension);
+        }
+        if (operatorTag != "init") {
+            g.setPaint(style.penColor);
+            g.drawPolygon(xPoints, yPoints, tspProblem.dimension);
+        }
+        g.setFont(new Font(style.fontName, Font.PLAIN, (int) (0.8 * style.fontSize)));
+        for (int i = 0; i < tspProblem.dimension; i++) {
+            g.setPaint(new GradientPaint(xPoints[i] - style.radius, yPoints[i] - style.radius, style.backgroundColor, xPoints[i] + style.radius, yPoints[i] + style.radius, style.fillColor));
+            g.fillOval(xPoints[i] - style.radius, yPoints[i] - style.radius, 2 * style.radius, 2 * style.radius);
+            g.setPaint(style.penColor);
+            g.drawOval(xPoints[i] - style.radius, yPoints[i] - style.radius, 2 * style.radius, 2 * style.radius);
+            g.setColor(Color.BLACK);
+            g.drawString(String.valueOf(order[i] + 1), xPoints[i], yPoints[i]);
+        }
+        g.setColor(Color.BLACK);
+        g.setFont(new Font(style.fontName, Font.PLAIN, style.fontSize));
+        g.drawString(String.format("Tour lenght: %1$.4f (lower bound gap %2$.2f%%)%3$s", cost, lowerBoundGap(), isCurrentBest ? " <<<" : ""), 0, style.fontSize);
+        g.drawString(String.format("Iterations: %1$d", iterationNumber), 0, 2 * style.fontSize);
+        g.drawString(String.format("Time: %1$.3fs", timeInSeconds), 0, 3 * style.fontSize);
+        return bitmap;
     }
 
     @Override

@@ -17,7 +17,7 @@ public class LocalDescent implements OptimizationAlgorithm {
 
     private Solution currentSolution;
 
-    private List<SolutionSummary> searchHistory;
+    private ArrayList<SolutionSummary> searchHistory;
 
     private boolean stopFlag = false;
 
@@ -85,7 +85,7 @@ public class LocalDescent implements OptimizationAlgorithm {
         return currentSolution;
     }
 
-    public List<SolutionSummary> searchHistory() {
+    public ArrayList<SolutionSummary> searchHistory() {
         return searchHistory;
     }
 }

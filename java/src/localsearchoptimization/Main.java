@@ -1,9 +1,6 @@
 package localsearchoptimization;
 
-import localsearchoptimization.components.Configuration;
-import localsearchoptimization.components.Operator;
-import localsearchoptimization.components.OptimizationAlgorithm;
-import localsearchoptimization.components.Solution;
+import localsearchoptimization.components.*;
 import localsearchoptimization.examples.problems.travellingsalesman.TspProblem;
 import localsearchoptimization.examples.problems.travellingsalesman.TspSolution;
 import localsearchoptimization.examples.structures.TwoOperands;
@@ -15,10 +12,16 @@ import localsearchoptimization.parameters.SimulatedAnnealingParameters;
 import localsearchoptimization.solvers.LocalDescent;
 import localsearchoptimization.solvers.SimulatedAnnealing;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         TspProblem problem = new TspProblem(200);
         System.out.println(problem.lowerBound);
         TspSolution solution = new TspSolution(problem);
@@ -49,7 +52,7 @@ public class Main {
 
         System.out.println(opt.elapsedTime());
         System.out.println(((TspSolution) opt).lowerBoundGap());
-
+//
 //        for (Configuration c : twoOpt.configurations) {
 //            TwoOperands t = (TwoOperands) c;
 //            if (t.first > t.second) {
@@ -57,5 +60,10 @@ public class Main {
 //                System.out.println(t.first + " " + t.second + " " + t.Apply(solution));
 //            }
 //        }
+
+        File solfile = new File("solution.png");
+        File costfile = new File("cost.png");
+        ImageIO.write(((TspSolution) opt).draw(new ImageStyle()), "png", solfile);
+        ImageIO.write(optimizer.drawCost(), "png", costfile);
     }
 }

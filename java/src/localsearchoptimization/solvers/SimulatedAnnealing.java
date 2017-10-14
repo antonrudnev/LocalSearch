@@ -15,7 +15,7 @@ public class SimulatedAnnealing implements OptimizationAlgorithm {
 
     private Solution currentSolution;
 
-    private List<SolutionSummary> searchHistory;
+    private ArrayList<SolutionSummary> searchHistory;
 
     private boolean stopFlag = false;
 
@@ -144,7 +144,7 @@ public class SimulatedAnnealing implements OptimizationAlgorithm {
         return currentSolution;
     }
 
-    public List<SolutionSummary> searchHistory() {
+    public ArrayList<SolutionSummary> searchHistory() {
         return searchHistory;
     }
 }
