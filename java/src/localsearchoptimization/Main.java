@@ -22,7 +22,7 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        TspProblem problem = new TspProblem(200);
+        TspProblem problem = new TspProblem(50);
         System.out.println(problem.lowerBound);
         TspSolution solution = new TspSolution(problem);
         Swap swap = new Swap(problem.dimension, 1);

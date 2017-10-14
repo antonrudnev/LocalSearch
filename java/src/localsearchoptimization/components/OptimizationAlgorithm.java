@@ -70,7 +70,7 @@ public interface OptimizationAlgorithm {
             g.setPaint(instanceBrush.size() > 1 ? instanceBrush.get(historyToDraw.get(i).instance) : operatorBrush.get(historyToDraw.get(i).operator));
             g.fillOval(x, y, 2 * style.penWidth, 2 * style.penWidth);
         }
-        g.setColor(Color.BLACK);
+        g.setPaint(Color.BLACK);
         g.setFont(new Font(style.fontName, Font.PLAIN, style.fontSize));
         g.drawString(String.format("Max cost: %1$.4f", maxCost), 0, style.fontSize);
         g.drawString(String.format("Min cost: %1$.4f", minCost), 0, 2 * style.fontSize);

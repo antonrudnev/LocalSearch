@@ -154,16 +154,16 @@ public class TspSolution implements Permutation {
             g.setPaint(style.penColor);
             g.drawPolygon(xPoints, yPoints, tspProblem.dimension);
         }
-        g.setFont(new Font(style.fontName, Font.PLAIN, (int) (0.8 * style.fontSize)));
+        int smallFontSize = (int) (0.9 * style.fontSize);
+        g.setFont(new Font(style.fontName, Font.PLAIN, smallFontSize));
         for (int i = 0; i < tspProblem.dimension; i++) {
             g.setPaint(new GradientPaint(xPoints[i] - style.radius, yPoints[i] - style.radius, style.backgroundColor, xPoints[i] + style.radius, yPoints[i] + style.radius, style.fillColor));
             g.fillOval(xPoints[i] - style.radius, yPoints[i] - style.radius, 2 * style.radius, 2 * style.radius);
             g.setPaint(style.penColor);
             g.drawOval(xPoints[i] - style.radius, yPoints[i] - style.radius, 2 * style.radius, 2 * style.radius);
-            g.setColor(Color.BLACK);
-            g.drawString(String.valueOf(order[i] + 1), xPoints[i], yPoints[i]);
+            g.drawString(String.valueOf(order[i] + 1), xPoints[i], yPoints[i] + smallFontSize);
         }
-        g.setColor(Color.BLACK);
+        g.setPaint(Color.BLACK);
         g.setFont(new Font(style.fontName, Font.PLAIN, style.fontSize));
         g.drawString(String.format("Tour lenght: %1$.4f (lower bound gap %2$.2f%%)%3$s", cost, lowerBoundGap(), isCurrentBest ? " <<<" : ""), 0, style.fontSize);
         g.drawString(String.format("Iterations: %1$d", iterationNumber), 0, 2 * style.fontSize);
