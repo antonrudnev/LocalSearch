@@ -66,14 +66,14 @@ public class LocalDescent implements OptimizationAlgorithm {
                         currentSolution.cost()
                 ));
                 if (parameters.isDetailedOutput)
-                    System.out.printf("\t%1$s updated to cost %2$.4f at iteration %3$d\n", parameters.name, currentSolution.cost(), iteration);
+                    System.out.printf("\t%1$s updated to cost %2$s at iteration %3$d\n", parameters.name, currentSolution.cost(), iteration);
                 neighborhood.moveToSolution(currentSolution);
             }
         } while (!(bestFound || stopFlag));
         currentSolution.iterationNumber(iteration);
         currentSolution.elapsedTime(Duration.between(startedAt, LocalDateTime.now()).toMillis() / 1000.0);
         currentSolution.isFinal(true);
-        System.out.printf("\t%1$s finished with cost %2$.4f at iteration %3$d\n", parameters.name, currentSolution.cost(), iteration);
+        System.out.printf("\t%1$s finished with cost %2$s at iteration %3$d\n", parameters.name, currentSolution.cost(), iteration);
         return currentSolution;
     }
 

@@ -84,14 +84,14 @@ public class SimulatedAnnealing implements OptimizationAlgorithm {
                     frozenState++;
                 else
                     frozenState = 0;
-                System.out.printf("\tSA %1$s cost %2$.4f, temp %3$f, accepted %4$d, deviation %5$.20f\n", parameters.name, current.cost(), temperature, acceptedIterationsByTemperature, costDeviation);
+                System.out.printf("\tSA %1$s cost %2$s, temp %3$s, accepted %4$d, deviation %5$s\n", parameters.name, current.cost(), temperature, acceptedIterationsByTemperature, costDeviation);
                 iterationsByTemperature = 0;
                 acceptedIterationsByTemperature = 0;
                 current = current.transcode();
                 neighborhood.moveToSolution(current);
             }
         }
-        System.out.printf("\t%1$s finished with cost %2$.4f, temperature %3$f, and deviation %4$.20f at iteration %5$d\n", parameters.name, bestSolution.cost(), temperature, costDeviation, iteration);
+        System.out.printf("\t%1$s finished with cost %2$s, temperature %3$s, and deviation %4$s at iteration %5$d\n", parameters.name, bestSolution.cost(), temperature, costDeviation, iteration);
         bestSolution.iterationNumber(iteration);
         bestSolution.elapsedTime(Duration.between(startedAt, LocalDateTime.now()).toMillis() / 1000.0);
         bestSolution.isFinal(true);

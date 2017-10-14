@@ -22,7 +22,8 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        TspProblem problem = new TspProblem(50);
+        TspProblem problem = TspProblem.load("../img/1000.tsp");
+
         System.out.println(problem.lowerBound);
         TspSolution solution = new TspSolution(problem);
         Swap swap = new Swap(problem.dimension, 1);
@@ -49,17 +50,8 @@ public class Main {
 
         Solution opt = optimizer.minimize(solution);
 
-
         System.out.println(opt.elapsedTime());
         System.out.println(((TspSolution) opt).lowerBoundGap());
-//
-//        for (Configuration c : twoOpt.configurations) {
-//            TwoOperands t = (TwoOperands) c;
-//            if (t.first > t.second) {
-//                System.out.println("    " + solution);
-//                System.out.println(t.first + " " + t.second + " " + t.Apply(solution));
-//            }
-//        }
 
         File solfile = new File("solution.png");
         File costfile = new File("cost.png");

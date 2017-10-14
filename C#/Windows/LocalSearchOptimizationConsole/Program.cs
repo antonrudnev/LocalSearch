@@ -40,21 +40,6 @@ namespace LocalSearchOptimizationConsole
             List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
 
 
-            //foreach (Configuration c in twoOpt.Configurations)
-            //{
-            //    TwoOperands t = (TwoOperands)c;
-            //    if (t.First > t.Second)
-            //    {
-            //        Console.WriteLine("    " + solution);
-            //        Console.WriteLine(t.First + " " + t.Second + " " + t.Apply(solution));
-            //    }
-            //}
-
-            //Console.ReadLine();
-
-            //return;
-
-
             MultistartOptions multistartOptions = new MultistartOptions()
             {
                 InstancesNumber = 50,
