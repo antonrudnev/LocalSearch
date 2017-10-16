@@ -3,6 +3,7 @@ package localsearchoptimization.parameters;
 import localsearchoptimization.components.Operator;
 
 public class CoreParameters {
+
     public String name = "core";
 
     public int seed = 0;

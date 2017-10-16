@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.Random;
 
 public class TspProblem {
+
     public final double[] x;
     public final double[] y;
     public double[][] distance;

@@ -6,6 +6,7 @@ import localsearchoptimization.components.Solution;
 import localsearchoptimization.examples.structures.TwoOperands;
 
 public class Shift extends Operator {
+
     public Shift(int elementsNumber) {
         this(elementsNumber, 1);
     }

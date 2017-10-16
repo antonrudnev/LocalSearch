@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public interface OptimizationAlgorithm {
+
     Solution currentSolution();
 
     ArrayList<SolutionSummary> searchHistory();
@@ -14,9 +15,6 @@ public interface OptimizationAlgorithm {
     Solution minimize(Solution startSolution);
 
     void stop();
-
-    Color[] colors = new Color[]{Color.BLUE, Color.GREEN, Color.CYAN, Color.MAGENTA, Color.ORANGE, Color.RED, Color.YELLOW, Color.PINK};
-    String[] notNeighborOperators = new String[]{"init", "shuffle", "transcode"};
 
     default BufferedImage drawCost() {
         return drawCost(new ImageStyle(), 0);
@@ -27,6 +25,8 @@ public interface OptimizationAlgorithm {
     }
 
     default BufferedImage drawCost(ImageStyle style, int maxPoints) {
+        Color[] colors = new Color[]{Color.BLUE, Color.GREEN, Color.CYAN, Color.MAGENTA, Color.ORANGE, Color.RED, Color.YELLOW, Color.PINK};
+        String[] notNeighborOperators = new String[]{"init", "shuffle", "transcode"};
         if (searchHistory() == null || searchHistory().size() == 0) return null;
         int n = maxPoints == 0 ? 1 : searchHistory().size() / maxPoints + 1;
         ArrayList<SolutionSummary> historyToDraw = maxPoints == 0 ? searchHistory() : new ArrayList<SolutionSummary>();
@@ -52,11 +52,15 @@ public interface OptimizationAlgorithm {
         HashMap<String, Color> operatorBrush = new HashMap<String, Color>();
         counter = 0;
         for (String operation : operators) {
-            operatorBrush.put(operation, colors[counter % colors.length]);
+
             boolean flag = true;
             for (String eliminated : notNeighborOperators)
                 if (eliminated.equals(operation)) flag = false;
-            if (flag) counter++;
+            if (flag) {
+                operatorBrush.put(operation, colors[counter % colors.length]);
+                counter++;
+            } else
+                operatorBrush.put(operation, colors[0]);
         }
         double scaleX = (double) (style.imageWidth - style.marginX) / (historyToDraw.size());
         double scaleY = (style.imageHeight - style.marginY - 4 * style.penWidth) / (maxCost - minCost);

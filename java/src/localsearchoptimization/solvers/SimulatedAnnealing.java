@@ -3,15 +3,16 @@ package localsearchoptimization.solvers;
 import localsearchoptimization.components.*;
 import localsearchoptimization.parameters.SimulatedAnnealingParameters;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 public class SimulatedAnnealing implements OptimizationAlgorithm {
+
     private SimulatedAnnealingParameters parameters;
+
+    private SolutionHandler solutionHandler;
 
     private Solution currentSolution;
 
@@ -20,14 +21,20 @@ public class SimulatedAnnealing implements OptimizationAlgorithm {
     private boolean stopFlag = false;
 
     public SimulatedAnnealing(SimulatedAnnealingParameters parameters) {
-        this.parameters = parameters;
+        this(parameters, null);
     }
 
+    public SimulatedAnnealing(SimulatedAnnealingParameters parameters, SolutionHandler solutionHandler) {
+        this.parameters = parameters;
+        this.solutionHandler = solutionHandler;
+    }
+
+    @Override
     public Solution minimize(Solution startSolution) {
         stopFlag = false;
         int iteration = 0;
         Random random = new Random(parameters.seed);
-        LocalDateTime startedAt = LocalDateTime.now();
+        long startedAt = System.currentTimeMillis();
         Solution bestSolution = startSolution;
         Solution current = startSolution;
         currentSolution = startSolution;
@@ -59,7 +66,7 @@ public class SimulatedAnnealing implements OptimizationAlgorithm {
                 acceptedIterationsByTemperature++;
                 current = randomNeighbour;
                 current.iterationNumber(iteration);
-                current.elapsedTime(Duration.between(startedAt, LocalDateTime.now()).toMillis() / 1000.0);
+                current.elapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
                 current.isCurrentBest(false);
                 current.isFinal(false);
                 current.instanceTag(parameters.name);
@@ -73,8 +80,13 @@ public class SimulatedAnnealing implements OptimizationAlgorithm {
                     current.isCurrentBest(true);
                     bestSolution = current;
                     currentSolution = bestSolution;
-                } else if (parameters.isDetailedOutput)
+                    if (solutionHandler != null)
+                        solutionHandler.process(currentSolution);
+                } else if (parameters.isDetailedOutput) {
                     currentSolution = current;
+                    if (solutionHandler != null)
+                        solutionHandler.process(currentSolution);
+                }
                 neighborhood.moveToSolution(current);
             }
             if (iterationsByTemperature >= maxIterationsByTemperature) {
@@ -84,19 +96,36 @@ public class SimulatedAnnealing implements OptimizationAlgorithm {
                     frozenState++;
                 else
                     frozenState = 0;
-                System.out.printf("\tSA %1$s cost %2$s, temp %3$s, accepted %4$d, deviation %5$s\n", parameters.name, current.cost(), temperature, acceptedIterationsByTemperature, costDeviation);
+                System.out.printf("\tSA %1$s cost %2$s, temp %3$s, accepted %4$d, deviation %5$s, time %6$.2fs\n", parameters.name, current.cost(), temperature, acceptedIterationsByTemperature, costDeviation, current.elapsedTime());
                 iterationsByTemperature = 0;
                 acceptedIterationsByTemperature = 0;
                 current = current.transcode();
                 neighborhood.moveToSolution(current);
             }
         }
-        System.out.printf("\t%1$s finished with cost %2$s, temperature %3$s, and deviation %4$s at iteration %5$d\n", parameters.name, bestSolution.cost(), temperature, costDeviation, iteration);
         bestSolution.iterationNumber(iteration);
-        bestSolution.elapsedTime(Duration.between(startedAt, LocalDateTime.now()).toMillis() / 1000.0);
+        bestSolution.elapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
         bestSolution.isFinal(true);
         currentSolution = bestSolution;
-        return bestSolution;
+        System.out.printf("\t%1$s finished with cost %2$s, temperature %3$s, and deviation %4$s at iteration %5$d, time %6$.2fs\n", parameters.name, currentSolution.cost(), temperature, costDeviation, currentSolution.iterationNumber(), currentSolution.elapsedTime());
+        if (solutionHandler != null)
+            solutionHandler.process(currentSolution);
+        return currentSolution;
+    }
+
+    @Override
+    public Solution currentSolution() {
+        return currentSolution;
+    }
+
+    @Override
+    public ArrayList<SolutionSummary> searchHistory() {
+        return searchHistory;
+    }
+
+    @Override
+    public void stop() {
+        stopFlag = true;
     }
 
     private double GetStartTemperature(double initProbability, Neighborhood neighborhood) {
@@ -134,17 +163,5 @@ public class SimulatedAnnealing implements OptimizationAlgorithm {
         for (double x : values)
             sqrDiff += Math.pow(x - average, 2);
         return Math.sqrt(sqrDiff / values.length);
-    }
-
-    public void stop() {
-        stopFlag = true;
-    }
-
-    public Solution currentSolution() {
-        return currentSolution;
-    }
-
-    public ArrayList<SolutionSummary> searchHistory() {
-        return searchHistory;
     }
 }

@@ -1,6 +1,7 @@
 package localsearchoptimization.parameters;
 
 public class SimulatedAnnealingParameters extends CoreParameters {
+
     public double initProbability = 0.3;
 
     public double temperatureCooling = 0.97;

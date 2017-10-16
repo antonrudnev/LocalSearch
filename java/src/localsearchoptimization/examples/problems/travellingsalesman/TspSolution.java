@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 public class TspSolution implements Permutation {
+
     private TspProblem tspProblem;
     private double cost;
     private int iterationNumber;

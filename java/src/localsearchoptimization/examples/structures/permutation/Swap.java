@@ -6,6 +6,7 @@ import localsearchoptimization.components.Solution;
 import localsearchoptimization.examples.structures.TwoOperands;
 
 public class Swap extends Operator {
+
     public Swap(int elementsNumber) {
         this(elementsNumber, 1);
     }

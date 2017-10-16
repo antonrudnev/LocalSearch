@@ -4,6 +4,7 @@ import localsearchoptimization.components.Configuration;
 import localsearchoptimization.components.Operator;
 
 public class TwoOperands extends Configuration {
+
     public int first;
 
     public int second;

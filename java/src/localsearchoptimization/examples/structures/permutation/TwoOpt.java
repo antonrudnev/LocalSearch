@@ -6,6 +6,7 @@ import localsearchoptimization.components.Solution;
 import localsearchoptimization.examples.structures.TwoOperands;
 
 public class TwoOpt extends Operator {
+
     public TwoOpt(int elementsNumber) {
         this(elementsNumber, 1);
     }

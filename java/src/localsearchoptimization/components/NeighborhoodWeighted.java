@@ -3,6 +3,7 @@ package localsearchoptimization.components;
 import java.util.Arrays;
 
 public class NeighborhoodWeighted extends Neighborhood {
+
     public NeighborhoodWeighted(Solution solution, Operator[] operators, int seed) {
         super(solution, operators, seed);
         double sumOperationsWeight = Arrays.stream(this.operators).mapToDouble(x -> x.weight).sum();

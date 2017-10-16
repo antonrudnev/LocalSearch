@@ -3,6 +3,7 @@ package localsearchoptimization.components;
 import java.awt.*;
 
 public class ImageStyle {
+
     public int imageWidth = 3200;
     public int imageHeight = 1800;
     public int marginX = 0;

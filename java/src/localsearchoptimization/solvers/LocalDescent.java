@@ -1,19 +1,16 @@
 package localsearchoptimization.solvers;
 
-import localsearchoptimization.components.Neighborhood;
-import localsearchoptimization.components.OptimizationAlgorithm;
-import localsearchoptimization.components.Solution;
-import localsearchoptimization.components.SolutionSummary;
+import localsearchoptimization.components.*;
 import localsearchoptimization.parameters.LocalDescentParameters;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class LocalDescent implements OptimizationAlgorithm {
+
     private LocalDescentParameters parameters;
+
+    private SolutionHandler solutionHandler;
 
     private Solution currentSolution;
 
@@ -22,13 +19,19 @@ public class LocalDescent implements OptimizationAlgorithm {
     private boolean stopFlag = false;
 
     public LocalDescent(LocalDescentParameters parameters) {
-        this.parameters = parameters;
+        this(parameters, null);
     }
 
+    public LocalDescent(LocalDescentParameters parameters, SolutionHandler solutionHandler) {
+        this.parameters = parameters;
+        this.solutionHandler = solutionHandler;
+    }
+
+    @Override
     public Solution minimize(Solution startSolution) {
         stopFlag = false;
         int iteration = 0;
-        LocalDateTime startedAt = LocalDateTime.now();
+        long startedAt = System.currentTimeMillis();
         currentSolution = startSolution;
         startSolution.iterationNumber(0);
         startSolution.elapsedTime(0);
@@ -55,7 +58,7 @@ public class LocalDescent implements OptimizationAlgorithm {
             }
             if (!bestFound) {
                 currentSolution.iterationNumber(iteration);
-                currentSolution.elapsedTime(Duration.between(startedAt, LocalDateTime.now()).toMillis() / 1000.0);
+                currentSolution.elapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
                 currentSolution.isCurrentBest(true);
                 currentSolution.isFinal(false);
                 currentSolution.instanceTag(parameters.name);
@@ -65,27 +68,32 @@ public class LocalDescent implements OptimizationAlgorithm {
                         currentSolution.iterationNumber(),
                         currentSolution.cost()
                 ));
-                if (parameters.isDetailedOutput)
-                    System.out.printf("\t%1$s updated to cost %2$s at iteration %3$d\n", parameters.name, currentSolution.cost(), iteration);
+                if (parameters.isDetailedOutput && solutionHandler != null)
+                    solutionHandler.process(currentSolution);
                 neighborhood.moveToSolution(currentSolution);
             }
         } while (!(bestFound || stopFlag));
         currentSolution.iterationNumber(iteration);
-        currentSolution.elapsedTime(Duration.between(startedAt, LocalDateTime.now()).toMillis() / 1000.0);
+        currentSolution.elapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
         currentSolution.isFinal(true);
-        System.out.printf("\t%1$s finished with cost %2$s at iteration %3$d\n", parameters.name, currentSolution.cost(), iteration);
+        System.out.printf("\t%1$s finished with cost %2$s at iteration %3$d, time %4$.2f\n", parameters.name, currentSolution.cost(), iteration, currentSolution.elapsedTime());
+        if (solutionHandler != null)
+            solutionHandler.process(currentSolution);
         return currentSolution;
     }
 
-    public void stop() {
-        stopFlag = true;
-    }
-
+    @Override
     public Solution currentSolution() {
         return currentSolution;
     }
 
+    @Override
     public ArrayList<SolutionSummary> searchHistory() {
         return searchHistory;
+    }
+
+    @Override
+    public void stop() {
+        stopFlag = true;
     }
 }
