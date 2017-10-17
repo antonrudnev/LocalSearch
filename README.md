@@ -4,9 +4,9 @@
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=tRpdhmKa3FA" target="_blank"><img src="http://img.youtube.com/vi/tRpdhmKa3FA/0.jpg" alt="Travelling salesman and rectangular packing demo video" width="240" height="180" border="10" /></a>
 
-#### Autoscheduled multistart of 50 Simulated Annealing instances:
+#### Multistart of 50 Simulated Annealing instances executed in pallel pool:
 
-![/img/PMultistart.jpg](/img/PMultistart.jpg?raw=true "Autoscheduled multistart of 50 Simulated Annealing instances")
+![/img/PMultistart.jpg](/img/PMultistart.jpg?raw=true "Multistart of 50 Simulated Annealing instances executed in pallel pool")
 
 #### 1000 cities Travelling Salesman:
 
