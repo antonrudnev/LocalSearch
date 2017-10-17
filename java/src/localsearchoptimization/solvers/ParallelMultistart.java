@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
 public class ParallelMultistart<T1 extends   OptimizationAlgorithm, T2 extends CoreParameters> implements OptimizationAlgorithm {
@@ -56,16 +57,17 @@ public class ParallelMultistart<T1 extends   OptimizationAlgorithm, T2 extends C
         startSolution.instanceTag(parameters.name);
         searchHistory = new ArrayList<SolutionSummary>();
         ArrayList<Solution> solutions = new ArrayList<Solution>();
-        Runnable[] solvers = new Runnable[multistart.instancesNumber];
+        RecursiveAction[] solvers = new RecursiveAction[multistart.instancesNumber];
         for (int i = 0; i < multistart.instancesNumber; i++) {
             T2 instanceParameters = (T2) parameters.Clone();
             instanceParameters.name = parameters.name + (multistart.instancesNumber > 1 ? ":" + i : "");
             instanceParameters.seed = random.nextInt();
             Solution instanceStartSolution = startSolution.shuffle(instanceParameters.seed);
             solvers[i] = new Solver(instanceParameters, startSolution, solutions);
+            solvers[i].fork();
         }
 
-        while (Arrays.stream(solvers).anyMatch(x -> ((Solver) x).thread.isAlive()) || solutions.size() > 0) {
+        while (Arrays.stream(solvers).anyMatch(x -> !x.isDone()) || solutions.size() > 0) {
             try {
                 Thread.sleep(multistart.outputFrequency);
                 synchronized (thisLock) {
@@ -118,9 +120,8 @@ public class ParallelMultistart<T1 extends   OptimizationAlgorithm, T2 extends C
         stopFlag = true;
     }
 
-    private class Solver implements Runnable {
+    private class Solver extends RecursiveAction {
         public T1 solver;
-        public Thread thread;
         private T2 parameters;
         private Solution startSolution;
         private ArrayList<Solution> outputSolutions;
@@ -129,12 +130,10 @@ public class ParallelMultistart<T1 extends   OptimizationAlgorithm, T2 extends C
             this.parameters = parameters;
             this.startSolution = startSolution;
             this.outputSolutions = outputSolutions;
-            thread = new Thread(this);
-            thread.start();
         }
 
         @Override
-        public void run() {
+        protected void compute() {
             try {
                 solver = optimizerType.getConstructor(parameters.getClass(), SolutionHandler.class).newInstance(parameters, new SolutionProcessor(outputSolutions));
                 solver.minimize(startSolution);

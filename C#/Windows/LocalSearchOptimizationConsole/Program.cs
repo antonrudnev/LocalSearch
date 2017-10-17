@@ -32,7 +32,7 @@ namespace LocalSearchOptimizationConsole
 
 
 
-            TspProblem problem = new TspProblem(200);
+            TspProblem problem = new TspProblem(500);
             TspSolution solution = new TspSolution(problem);
             Swap swap = new Swap(problem.Dimension, 1);
             Shift shift = new Shift(problem.Dimension, 2);
@@ -42,7 +42,7 @@ namespace LocalSearchOptimizationConsole
 
             MultistartOptions multistartOptions = new MultistartOptions()
             {
-                InstancesNumber = 50,
+                InstancesNumber = 1,
                 OutputFrequency = 1000,
                 ReturnImprovedOnly = true
             };
@@ -91,10 +91,10 @@ namespace LocalSearchOptimizationConsole
             //Console.WriteLine("Done");
 
 
-            //foreach (var b in DrawSolution(bestSolution, optimizer))
-            //{
-            //    b?.Save("solution" + DateTime.Now.Millisecond + ".jpg");
-            //}
+            foreach (var b in DrawSolution(bestSolution, optimizer))
+            {
+                b?.Save("solution" + DateTime.Now.Millisecond + ".jpg");
+            }
 
             Console.ReadLine();
         }

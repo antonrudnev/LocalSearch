@@ -46,12 +46,12 @@ public class Main {
         saParameters.temperatureCooling = 0.94;
         saParameters.minCostDeviation = 10E-5;
         saParameters.seed = 0;
-        saParameters.isDetailedOutput = false;
+        saParameters.isDetailedOutput = true;
         saParameters.operators = operations;
         SimulatedAnnealing sa = new SimulatedAnnealing(saParameters, new SolutionProcessor());
 
         MultistartOptions multistart = new MultistartOptions();
-        multistart.instancesNumber = 10;
+        multistart.instancesNumber = 14;
         multistart.outputFrequency = 500;
         multistart.returnImprovedOnly = true;
 
@@ -60,7 +60,7 @@ public class Main {
         ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters> psa = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(SimulatedAnnealing.class, saParameters, multistart, new SolutionProcessor());
 
 
-        OptimizationAlgorithm optimizer = pld;
+        OptimizationAlgorithm optimizer = psa;
 
         Solution opt = optimizer.minimize(solution);
 
