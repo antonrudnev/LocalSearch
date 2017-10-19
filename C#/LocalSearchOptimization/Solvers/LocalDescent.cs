@@ -82,7 +82,7 @@ namespace LocalSearchOptimization.Solvers
             currentSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
             currentSolution.IsFinal = true;
             yield return currentSolution;
-            Console.WriteLine("\t{0} finished with cost {1} at iteration {2}", parameters.Name, currentSolution.CostValue, iteration);
+            Console.WriteLine("{0} finished with cost {1} at iteration {2}", parameters.Name, currentSolution.CostValue, iteration);
         }
 
         public void Stop()

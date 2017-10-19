@@ -8,13 +8,9 @@ using LocalSearchOptimization.Parameters;
 
 namespace LocalSearchOptimization.Solvers
 {
-    public class ParallelMultistart<T1, T2> : IOptimizationAlgorithm
-        where T1 : IOptimizationAlgorithm
-        where T2 : CoreParameters
+    public class ParallelMultistart : IOptimizationAlgorithm
     {
-        private T2 parameters;
-
-        private MultistartOptions multistart;
+        private MultistartParameters parameters;
 
         private ISolution currentSolution;
 
@@ -28,15 +24,15 @@ namespace LocalSearchOptimization.Solvers
 
         private object thisLock = new object();
 
-        public ParallelMultistart(T2 parameters, MultistartOptions multistart)
+        public ParallelMultistart(MultistartParameters parameters)
         {
             this.parameters = parameters;
-            this.multistart = multistart;
         }
 
         public IEnumerable<ISolution> Minimize(ISolution startSolution)
         {
             stopFlag = false;
+            OptimizationParameters coreParameters = parameters.Parameters;
             Random random = new Random(parameters.Seed);
             DateTime startedAt = DateTime.Now;
             ISolution bestSolution = startSolution;
@@ -45,23 +41,23 @@ namespace LocalSearchOptimization.Solvers
             startSolution.TimeInSeconds = 0;
             startSolution.IsCurrentBest = false;
             startSolution.IsFinal = false;
-            startSolution.InstanceTag = parameters.Name;
+            startSolution.InstanceTag = coreParameters.Name;
             searchHistory = new List<SolutionSummary>();
             List<ISolution> solutions = new List<ISolution>();
-            Task<int>[] solvers = new Task<int>[multistart.InstancesNumber];
-            for (int i = 0; i < multistart.InstancesNumber; i++)
+            Task<int>[] solvers = new Task<int>[parameters.InstancesNumber];
+            for (int i = 0; i < parameters.InstancesNumber; i++)
             {
-                T2 instanceParameters = (T2)parameters.Clone();
-                instanceParameters.Name = parameters.Name + (multistart.InstancesNumber > 1 ? ":" + i : null);
+                OptimizationParameters instanceParameters = coreParameters.Clone();
+                instanceParameters.Name = (parameters.InstancesNumber > 1 ? parameters.Name + "|" + i + "|" : "") + coreParameters.Name;
                 instanceParameters.Seed = random.Next();
-                ISolution instanceStartSolution = startSolution.Shuffle(instanceParameters.Seed);
-                solvers[i] = Task<int>.Factory.StartNew(() => Solve(instanceParameters, instanceStartSolution, solutions));
+                ISolution instanceStartSolution = parameters.RandomizeStart ? startSolution.Shuffle(instanceParameters.Seed) : startSolution;
+                solvers[i] = Task<int>.Factory.StartNew(() => Solve(parameters.OptimizationAlgorithm, instanceParameters, instanceStartSolution, solutions));
             }
             using (ManualResetEventSlim delay = new ManualResetEventSlim(initialState: false))
             {
                 while (solvers.Any(x => !x.IsCompleted) || solutions.Count() > 0)
                 {
-                    delay.Wait(multistart.OutputFrequency);
+                    delay.Wait(parameters.OutputFrequency);
                     lock (thisLock)
                         if (solutions.Count > 0)
                         {
@@ -83,7 +79,7 @@ namespace LocalSearchOptimization.Solvers
                                 bestSolution = current;
                                 yield return bestSolution;
                             }
-                            else if (!multistart.ReturnImprovedOnly)
+                            else if (parameters.DetailedOutput)
                             {
                                 currentSolution = current;
                                 yield return current;
@@ -97,7 +93,7 @@ namespace LocalSearchOptimization.Solvers
             bestSolution.IsCurrentBest = true;
             bestSolution.IsFinal = true;
             currentSolution = bestSolution;
-            yield return bestSolution;
+            yield return currentSolution;
         }
 
         public void Stop()
@@ -105,10 +101,10 @@ namespace LocalSearchOptimization.Solvers
             stopFlag = true;
         }
 
-        private int Solve(T2 parameters, ISolution startSolution, List<ISolution> output)
+        private int Solve(Type optimizationAlgorithm, OptimizationParameters parameters, ISolution startSolution, List<ISolution> output)
         {
             int iteration = 0;
-            T1 solver = (T1)Activator.CreateInstance(typeof(T1), new object[] { parameters });
+            IOptimizationAlgorithm solver = (IOptimizationAlgorithm)Activator.CreateInstance(optimizationAlgorithm, new object[] { parameters });
             foreach (ISolution solution in solver.Minimize(startSolution))
             {
                 lock (thisLock) output.Add(solution);

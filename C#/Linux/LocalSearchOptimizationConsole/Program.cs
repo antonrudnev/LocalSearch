@@ -37,11 +37,10 @@ namespace LocalSearch
 
 
 
-            MultistartOptions multistartOptions = new MultistartOptions()
+            MultistartParameters multistartOptions = new MultistartParameters()
             {
                 InstancesNumber = 1,
                 OutputFrequency = 500,
-                ReturnImprovedOnly = true
             };
 
             LocalDescentParameters ldParameters = new LocalDescentParameters()
@@ -62,10 +61,16 @@ namespace LocalSearch
                 Operators = operations,
             };
 
+            MultistartParameters ldMultistartParameters = (MultistartParameters)multistartOptions.Clone();
+            ldMultistartParameters.Parameters = ldParameters;
+
+            MultistartParameters saMultistartParameters = (MultistartParameters)multistartOptions.Clone();
+            saMultistartParameters.Parameters = saParameters;
+
             LocalDescent ld = new LocalDescent(ldParameters);
             SimulatedAnnealing sa = new SimulatedAnnealing(saParameters);
-            ParallelMultistart<LocalDescent, LocalDescentParameters> pld = new ParallelMultistart<LocalDescent, LocalDescentParameters>(ldParameters, multistartOptions);
-            ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters> psa = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(saParameters, multistartOptions);
+            ParallelMultistart pld = new ParallelMultistart(ldMultistartParameters);
+            ParallelMultistart psa = new ParallelMultistart(saMultistartParameters);
 
             List<string> operators = new List<string>();
 

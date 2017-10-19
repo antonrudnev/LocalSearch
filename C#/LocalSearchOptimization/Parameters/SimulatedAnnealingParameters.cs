@@ -1,6 +1,9 @@
-﻿namespace LocalSearchOptimization.Parameters
+﻿using LocalSearchOptimization.Components;
+using System.Collections.Generic;
+
+namespace LocalSearchOptimization.Parameters
 {
-    public class SimulatedAnnealingParameters : CoreParameters
+    public class SimulatedAnnealingParameters : OptimizationParameters
     {
         public double InitProbability { get; set; } = 0.3;
 
@@ -13,6 +16,8 @@
         public int MaxFrozenLevels { get; set; } = 3;
 
         public bool UseWeightedNeighborhood { get; set; } = false;
+
+        public List<Operator> Operators { get; set; }
 
         public SimulatedAnnealingParameters()
         {
@@ -27,9 +32,10 @@
             MinCostDeviation = copy.MinCostDeviation;
             MaxFrozenLevels = copy.MaxFrozenLevels;
             UseWeightedNeighborhood = copy.UseWeightedNeighborhood;
+            Operators = copy.Operators;
         }
 
-        public override CoreParameters Clone()
+        public override OptimizationParameters Clone()
         {
             return new SimulatedAnnealingParameters(this);
         }

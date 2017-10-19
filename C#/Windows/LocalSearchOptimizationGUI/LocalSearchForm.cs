@@ -22,11 +22,11 @@ namespace LocalSearchOptimizationGUI
 
         private int seed = 0;
 
-        private MultistartOptions multistartOptions = new MultistartOptions()
+        private MultistartParameters multistartOptions = new MultistartParameters()
         {
             InstancesNumber = 1,
             OutputFrequency = 200,
-            ReturnImprovedOnly = false
+            DetailedOutput = true
         };
 
         private BitmapStyle style = new BitmapStyle
@@ -107,6 +107,7 @@ namespace LocalSearchOptimizationGUI
             TwoOpt twoOpt = new TwoOpt(problem.Dimension, 3);
 
             List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
+            MultistartParameters multistartParameters = (MultistartParameters)multistartOptions.Clone();
 
             if (stochasticOptimizer)
             {
@@ -120,7 +121,11 @@ namespace LocalSearchOptimizationGUI
                     DetailedOutput = true,
                     Operators = operations,
                 };
-                tspOptimizer = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(saParameters, multistartOptions);
+                
+                multistartParameters.Parameters = saParameters;
+                multistartParameters.OptimizationAlgorithm = typeof(SimulatedAnnealing);
+
+                tspOptimizer = new ParallelMultistart(multistartParameters);
             }
             else
             {
@@ -131,7 +136,11 @@ namespace LocalSearchOptimizationGUI
                     DetailedOutput = true,
                     Operators = operations,
                 };
-                tspOptimizer = new ParallelMultistart<LocalDescent, LocalDescentParameters>(ldParameters, multistartOptions);
+
+                multistartParameters.Parameters = ldParameters;
+                multistartParameters.OptimizationAlgorithm = typeof(LocalDescent);
+
+                tspOptimizer = new ParallelMultistart(multistartParameters);
             }
 
             toRenderBackground = false;
@@ -163,6 +172,7 @@ namespace LocalSearchOptimizationGUI
             FullNodeMove node = new FullNodeMove(problem.Dimension, 5);
 
             List<Operator> operations = new List<Operator> { swap, fLeaf };
+            MultistartParameters multistartParameters = (MultistartParameters)multistartOptions.Clone();
 
             if (stochasticOptimizer)
             {
@@ -176,7 +186,11 @@ namespace LocalSearchOptimizationGUI
                     DetailedOutput = true,
                     Operators = operations,
                 };
-                floorplanOptimizer = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(saParameters, multistartOptions);
+
+                multistartParameters.Parameters = saParameters;
+                multistartParameters.OptimizationAlgorithm = typeof(SimulatedAnnealing);
+
+                floorplanOptimizer = new ParallelMultistart(multistartParameters);
             }
             else
             {
@@ -187,7 +201,11 @@ namespace LocalSearchOptimizationGUI
                     DetailedOutput = true,
                     Operators = operations,
                 };
-                floorplanOptimizer = new ParallelMultistart<LocalDescent, LocalDescentParameters>(ldParameters, multistartOptions);
+
+                multistartParameters.Parameters = ldParameters;
+                multistartParameters.OptimizationAlgorithm = typeof(LocalDescent);
+
+                floorplanOptimizer = new ParallelMultistart(multistartParameters);
             }
 
             toRenderBackground = false;
@@ -225,7 +243,8 @@ namespace LocalSearchOptimizationGUI
                     algorithmStatus.Text = ("Error: " + e.Error.Message);
                 else
                     algorithmStatus.Text = "Done";
-                toRenderBackground = true;
+
+                //toRenderBackground = true;
             }
         }
 

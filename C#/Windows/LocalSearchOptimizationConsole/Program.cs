@@ -31,8 +31,7 @@ namespace LocalSearchOptimizationConsole
             //List<Operator> operations = new List<Operator> { swap, fLeaf };
 
 
-
-            TspProblem problem = new TspProblem(500);
+            TspProblem problem = new TspProblem(200);
             TspSolution solution = new TspSolution(problem);
             Swap swap = new Swap(problem.Dimension, 1);
             Shift shift = new Shift(problem.Dimension, 2);
@@ -40,15 +39,18 @@ namespace LocalSearchOptimizationConsole
             List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
 
 
-            MultistartOptions multistartOptions = new MultistartOptions()
+            MultistartParameters multistartOptions = new MultistartParameters()
             {
-                InstancesNumber = 1,
-                OutputFrequency = 1000,
-                ReturnImprovedOnly = true
+                Name = "P",
+                InstancesNumber = 5,
+                RandomizeStart = false,
+                DetailedOutput = true,
+                OutputFrequency = 100,
             };
 
             LocalDescentParameters ldParameters = new LocalDescentParameters()
             {
+                Name = "LD",
                 DetailedOutput = true,
                 Seed = 0,
                 Operators = operations,
@@ -57,28 +59,70 @@ namespace LocalSearchOptimizationConsole
 
             SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
             {
-                InitProbability = 0.5,
+                Name = "SA",
+                InitProbability = 0.01,
                 TemperatureCooling = 0.94,
                 MinCostDeviation = 10E-5,
                 UseWeightedNeighborhood = false,
-                DetailedOutput = false,
+                DetailedOutput = true,
                 Seed = 0,
                 Operators = operations,
             };
 
+            MultistartParameters pldParameters = (MultistartParameters)multistartOptions.Clone();
+            pldParameters.OptimizationAlgorithm = typeof(LocalDescent);
+            pldParameters.Parameters = ldParameters;
+
+            MultistartParameters psaParameters = (MultistartParameters)multistartOptions.Clone();
+            psaParameters.OptimizationAlgorithm = typeof(SimulatedAnnealing);
+            psaParameters.Parameters = saParameters;
+
+            StackedParameters ssParameters = new StackedParameters()
+            {
+                Name = "B",
+                DetailedOutput = true,
+                OptimizationAlgorithms = new Type[] { typeof(LocalDescent), typeof(SimulatedAnnealing), typeof(LocalDescent) },
+                Parameters = new OptimizationParameters[] { ldParameters, saParameters, ldParameters }
+            };
+
+            StackedParameters sspParameters = new StackedParameters()
+            {
+                Name = "B",
+                DetailedOutput = false,
+                OptimizationAlgorithms = new Type[] { typeof(LocalDescent), typeof(ParallelMultistart), typeof(LocalDescent) },
+                Parameters = new OptimizationParameters[] { ldParameters, psaParameters, ldParameters }
+            };
+
+
+
             LocalDescent ld = new LocalDescent(ldParameters);
             SimulatedAnnealing sa = new SimulatedAnnealing(saParameters);
-            ParallelMultistart<LocalDescent, LocalDescentParameters> pld = new ParallelMultistart<LocalDescent, LocalDescentParameters>(ldParameters, multistartOptions);
-            ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters> psa = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(saParameters, multistartOptions);
-            IOptimizationAlgorithm optimizer = sa;
+            ParallelMultistart pld = new ParallelMultistart(pldParameters);
+            ParallelMultistart psa = new ParallelMultistart(psaParameters);
+
+            StackedSearch ss = new StackedSearch(ssParameters);
+            StackedSearch ssp = new StackedSearch(sspParameters);
+
+
+            MultistartParameters pssParameters = (MultistartParameters)multistartOptions.Clone();
+            pssParameters.DetailedOutput = false;
+            pssParameters.RandomizeStart = true;
+            pssParameters.OptimizationAlgorithm = typeof(StackedSearch);
+            pssParameters.Parameters = ssParameters;
+
+            ParallelMultistart pss = new ParallelMultistart(pssParameters);
+
+            IOptimizationAlgorithm optimizer = pss;
             ISolution bestSolution = solution;
             foreach (ISolution s in optimizer.Minimize(solution))
             {
-                //if (s.IsCurrentBest) Console.WriteLine("{0}, {1:f}s, {2}, {3}, {4}, {5}, {6}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, bestSolution.CostValue - s.CostValue, optimizer.SearchHistory?.Count());
+                //if (s.IsCurrentBest)
+                    Console.WriteLine("\t{0}, {1:f}s, {2}, {3}, {4}, {5}, {6}", s.CostValue, s.TimeInSeconds, s.IterationNumber, s.IsCurrentBest, s.IsFinal, bestSolution.CostValue - s.CostValue, s.InstanceTag);
                 bestSolution = s;
             }
 
             Console.WriteLine(bestSolution.TimeInSeconds + "s");
+            Console.WriteLine(bestSolution.IterationNumber + " iterations");
 
             //var groups = optimizer.SearchHistory.GroupBy(s => s.OperatorTag).Select(s => new { Operator = s.Key, Count = s.Count() });
             //var dictionary = groups.ToDictionary(g => g.Operator, g => g.Count);
