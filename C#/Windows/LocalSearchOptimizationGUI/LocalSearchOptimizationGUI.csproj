@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{C9632116-3E84-4E91-A19A-7E54123F26C8}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>TestForm</RootNamespace>
-    <AssemblyName>TestForm</AssemblyName>
+    <RootNamespace>LocalSearchForm</RootNamespace>
+    <AssemblyName>LocalSearchForm</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -64,6 +64,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

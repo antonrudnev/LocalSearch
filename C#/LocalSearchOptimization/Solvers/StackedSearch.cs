@@ -72,7 +72,7 @@ namespace LocalSearchOptimization.Solvers
             bestSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
             bestSolution.IsFinal = true;
             currentSolution = bestSolution;
-            yield return currentSolution;
+            yield return bestSolution;
         }
 
         public void Stop()

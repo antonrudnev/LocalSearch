@@ -58,7 +58,7 @@ namespace LocalSearchOptimizationGUI
 
         private BackgroundWorker bwTsp = new BackgroundWorker() { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
         private BackgroundWorker bwFloorplan = new BackgroundWorker() { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
-        private bool stochasticOptimizer = true;
+        private int optimizerType = 0;
         private bool toRenderBackground = true;
 
         Task tspSolutionDrawTask;
@@ -109,39 +109,67 @@ namespace LocalSearchOptimizationGUI
             List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
             MultistartParameters multistartParameters = (MultistartParameters)multistartOptions.Clone();
 
-            if (stochasticOptimizer)
+            LocalDescentParameters ldParameters = new LocalDescentParameters()
             {
-                SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
-                {
-                    Name = "TSP SA",
-                    InitProbability = 0.5,
-                    TemperatureCooling = 0.94,
-                    MinCostDeviation = 10E-5,
-                    Seed = seed,
-                    DetailedOutput = true,
-                    Operators = operations,
-                };
-                
-                multistartParameters.Parameters = saParameters;
-                multistartParameters.OptimizationAlgorithm = typeof(SimulatedAnnealing);
+                Name = "TSP LD",
+                Seed = seed,
+                DetailedOutput = true,
+                Operators = operations
+            };
 
-                tspOptimizer = new ParallelMultistart(multistartParameters);
-            }
-            else
+            SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
             {
-                LocalDescentParameters ldParameters = new LocalDescentParameters()
-                {
-                    Name = "TSP LD",
-                    Seed = seed,
-                    DetailedOutput = true,
-                    Operators = operations,
-                };
+                Name = "TSP SA",
+                InitProbability = 0.5,
+                TemperatureCooling = 0.94,
+                MinCostDeviation = 10E-5,
+                Seed = seed,
+                DetailedOutput = true,
+                Operators = operations
+            };
 
-                multistartParameters.Parameters = ldParameters;
-                multistartParameters.OptimizationAlgorithm = typeof(LocalDescent);
+            StackedParameters ssParameters = new StackedParameters()
+            {
+                Name = "B",
+                DetailedOutput = true,
+                OptimizationAlgorithms = new Type[] { typeof(LocalDescent), typeof(SimulatedAnnealing), typeof(LocalDescent) },
+                Parameters = new OptimizationParameters[] { ldParameters, saParameters, ldParameters }
+            };
 
-                tspOptimizer = new ParallelMultistart(multistartParameters);
+            switch (optimizerType)
+            {
+                case 0:
+                    {
+                        multistartParameters.Parameters = ldParameters;
+                        multistartParameters.OptimizationAlgorithm = typeof(LocalDescent);
+                    }
+                    break;
+                case 1:
+                    {
+                        multistartParameters.Parameters = saParameters;
+                        multistartParameters.OptimizationAlgorithm = typeof(SimulatedAnnealing);
+                    }
+                    break;
+                case 2:
+                    {
+                        saParameters.InitProbability = 0.01;
+                        saParameters.MinCostDeviation = 10E-2;
+                        multistartParameters.Parameters = ssParameters;
+                        multistartParameters.OptimizationAlgorithm = typeof(StackedSearch);
+                    }
+                    break;
+                case 3:
+                    {
+                        saParameters.InitProbability = 0.01;
+                        saParameters.MinCostDeviation = 10E-2;
+                        multistartParameters.InstancesNumber = 2;
+                        multistartParameters.Parameters = ssParameters;
+                        multistartParameters.OptimizationAlgorithm = typeof(StackedSearch);
+                    }
+                    break;
             }
+
+            tspOptimizer = new ParallelMultistart(multistartParameters);
 
             toRenderBackground = false;
 
@@ -169,44 +197,71 @@ namespace LocalSearchOptimizationGUI
             Shift shift = new Shift(problem.Dimension, 1);
             EmptyLeafMove eLeaf = new EmptyLeafMove(problem.Dimension, 5);
             FullLeafMove fLeaf = new FullLeafMove(problem.Dimension, 5);
-            FullNodeMove node = new FullNodeMove(problem.Dimension, 5);
+            FullNodeMove fNode = new FullNodeMove(problem.Dimension, 5);
 
-            List<Operator> operations = new List<Operator> { swap, fLeaf };
             MultistartParameters multistartParameters = (MultistartParameters)multistartOptions.Clone();
 
-            if (stochasticOptimizer)
+            LocalDescentParameters ldParameters = new LocalDescentParameters()
             {
-                SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
-                {
-                    Name = "VLSI SA",
-                    InitProbability = 0.5,
-                    TemperatureCooling = 0.96,
-                    MinCostDeviation = 0,
-                    Seed = seed,
-                    DetailedOutput = true,
-                    Operators = operations,
-                };
+                Name = "VLSI LD",
+                Seed = seed,
+                DetailedOutput = true,
+                Operators = new List<Operator> { swap, fLeaf }
+            };
 
-                multistartParameters.Parameters = saParameters;
-                multistartParameters.OptimizationAlgorithm = typeof(SimulatedAnnealing);
-
-                floorplanOptimizer = new ParallelMultistart(multistartParameters);
-            }
-            else
+            SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters()
             {
-                LocalDescentParameters ldParameters = new LocalDescentParameters()
-                {
-                    Name = "VLSI LD",
-                    Seed = seed,
-                    DetailedOutput = true,
-                    Operators = operations,
-                };
+                Name = "VLSI SA",
+                InitProbability = 0.5,
+                TemperatureCooling = 0.96,
+                MinCostDeviation = 0,
+                Seed = seed,
+                DetailedOutput = true,
+                Operators = new List<Operator> { swap, fNode }
+            };
 
-                multistartParameters.Parameters = ldParameters;
-                multistartParameters.OptimizationAlgorithm = typeof(LocalDescent);
+            StackedParameters ssParameters = new StackedParameters()
+            {
+                Name = "B",
+                DetailedOutput = true,
+                OptimizationAlgorithms = new Type[] { typeof(LocalDescent), typeof(SimulatedAnnealing), typeof(LocalDescent) },
+                Parameters = new OptimizationParameters[] { ldParameters, saParameters, ldParameters }
+            };
 
-                floorplanOptimizer = new ParallelMultistart(multistartParameters);
+            switch (optimizerType)
+            {
+                case 0:
+                    {
+                        multistartParameters.Parameters = ldParameters;
+                        multistartParameters.OptimizationAlgorithm = typeof(LocalDescent);
+                    }
+                    break;
+                case 1:
+                    {
+                        multistartParameters.Parameters = saParameters;
+                        multistartParameters.OptimizationAlgorithm = typeof(SimulatedAnnealing);
+                    }
+                    break;
+                case 2:
+                    {
+                        saParameters.InitProbability = 0.005;
+                        saParameters.TemperatureCooling = 0.95;
+                        multistartParameters.Parameters = ssParameters;
+                        multistartParameters.OptimizationAlgorithm = typeof(StackedSearch);
+                    }
+                    break;
+                case 3:
+                    {
+                        saParameters.InitProbability = 0.005;
+                        saParameters.TemperatureCooling = 0.95;
+                        multistartParameters.InstancesNumber = 2;
+                        multistartParameters.Parameters = ssParameters;
+                        multistartParameters.OptimizationAlgorithm = typeof(StackedSearch);
+                    }
+                    break;
             }
+
+            floorplanOptimizer = new ParallelMultistart(multistartParameters);
 
             toRenderBackground = false;
 
@@ -248,15 +303,27 @@ namespace LocalSearchOptimizationGUI
             }
         }
 
-        private void simulatedAnnealingMenuItem_Click(object sender, EventArgs e)
+        private void localDescentMenuItem_Click(object sender, EventArgs e)
         {
-            stochasticOptimizer = true;
+            optimizerType = 0;
             StartDemo();
         }
 
-        private void localDescentMenuItem_Click(object sender, EventArgs e)
+        private void simulatedAnnealingMenuItem_Click(object sender, EventArgs e)
         {
-            stochasticOptimizer = false;
+            optimizerType = 1;
+            StartDemo();
+        }
+
+        private void stackedSearchMenuItem_Click(object sender, EventArgs e)
+        {
+            optimizerType = 2;
+            StartDemo();
+        }
+
+        private void parallelMultistartMenuItem_Click(object sender, EventArgs e)
+        {
+            optimizerType = 3;
             StartDemo();
         }
 

@@ -32,8 +32,10 @@
             this.solverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.localDescentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.simulatedAnnealingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stackedSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusBar = new System.Windows.Forms.StatusStrip();
             this.algorithmStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.parallelMultistartMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuBar.SuspendLayout();
             this.statusBar.SuspendLayout();
             this.SuspendLayout();
@@ -45,7 +47,7 @@
             this.solverToolStripMenuItem});
             this.menuBar.Location = new System.Drawing.Point(0, 0);
             this.menuBar.Name = "menuBar";
-            this.menuBar.Size = new System.Drawing.Size(1688, 40);
+            this.menuBar.Size = new System.Drawing.Size(1688, 42);
             this.menuBar.TabIndex = 1;
             this.menuBar.Text = "menuStrip1";
             // 
@@ -53,42 +55,60 @@
             // 
             this.solverToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.localDescentMenuItem,
-            this.simulatedAnnealingMenuItem});
+            this.simulatedAnnealingMenuItem,
+            this.stackedSearchMenuItem,
+            this.parallelMultistartMenuItem});
             this.solverToolStripMenuItem.Name = "solverToolStripMenuItem";
-            this.solverToolStripMenuItem.Size = new System.Drawing.Size(93, 36);
+            this.solverToolStripMenuItem.Size = new System.Drawing.Size(93, 38);
             this.solverToolStripMenuItem.Text = "Solver";
             // 
             // localDescentMenuItem
             // 
             this.localDescentMenuItem.Name = "localDescentMenuItem";
             this.localDescentMenuItem.ShortcutKeyDisplayString = "";
-            this.localDescentMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.localDescentMenuItem.Size = new System.Drawing.Size(417, 38);
+            this.localDescentMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.localDescentMenuItem.Size = new System.Drawing.Size(419, 38);
             this.localDescentMenuItem.Text = "Local Descent";
             this.localDescentMenuItem.Click += new System.EventHandler(this.localDescentMenuItem_Click);
             // 
             // simulatedAnnealingMenuItem
             // 
             this.simulatedAnnealingMenuItem.Name = "simulatedAnnealingMenuItem";
-            this.simulatedAnnealingMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.simulatedAnnealingMenuItem.Size = new System.Drawing.Size(417, 38);
+            this.simulatedAnnealingMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.simulatedAnnealingMenuItem.Size = new System.Drawing.Size(419, 38);
             this.simulatedAnnealingMenuItem.Text = "Simulated Annealing";
             this.simulatedAnnealingMenuItem.Click += new System.EventHandler(this.simulatedAnnealingMenuItem_Click);
+            // 
+            // stackedSearchMenuItem
+            // 
+            this.stackedSearchMenuItem.Name = "stackedSearchMenuItem";
+            this.stackedSearchMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.stackedSearchMenuItem.Size = new System.Drawing.Size(419, 38);
+            this.stackedSearchMenuItem.Text = "Stacked Search";
+            this.stackedSearchMenuItem.Click += new System.EventHandler(this.stackedSearchMenuItem_Click);
             // 
             // statusBar
             // 
             this.statusBar.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.algorithmStatus});
-            this.statusBar.Location = new System.Drawing.Point(0, 774);
+            this.statusBar.Location = new System.Drawing.Point(0, 790);
             this.statusBar.Name = "statusBar";
-            this.statusBar.Size = new System.Drawing.Size(1688, 38);
+            this.statusBar.Size = new System.Drawing.Size(1688, 22);
             this.statusBar.TabIndex = 2;
             // 
             // algorithmStatus
             // 
             this.algorithmStatus.Name = "algorithmStatus";
-            this.algorithmStatus.Size = new System.Drawing.Size(0, 33);
+            this.algorithmStatus.Size = new System.Drawing.Size(0, 17);
+            // 
+            // parallelMultistartMenuItem
+            // 
+            this.parallelMultistartMenuItem.Name = "parallelMultistartMenuItem";
+            this.parallelMultistartMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
+            this.parallelMultistartMenuItem.Size = new System.Drawing.Size(419, 38);
+            this.parallelMultistartMenuItem.Text = "Parallel Multistart";
+            this.parallelMultistartMenuItem.Click += new System.EventHandler(this.parallelMultistartMenuItem_Click);
             // 
             // LocalSearchForm
             // 
@@ -120,6 +140,8 @@
         private System.Windows.Forms.StatusStrip statusBar;
         private System.Windows.Forms.ToolStripStatusLabel algorithmStatus;
         private System.Windows.Forms.ToolStripMenuItem localDescentMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem stackedSearchMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem parallelMultistartMenuItem;
     }
 }
 
