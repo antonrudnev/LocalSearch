@@ -121,8 +121,8 @@ namespace LocalSearchOptimizationGUI
             {
                 Name = "TSP SA",
                 InitProbability = 0.5,
-                TemperatureCooling = 0.94,
-                MinCostDeviation = 10E-5,
+                TemperatureCooling = 0.91,
+                MinCostDeviation = 10E-3,
                 Seed = seed,
                 DetailedOutput = true,
                 Operators = operations
