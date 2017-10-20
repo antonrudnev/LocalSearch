@@ -1,8 +1,12 @@
 package localsearchoptimization.parameters;
 
-public class LocalDescentParameters extends CoreParameters {
+import localsearchoptimization.components.Operator;
+
+public class LocalDescentParameters extends OptimizationParameters {
 
     public boolean isSteepestDescent = false;
+
+    public Operator[] operators;
 
     public LocalDescentParameters() {
 
@@ -11,9 +15,11 @@ public class LocalDescentParameters extends CoreParameters {
     protected LocalDescentParameters(LocalDescentParameters copy) {
         super(copy);
         isSteepestDescent = copy.isSteepestDescent;
+        operators = copy.operators;
     }
 
-    public CoreParameters Clone() {
+    @Override
+    public OptimizationParameters Clone() {
         return new LocalDescentParameters(this);
     }
 }

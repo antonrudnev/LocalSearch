@@ -7,7 +7,7 @@ import localsearchoptimization.examples.structures.permutation.Shift;
 import localsearchoptimization.examples.structures.permutation.Swap;
 import localsearchoptimization.examples.structures.permutation.TwoOpt;
 import localsearchoptimization.parameters.LocalDescentParameters;
-import localsearchoptimization.parameters.MultistartOptions;
+import localsearchoptimization.parameters.MultistartParameters;
 import localsearchoptimization.parameters.SimulatedAnnealingParameters;
 import localsearchoptimization.solvers.LocalDescent;
 import localsearchoptimization.solvers.ParallelMultistart;
@@ -50,17 +50,19 @@ public class Main {
         saParameters.operators = operations;
         SimulatedAnnealing sa = new SimulatedAnnealing(saParameters, new SolutionProcessor());
 
-        MultistartOptions multistart = new MultistartOptions();
-        multistart.instancesNumber = 14;
+        MultistartParameters multistart = new MultistartParameters();
+        multistart.instancesNumber = 4;
         multistart.outputFrequency = 500;
-        multistart.returnImprovedOnly = true;
+        multistart.isDetailedOutput = false;
+        multistart.optimizationAlgorithm = LocalDescent.class;
+        multistart.parameters = ldParameters;
 
-        ParallelMultistart<LocalDescent, LocalDescentParameters> pld = new ParallelMultistart<LocalDescent, LocalDescentParameters>(LocalDescent.class, ldParameters, multistart, new SolutionProcessor());
+        ParallelMultistart pld = new ParallelMultistart(multistart, new SolutionProcessor());
 
-        ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters> psa = new ParallelMultistart<SimulatedAnnealing, SimulatedAnnealingParameters>(SimulatedAnnealing.class, saParameters, multistart, new SolutionProcessor());
+        ParallelMultistart psa = new ParallelMultistart(multistart, new SolutionProcessor());
 
 
-        OptimizationAlgorithm optimizer = psa;
+        OptimizationAlgorithm optimizer = pld;
 
         Solution opt = optimizer.minimize(solution);
 

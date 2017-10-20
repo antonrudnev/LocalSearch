@@ -1,6 +1,8 @@
 package localsearchoptimization.parameters;
 
-public class SimulatedAnnealingParameters extends CoreParameters {
+import localsearchoptimization.components.Operator;
+
+public class SimulatedAnnealingParameters extends OptimizationParameters {
 
     public double initProbability = 0.3;
 
@@ -14,6 +16,8 @@ public class SimulatedAnnealingParameters extends CoreParameters {
 
     public boolean useWeightedNeighborhood = false;
 
+    public Operator[] operators;
+
     public SimulatedAnnealingParameters() {
 
     }
@@ -26,9 +30,11 @@ public class SimulatedAnnealingParameters extends CoreParameters {
         minCostDeviation = copy.minCostDeviation;
         maxFrozenLevels = copy.maxFrozenLevels;
         useWeightedNeighborhood = copy.useWeightedNeighborhood;
+        operators = copy.operators;
     }
 
-    public CoreParameters Clone() {
+    @Override
+    public OptimizationParameters Clone() {
         return new SimulatedAnnealingParameters(this);
     }
 }

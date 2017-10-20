@@ -4,8 +4,8 @@ import localsearchoptimization.components.OptimizationAlgorithm;
 import localsearchoptimization.components.Solution;
 import localsearchoptimization.components.SolutionHandler;
 import localsearchoptimization.components.SolutionSummary;
-import localsearchoptimization.parameters.CoreParameters;
-import localsearchoptimization.parameters.MultistartOptions;
+import localsearchoptimization.parameters.OptimizationParameters;
+import localsearchoptimization.parameters.MultistartParameters;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -14,13 +14,9 @@ import java.util.Random;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
-public class ParallelMultistart<T1 extends   OptimizationAlgorithm, T2 extends CoreParameters> implements OptimizationAlgorithm {
+public class ParallelMultistart implements OptimizationAlgorithm {
 
-    private Class<T1> optimizerType;
-
-    private T2 parameters;
-
-    private MultistartOptions multistart;
+    private MultistartParameters parameters;
 
     private SolutionHandler solutionHandler;
 
@@ -32,14 +28,12 @@ public class ParallelMultistart<T1 extends   OptimizationAlgorithm, T2 extends C
 
     private final Object thisLock = new Object();
 
-    public ParallelMultistart(Class<T1> optimizerType, T2 parameters, MultistartOptions multistart) {
-        this(optimizerType, parameters, multistart, null);
+    public ParallelMultistart(MultistartParameters parameters) {
+        this(parameters, null);
     }
 
-    public ParallelMultistart(Class<T1> optimizerType, T2 parameters, MultistartOptions multistart, SolutionHandler solutionHandler) {
-        this.optimizerType = optimizerType;
+    public ParallelMultistart(MultistartParameters parameters, SolutionHandler solutionHandler) {
         this.parameters = parameters;
-        this.multistart = multistart;
         this.solutionHandler = solutionHandler;
     }
 
@@ -57,19 +51,19 @@ public class ParallelMultistart<T1 extends   OptimizationAlgorithm, T2 extends C
         startSolution.instanceTag(parameters.name);
         searchHistory = new ArrayList<SolutionSummary>();
         ArrayList<Solution> solutions = new ArrayList<Solution>();
-        RecursiveAction[] solvers = new RecursiveAction[multistart.instancesNumber];
-        for (int i = 0; i < multistart.instancesNumber; i++) {
-            T2 instanceParameters = (T2) parameters.Clone();
-            instanceParameters.name = parameters.name + (multistart.instancesNumber > 1 ? ":" + i : "");
+        RecursiveAction[] solvers = new RecursiveAction[parameters.instancesNumber];
+        for (int i = 0; i < parameters.instancesNumber; i++) {
+            OptimizationParameters instanceParameters = parameters.parameters.Clone();
+            instanceParameters.name = parameters.parameters.name + (parameters.instancesNumber > 1 ? ":" + i : "");
             instanceParameters.seed = random.nextInt();
             Solution instanceStartSolution = startSolution.shuffle(instanceParameters.seed);
-            solvers[i] = new Solver(instanceParameters, startSolution, solutions);
+            solvers[i] = new Solver(parameters.optimizationAlgorithm, instanceParameters, startSolution, solutions);
             solvers[i].fork();
         }
 
         while (Arrays.stream(solvers).anyMatch(x -> !x.isDone()) || solutions.size() > 0) {
             try {
-                Thread.sleep(multistart.outputFrequency);
+                Thread.sleep(parameters.outputFrequency);
                 synchronized (thisLock) {
                     if (solutions.size() > 0) {
                         Solution current = solutions.stream().sorted((f1, f2) -> Double.compare(f1.cost(), f2.cost())).findFirst().get();
@@ -83,7 +77,7 @@ public class ParallelMultistart<T1 extends   OptimizationAlgorithm, T2 extends C
                             currentSolution = current;
                             if (solutionHandler != null)
                                 solutionHandler.process(currentSolution);
-                        } else if (!multistart.returnImprovedOnly) {
+                        } else if (parameters.isDetailedOutput) {
                             currentSolution = current;
                             if (solutionHandler != null)
                                 solutionHandler.process(currentSolution);
@@ -121,13 +115,15 @@ public class ParallelMultistart<T1 extends   OptimizationAlgorithm, T2 extends C
     }
 
     private class Solver extends RecursiveAction {
-        public T1 solver;
-        private T2 parameters;
+        public OptimizationAlgorithm solver;
+        private  Class optimizerType;
+        private OptimizationParameters parameters;
         private Solution startSolution;
         private ArrayList<Solution> outputSolutions;
 
-        public Solver(T2 parameters, Solution startSolution, ArrayList<Solution> outputSolutions) {
+        public Solver(Class optimizerType, OptimizationParameters parameters, Solution startSolution, ArrayList<Solution> outputSolutions) {
             this.parameters = parameters;
+            this.optimizerType = optimizerType;
             this.startSolution = startSolution;
             this.outputSolutions = outputSolutions;
         }
@@ -135,7 +131,7 @@ public class ParallelMultistart<T1 extends   OptimizationAlgorithm, T2 extends C
         @Override
         protected void compute() {
             try {
-                solver = optimizerType.getConstructor(parameters.getClass(), SolutionHandler.class).newInstance(parameters, new SolutionProcessor(outputSolutions));
+                solver = (OptimizationAlgorithm)optimizerType.getConstructor(parameters.getClass(), SolutionHandler.class).newInstance(parameters, new SolutionProcessor(outputSolutions));
                 solver.minimize(startSolution);
             } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
