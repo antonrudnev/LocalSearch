@@ -61,6 +61,9 @@ namespace LocalSearchOptimizationGUI
         private int optimizerType = 0;
         private bool isTspActive = true;
         private bool isFloorplanActive = true;
+        private bool isSolutionDraw = true;
+        private bool isCostDraw = true;
+
         private bool toRenderBackground = true;
 
         Task tspSolutionDrawTask;
@@ -280,14 +283,16 @@ namespace LocalSearchOptimizationGUI
 
         private void bwTsp_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            DrawTspSolutionAsync();
-            DrawTspCostAsync();
+            if (!isTspActive) return;
+            if (isSolutionDraw) DrawTspSolutionAsync();
+            if (isCostDraw) DrawTspCostAsync();
         }
 
         private void bwFloorplan_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            DrawFloorplanSolutionAsync();
-            DrawFloorplanCostAsync();
+            if (!isFloorplanActive) return;
+            if (isSolutionDraw) DrawFloorplanSolutionAsync();
+            if (isCostDraw) DrawFloorplanCostAsync();
         }
 
         private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -337,10 +342,10 @@ namespace LocalSearchOptimizationGUI
 
         private void LocalSearchForm_Paint(object sender, PaintEventArgs e)
         {
-            if (tspSolutionImage != null && isTspActive) e.Graphics.DrawImage(tspSolutionImage, 0, menuBar.Height);
-            if (tspCostImage != null && isTspActive) e.Graphics.DrawImage(tspCostImage, 0, menuBar.Height + solutionStyle.ImageHeight);
-            if (floorplanSolutionImage != null && isFloorplanActive) e.Graphics.DrawImage(floorplanSolutionImage, isTspActive ? solutionStyle.ImageWidth : 0, menuBar.Height);
-            if (floorplanCostImage != null && isFloorplanActive) e.Graphics.DrawImage(floorplanCostImage, isTspActive ? solutionStyle.ImageWidth : 0, menuBar.Height + solutionStyle.ImageHeight);
+            if (tspSolutionImage != null && isTspActive && isSolutionDraw) e.Graphics.DrawImage(tspSolutionImage, 0, menuBar.Height);
+            if (tspCostImage != null && isTspActive && isCostDraw) e.Graphics.DrawImage(tspCostImage, 0, menuBar.Height + (isSolutionDraw ? solutionStyle.ImageHeight : 0));
+            if (floorplanSolutionImage != null && isFloorplanActive && isSolutionDraw) e.Graphics.DrawImage(floorplanSolutionImage, isTspActive ? solutionStyle.ImageWidth : 0, menuBar.Height);
+            if (floorplanCostImage != null && isFloorplanActive && isCostDraw) e.Graphics.DrawImage(floorplanCostImage, isTspActive ? solutionStyle.ImageWidth : 0, menuBar.Height + (isSolutionDraw ? solutionStyle.ImageHeight : 0));
         }
 
         protected override void OnPaintBackground(PaintEventArgs e)
@@ -351,10 +356,10 @@ namespace LocalSearchOptimizationGUI
         private void LocalSearchForm_Resize(object sender, EventArgs e)
         {
             int imageWidth = Math.Max(Width / ((isTspActive ? 1 : 0) + (isFloorplanActive ? 1 : 0)) - 8, 10);
-            int imageHeight = Math.Max((Height - 2 * (menuBar.Height + statusBar.Height) + 8) / 3, 10);
+            int imageHeight = Math.Max((Height - 2 * (menuBar.Height + statusBar.Height) + 8) / (isSolutionDraw && isCostDraw ? 3 : 1), 10);
 
             solutionStyle.ImageWidth = imageWidth;
-            solutionStyle.ImageHeight = imageHeight * 2;
+            solutionStyle.ImageHeight = imageHeight * (isSolutionDraw && isCostDraw ? 2 : 1);
 
             costStyle.ImageWidth = imageWidth;
             costStyle.ImageHeight = imageHeight;
@@ -417,22 +422,28 @@ namespace LocalSearchOptimizationGUI
                 bwTsp.CancelAsync();
                 bwFloorplan.CancelAsync();
             }
-            else if (e.Shift && e.KeyCode == Keys.D1)
+            else if (e.KeyCode == Keys.Left)
             {
-                isTspActive = true;
-                isFloorplanActive = false;
-                LocalSearchForm_Resize(sender, e);
-            }
-            else if (e.Shift && e.KeyCode == Keys.D2)
-            {
-                isTspActive = false;
+                isTspActive = isFloorplanActive ? false : true;
                 isFloorplanActive = true;
                 LocalSearchForm_Resize(sender, e);
             }
-            else if (e.Shift && e.KeyCode == Keys.D3)
+            else if (e.KeyCode == Keys.Right)
             {
+                isFloorplanActive = isTspActive ? false : true;
                 isTspActive = true;
-                isFloorplanActive = true;
+                LocalSearchForm_Resize(sender, e);
+            }
+            else if (e.KeyCode == Keys.Up)
+            {
+                isSolutionDraw = isCostDraw ? false : true;
+                isCostDraw = true;
+                LocalSearchForm_Resize(sender, e);
+            }
+            else if (e.KeyCode == Keys.Down)
+            {
+                isCostDraw = isSolutionDraw ? false : true;
+                isSolutionDraw = true;
                 LocalSearchForm_Resize(sender, e);
             }
         }
