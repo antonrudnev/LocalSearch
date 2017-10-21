@@ -59,6 +59,8 @@ namespace LocalSearchOptimizationGUI
         private BackgroundWorker bwTsp = new BackgroundWorker() { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
         private BackgroundWorker bwFloorplan = new BackgroundWorker() { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
         private int optimizerType = 0;
+        private bool isTspActive = true;
+        private bool isFloorplanActive = true;
         private bool toRenderBackground = true;
 
         Task tspSolutionDrawTask;
@@ -329,16 +331,16 @@ namespace LocalSearchOptimizationGUI
 
         private void StartDemo()
         {
-            if (!bwTsp.IsBusy) bwTsp.RunWorkerAsync();
-            if (!bwFloorplan.IsBusy) bwFloorplan.RunWorkerAsync();
+            if (!bwTsp.IsBusy && isTspActive) bwTsp.RunWorkerAsync();
+            if (!bwFloorplan.IsBusy && isFloorplanActive) bwFloorplan.RunWorkerAsync();
         }
 
         private void LocalSearchForm_Paint(object sender, PaintEventArgs e)
         {
-            if (tspSolutionImage != null) e.Graphics.DrawImage(tspSolutionImage, 0, menuBar.Height);
-            if (tspCostImage != null) e.Graphics.DrawImage(tspCostImage, 0, menuBar.Height + solutionStyle.ImageHeight);
-            if (floorplanSolutionImage != null) e.Graphics.DrawImage(floorplanSolutionImage, solutionStyle.ImageWidth, menuBar.Height);
-            if (floorplanCostImage != null) e.Graphics.DrawImage(floorplanCostImage, solutionStyle.ImageWidth, menuBar.Height + solutionStyle.ImageHeight);
+            if (tspSolutionImage != null && isTspActive) e.Graphics.DrawImage(tspSolutionImage, 0, menuBar.Height);
+            if (tspCostImage != null && isTspActive) e.Graphics.DrawImage(tspCostImage, 0, menuBar.Height + solutionStyle.ImageHeight);
+            if (floorplanSolutionImage != null && isFloorplanActive) e.Graphics.DrawImage(floorplanSolutionImage, isTspActive ? solutionStyle.ImageWidth : 0, menuBar.Height);
+            if (floorplanCostImage != null && isFloorplanActive) e.Graphics.DrawImage(floorplanCostImage, isTspActive ? solutionStyle.ImageWidth : 0, menuBar.Height + solutionStyle.ImageHeight);
         }
 
         protected override void OnPaintBackground(PaintEventArgs e)
@@ -348,7 +350,7 @@ namespace LocalSearchOptimizationGUI
 
         private void LocalSearchForm_Resize(object sender, EventArgs e)
         {
-            int imageWidth = Math.Max(Width / 2 - 8, 10);
+            int imageWidth = Math.Max(Width / ((isTspActive ? 1 : 0) + (isFloorplanActive ? 1 : 0)) - 8, 10);
             int imageHeight = Math.Max((Height - 2 * (menuBar.Height + statusBar.Height) + 8) / 3, 10);
 
             solutionStyle.ImageWidth = imageWidth;
@@ -414,6 +416,24 @@ namespace LocalSearchOptimizationGUI
             {
                 bwTsp.CancelAsync();
                 bwFloorplan.CancelAsync();
+            }
+            else if (e.Shift && e.KeyCode == Keys.D1)
+            {
+                isTspActive = true;
+                isFloorplanActive = false;
+                LocalSearchForm_Resize(sender, e);
+            }
+            else if (e.Shift && e.KeyCode == Keys.D2)
+            {
+                isTspActive = false;
+                isFloorplanActive = true;
+                LocalSearchForm_Resize(sender, e);
+            }
+            else if (e.Shift && e.KeyCode == Keys.D3)
+            {
+                isTspActive = true;
+                isFloorplanActive = true;
+                LocalSearchForm_Resize(sender, e);
             }
         }
     }
