@@ -111,15 +111,16 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
             {
                 int parent = parents.Peek();
                 int next = 0;
-                double nextX = int.MaxValue;
+                double nextX = 0;
                 foreach (int item in uncoded)
                 {
                     if ((Y[item] == Y[parent] + H[parent])
                         && (X[parent] < X[item] + W[item])
                         && (X[item] < X[parent] + (parent > 0 ? W[parent] : MaxWidth))
-                        && (X[item] < nextX))
+                        && (X[item] >= nextX))
                     {
                         next = item;
+                        nextX = X[item];
                     }
                 }
                 if (next > 0)
@@ -138,9 +139,7 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                 }
             }
             for (int i = 0; i < opened; i++)
-            {
                 branching.Add(true);
-            }
             return new FloorplanSolution(floorplanProblem, order, branching, "transcode", (Transcoder + 1) % 4);
         }
 
@@ -160,9 +159,9 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
             Y[0] = 0;
             W[0] = 0;
             H[0] = 0;
-            LinkedList<int> countour = new LinkedList<int>();
-            countour.AddLast(0);
-            LinkedListNode<int> currentContour = countour.First;
+            LinkedList<int> contour = new LinkedList<int>();
+            contour.AddLast(0);
+            LinkedListNode<int> currentContour = contour.First;
             int perm = 0;
             foreach (bool b in Branching)
             {
@@ -184,12 +183,12 @@ namespace LocalSearchOptimization.Examples.RectangularPacking
                         if (X[top] + W[top] <= rightSide)
                         {
                             currentTop = currentTop.Previous;
-                            countour.Remove(top);
+                            contour.Remove(top);
                         }
                         else topMostFound = true;
                     }
                     Y[current] = maxY;
-                    countour.AddAfter(currentContour, current);
+                    contour.AddAfter(currentContour, current);
                     currentContour = currentContour.Next;
                     perm++;
                     double currentW = X[current] + W[current];

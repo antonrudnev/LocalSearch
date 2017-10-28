@@ -9,7 +9,7 @@ namespace LocalSearchOptimization.Examples.Structures.Tree
         {
             for (int i = 0; i < 2 * nodesNumber; i++)
                 for (int j = 0; j < 2 * nodesNumber - 1; j++)
-                    if (i != j) Configurations.Add(new TwoOperands(i, j, this));
+                    Configurations.Add(new TwoOperands(i, j, this));
         }
 
         public override ISolution Apply(ISolution solution, Configuration configuration)
