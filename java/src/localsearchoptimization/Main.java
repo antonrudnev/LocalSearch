@@ -10,6 +10,7 @@ import localsearchoptimization.examples.structures.permutation.Shift;
 import localsearchoptimization.examples.structures.permutation.Swap;
 import localsearchoptimization.examples.structures.permutation.TwoOpt;
 import localsearchoptimization.examples.structures.tree.EmptyLeafMove;
+import localsearchoptimization.examples.structures.tree.FullLeafMove;
 import localsearchoptimization.parameters.LocalDescentParameters;
 import localsearchoptimization.parameters.MultistartParameters;
 import localsearchoptimization.parameters.SimulatedAnnealingParameters;
@@ -37,15 +38,16 @@ public class Main {
 //        TspProblem problem = TspProblem.load("../img/200.tsp");
 //        TspSolution solution = new TspSolution(problem);
 
-        FloorplanProblem problem = new FloorplanProblem(100);
+        FloorplanProblem problem = new FloorplanProblem(50);
         FloorplanSolution solution = new FloorplanSolution(problem);
 
         Swap swap = new Swap(problem.dimension, 1);
         Shift shift = new Shift(problem.dimension, 2);
         TwoOpt twoOpt = new TwoOpt(problem.dimension, 3);
-        EmptyLeafMove emptyLeaf = new EmptyLeafMove(problem.dimension);
+        EmptyLeafMove eLeaf = new EmptyLeafMove(problem.dimension);
+        FullLeafMove fLeaf = new FullLeafMove(problem.dimension);
 
-        Operator[] operations = new Operator[]{swap, shift, emptyLeaf};
+        Operator[] operations = new Operator[]{swap, fLeaf};
 
         LocalDescentParameters ldParameters = new LocalDescentParameters();
         ldParameters.isDetailedOutput = true;
@@ -72,16 +74,16 @@ public class Main {
 
         OptimizationAlgorithm optimizer = sa;
 
-
-//        System.out.println(solution);
-//        for(int i =0; i<emptyLeaf.configurations.size();i++) {
-//            TwoOperands t = (TwoOperands) emptyLeaf.configurations.get(i);
-//            FloorplanSolution fs = (FloorplanSolution) t.Apply(solution);
+//
+//        System.out.println(solution.shuffle(0));
+//        for(int i =0; i<fLeaf.configurations.size();i++) {
+//            TwoOperands t = (TwoOperands) fLeaf.configurations.get(i);
+//            FloorplanSolution fs = (FloorplanSolution) t.Apply(solution.shuffle(0));
 //            System.out.printf("%1$d %2$d %3$s\n", t.first, t.second, fs);
 //        }
 
 
-        Solution opt = optimizer.minimize(solution);
+        Solution opt = optimizer.minimize(solution.shuffle(0));
 
         System.out.println("Final cost: "+opt.cost());
         System.out.println("Final time: "+opt.elapsedTime());
@@ -89,14 +91,14 @@ public class Main {
 
 
         File solfile = new File("solution.png");
-        File solfile2 = new File("solution2.png");
-        File solfile3 = new File("solution3.png");
-        File solfile4 = new File("solution4.png");
+//        File solfile2 = new File("solution2.png");
+//        File solfile3 = new File("solution3.png");
+//        File solfile4 = new File("solution4.png");
         File costfile = new File("cost.png");
         ImageIO.write(((FloorplanSolution) opt).draw(new ImageStyle()), "png", solfile);
-        ImageIO.write(((FloorplanSolution) opt.transcode()).draw(new ImageStyle()), "png", solfile2);
-        ImageIO.write(((FloorplanSolution) opt.transcode().transcode()).draw(new ImageStyle()), "png", solfile3);
-        ImageIO.write(((FloorplanSolution) opt.transcode().transcode().transcode()).draw(new ImageStyle()), "png", solfile4);
+//        ImageIO.write(((FloorplanSolution) opt.transcode()).draw(new ImageStyle()), "png", solfile2);
+//        ImageIO.write(((FloorplanSolution) opt.transcode().transcode()).draw(new ImageStyle()), "png", solfile3);
+//        ImageIO.write(((FloorplanSolution) opt.transcode().transcode().transcode()).draw(new ImageStyle()), "png", solfile4);
         ImageIO.write(optimizer.drawCost(), "png", costfile);
     }
 }

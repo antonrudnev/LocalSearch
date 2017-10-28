@@ -168,7 +168,24 @@ public class FloorplanSolution implements OrientedTree {
 
     @Override
     public Solution shuffle(int seed) {
-        return this;
+        Random random = new Random(seed);
+        boolean[] branching = new boolean[this.branching.length];
+        int opened = 0;
+        int completed = 0;
+        int currentBranching = 0;
+        for (int i = 0; i < 2 * floorplanProblem.dimension; i++) {
+            if (completed < floorplanProblem.dimension && (opened == 0 || random.nextDouble() < 0.5)) {
+                branching[currentBranching++] = false;
+                opened++;
+                completed++;
+            } else {
+                branching[currentBranching++] = true;
+                opened--;
+            }
+        }
+        int[] shuffled = order.clone();
+        Collections.shuffle(Arrays.asList(shuffled), new Random(seed));
+        return new FloorplanSolution(floorplanProblem, shuffled, branching, "shuffle", transcoder);
     }
 
     @Override
