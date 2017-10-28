@@ -9,7 +9,7 @@ namespace LocalSearchOptimization.Examples.Structures.Tree
         {
             for (int i = 0; i < 2 * nodesNumber; i++)
                 for (int j = 0; j < 2 * nodesNumber - 1; j++)
-                    if (i != j) Configurations.Add(new TwoOperands(i, j, this));
+                    Configurations.Add(new TwoOperands(i, j, this));
         }
 
         public override ISolution Apply(ISolution solution, Configuration configuration)
@@ -17,34 +17,38 @@ namespace LocalSearchOptimization.Examples.Structures.Tree
             IOrientedTree tree = (IOrientedTree)solution;
             TwoOperands operands = (TwoOperands)configuration;
 
-            List<bool> branching = new List<bool>(tree.Branching);
-            List<int> order = new List<int>(tree.Order);
+            List<bool> branching = tree.Branching;
+            List<int> order = tree.Order;
 
             int start = operands.First;
             int traverse = branching[start] == false ? 1 : -1;
 
-            while (!(branching[start] ^ branching[start + traverse]))
-            {
+            while (branching[start] == branching[start + traverse])
                 start += traverse;
-            }
 
             int left = traverse > 0 ? start : start - 1;
 
-            int leafOrder = 0;
-            for (int i = 0; i < left; i++)
-                if (!branching[i]) leafOrder++;
+            if (left != operands.Second)
+            {
+                branching = new List<bool>(tree.Branching);
+                order = new List<int>(tree.Order);
 
-            branching.RemoveRange(left, 2);
+                int leafOrder = 0;
+                for (int i = 0; i < left; i++)
+                    if (!branching[i]) leafOrder++;
 
-            int newOrder = 0;
-            for (int i = 0; i < operands.Second; i++)
-                if (!branching[i]) newOrder++;
+                branching.RemoveRange(left, 2);
 
-            branching.Insert(operands.Second, true);
-            branching.Insert(operands.Second, false);
+                int newOrder = 0;
+                for (int i = 0; i < operands.Second; i++)
+                    if (!branching[i]) newOrder++;
 
-            order.RemoveAt(leafOrder);
-            order.Insert(newOrder, tree.Order[leafOrder]);
+                branching.Insert(operands.Second, true);
+                branching.Insert(operands.Second, false);
+
+                order.RemoveAt(leafOrder);
+                order.Insert(newOrder, tree.Order[leafOrder]);
+            }
 
             return tree.FetchOrientedTree(order, branching, "full leaf");
         }
