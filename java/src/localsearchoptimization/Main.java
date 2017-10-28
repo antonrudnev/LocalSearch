@@ -38,7 +38,7 @@ public class Main {
 //        TspProblem problem = TspProblem.load("../img/200.tsp");
 //        TspSolution solution = new TspSolution(problem);
 
-        FloorplanProblem problem = new FloorplanProblem(50);
+        FloorplanProblem problem = FloorplanProblem.load("../img/500.vlsi");
         FloorplanSolution solution = new FloorplanSolution(problem);
 
         Swap swap = new Swap(problem.dimension, 1);
@@ -56,7 +56,7 @@ public class Main {
 
         SimulatedAnnealingParameters saParameters = new SimulatedAnnealingParameters();
         saParameters.initProbability = 0.5;
-        saParameters.temperatureCooling = 0.97;
+        saParameters.temperatureCooling = 0.96;
         saParameters.minCostDeviation = 0;
         saParameters.seed = 0;
         saParameters.isDetailedOutput = false;

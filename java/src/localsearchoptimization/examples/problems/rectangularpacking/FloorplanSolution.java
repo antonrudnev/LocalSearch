@@ -275,7 +275,7 @@ public class FloorplanSolution implements OrientedTree {
             }
         }
 //        cost = maxWidth * maxHeight;
-        cost = Math.pow(maxWidth + maxHeight, 2);
+        cost = Math.pow(maxWidth + 1.05 * maxHeight, 2);
     }
 
     public BufferedImage draw(ImageStyle style) {

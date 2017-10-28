@@ -102,14 +102,14 @@ namespace LocalSearchOptimization.Solvers
                         frozenState++;
                     else
                         frozenState = 0;
-                    Console.WriteLine("{0} cost {1}, temp {2}, accepted {3}, deviation {4}", parameters.Name, current.CostValue, temperature, acceptedIterationsByTemperature, costDeviation);
+                    Console.WriteLine("{0} cost {1}, temp {2}, accepted {3}, deviation {4}, time {5:F2}s", parameters.Name, current.CostValue, temperature, acceptedIterationsByTemperature, costDeviation, current.TimeInSeconds);
                     iterationsByTemperature = 0;
                     acceptedIterationsByTemperature = 0;
                     current = current.Transcode();
                     neighborhood.MoveToSolution(current);
                 }
             }
-            Console.WriteLine("{0} finished with cost {1}, temperature {2}, and deviation {3} at iteration {4}", parameters.Name, bestSolution.CostValue, temperature, costDeviation, iteration);
+            Console.WriteLine("{0} finished with cost {1}, temperature {2}, and deviation {3} at iteration {4}, time {5:F2}s", parameters.Name, bestSolution.CostValue, temperature, costDeviation, iteration, bestSolution.TimeInSeconds);
             bestSolution.IterationNumber = iteration;
             bestSolution.TimeInSeconds = (DateTime.Now - startedAt).TotalSeconds;
             bestSolution.IsFinal = true;
