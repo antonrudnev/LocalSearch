@@ -2,11 +2,16 @@ package localsearchoptimization.examples.structures.tree;
 
 import localsearchoptimization.components.Solution;
 
-import java.util.List;
-
 public interface TreeBranching extends Solution {
 
-    List<Boolean> Branching();
+    boolean[] branching();
 
-    TreeBranching fetchBranching(List<Boolean> branching, String operationName);
+    TreeBranching fetchBranching(boolean[] branching, String operationName);
+
+    default String printBranching() {
+        StringBuilder builder = new StringBuilder();
+        for (boolean i : branching())
+            builder.append(i ? ")" : "(");
+        return builder.toString();
+    }
 }

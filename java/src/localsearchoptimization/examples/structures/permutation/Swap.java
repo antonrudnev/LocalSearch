@@ -18,6 +18,7 @@ public class Swap extends Operator {
                 configurations.add(new TwoOperands(i, j, this));
     }
 
+    @Override
     public Solution apply(Solution solution, Configuration configuration) {
         Permutation permutation = (Permutation) solution;
         TwoOperands operands = (TwoOperands) configuration;

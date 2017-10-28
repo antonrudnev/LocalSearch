@@ -42,16 +42,19 @@ public class TspSolution implements Permutation {
         decodeSolution(tspProblem);
     }
 
+    @Override
     public Permutation fetchPermutation(int[] order, String operatorName) {
         return new TspSolution(tspProblem, order, operatorName);
     }
 
+    @Override
     public Solution shuffle(int seed) {
         int[] shuffled = order.clone();
         Collections.shuffle(Arrays.asList(shuffled), new Random(seed));
         return new TspSolution(this.tspProblem, shuffled, "shuffle");
     }
 
+    @Override
     public Solution transcode() {
         return this;
     }
@@ -60,54 +63,67 @@ public class TspSolution implements Permutation {
         return tspProblem.dimension;
     }
 
+    @Override
     public int[] order() {
         return order;
     }
 
+    @Override
     public double cost() {
         return cost;
     }
 
+    @Override
     public int iterationNumber() {
         return iterationNumber;
     }
 
+    @Override
     public void iterationNumber(int iteration) {
         iterationNumber = iteration;
     }
 
+    @Override
     public double elapsedTime() {
         return timeInSeconds;
     }
 
+    @Override
     public void elapsedTime(double seconds) {
         timeInSeconds = seconds;
     }
 
+    @Override
     public boolean isCurrentBest() {
         return isCurrentBest;
     }
 
+    @Override
     public void isCurrentBest(boolean isCurrentBest) {
         this.isCurrentBest = isCurrentBest;
     }
 
+    @Override
     public boolean isFinal() {
         return isFinal;
     }
 
+    @Override
     public void isFinal(boolean isFinal) {
         this.isFinal = isFinal;
     }
 
+    @Override
     public String instanceTag() {
         return instanceTag;
     }
 
+    @Override
     public void instanceTag(String tag) {
         instanceTag = tag;
     }
 
+    @Override
     public String operatorTag() {
         return operatorTag;
     }
@@ -174,10 +190,6 @@ public class TspSolution implements Permutation {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        for (int i : order) {
-            builder.append(i).append("->");
-        }
-        return builder.toString();
+        return printPermutation();
     }
 }
