@@ -17,25 +17,25 @@ namespace LocalSearchOptimization.Examples.Structures.Tree
             ITreeBranching tree = (ITreeBranching)solution;
             TwoOperands operands = (TwoOperands)configuration;
 
-            List<bool> shifted = tree.Branching;
+            List<bool> branching = tree.Branching;
 
             int start = operands.First;
-            int traverse = shifted[start] == false ? 1 : -1;
+            int traverse = branching[start] == false ? 1 : -1;
 
-            while (shifted[start] == shifted[start + traverse])
+            while (branching[start] == branching[start + traverse])
                 start += traverse;
 
             int left = traverse > 0 ? start : start - 1;
 
             if (left != operands.Second)
             {
-                shifted = new List<bool>(tree.Branching);
-                shifted.RemoveRange(left, 2);
-                shifted.Insert(operands.Second, true);
-                shifted.Insert(operands.Second, false);
+                branching = new List<bool>(tree.Branching);
+                branching.RemoveRange(left, 2);
+                branching.Insert(operands.Second, true);
+                branching.Insert(operands.Second, false);
             }
 
-            return tree.FetchBranching(shifted, "empty leaf");
+            return tree.FetchBranching(branching, "empty leaf");
         }
     }
 }
