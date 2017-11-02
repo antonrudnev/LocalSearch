@@ -2,15 +2,15 @@ package localsearchoptimization.components;
 
 public interface Solution {
 
-    double cost();
+    double getCost();
 
-    int iterationNumber();
+    int getIterationNumber();
 
-    void iterationNumber(int iteration);
+    void setIterationNumber(int iteration);
 
-    double elapsedTime();
+    double getElapsedTime();
 
-    void elapsedTime(double seconds);
+    void setElapsedTime(double seconds);
 
     boolean isCurrentBest();
 
@@ -20,11 +20,11 @@ public interface Solution {
 
     void isFinal(boolean isFinal);
 
-    String instanceTag();
+    String getInstanceTag();
 
-    void instanceTag(String tag);
+    void setInstanceTag(String tag);
 
-    String operatorTag();
+    String getOperatorTag();
 
     Solution shuffle(int seed);
 

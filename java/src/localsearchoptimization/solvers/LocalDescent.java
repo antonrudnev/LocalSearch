@@ -33,62 +33,62 @@ public class LocalDescent implements OptimizationAlgorithm {
         int iteration = 0;
         long startedAt = System.currentTimeMillis();
         currentSolution = startSolution;
-        startSolution.iterationNumber(0);
-        startSolution.elapsedTime(0);
+        startSolution.setIterationNumber(0);
+        startSolution.setElapsedTime(0);
         startSolution.isCurrentBest(true);
         startSolution.isFinal(false);
-        startSolution.instanceTag(parameters.name);
+        startSolution.setInstanceTag(parameters.name);
         searchHistory = new ArrayList<SolutionSummary>(
                 Arrays.asList(new SolutionSummary(parameters.name,
-                        currentSolution.operatorTag(),
-                        currentSolution.iterationNumber(),
-                        currentSolution.cost())));
+                        currentSolution.getOperatorTag(),
+                        currentSolution.getIterationNumber(),
+                        currentSolution.getCost())));
         Neighborhood neighborhood = new Neighborhood(currentSolution, parameters.operators, parameters.seed);
         boolean bestFound;
         do {
             bestFound = true;
             while (neighborhood.hasNext()) {
                 iteration++;
-                Solution neighbor = neighborhood.next();
-                if (neighbor.cost() < currentSolution.cost()) {
+                Solution neighbor = neighborhood.getNext();
+                if (neighbor.getCost() < currentSolution.getCost()) {
                     currentSolution = neighbor;
                     bestFound = false;
                     if (!parameters.isSteepestDescent) break;
                 }
             }
             if (!bestFound) {
-                currentSolution.iterationNumber(iteration);
-                currentSolution.elapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
+                currentSolution.setIterationNumber(iteration);
+                currentSolution.setElapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
                 currentSolution.isCurrentBest(true);
                 currentSolution.isFinal(false);
-                currentSolution.instanceTag(parameters.name);
+                currentSolution.setInstanceTag(parameters.name);
                 searchHistory.add(new SolutionSummary(
                         parameters.name,
-                        currentSolution.operatorTag(),
-                        currentSolution.iterationNumber(),
-                        currentSolution.cost()
+                        currentSolution.getOperatorTag(),
+                        currentSolution.getIterationNumber(),
+                        currentSolution.getCost()
                 ));
                 if (parameters.isDetailedOutput && solutionHandler != null)
                     solutionHandler.process(currentSolution);
                 neighborhood.moveToSolution(currentSolution);
             }
         } while (!(bestFound || stopFlag));
-        currentSolution.iterationNumber(iteration);
-        currentSolution.elapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
+        currentSolution.setIterationNumber(iteration);
+        currentSolution.setElapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
         currentSolution.isFinal(true);
-        System.out.printf("\t%1$s finished with cost %2$s at iteration %3$d, time %4$.2f\n", parameters.name, currentSolution.cost(), iteration, currentSolution.elapsedTime());
+        System.out.printf("\t%1$s finished with getCost %2$s at iteration %3$d, time %4$.2f\n", parameters.name, currentSolution.getCost(), iteration, currentSolution.getElapsedTime());
         if (solutionHandler != null)
             solutionHandler.process(currentSolution);
         return currentSolution;
     }
 
     @Override
-    public Solution currentSolution() {
+    public Solution getCurrentSolution() {
         return currentSolution;
     }
 
     @Override
-    public ArrayList<SolutionSummary> searchHistory() {
+    public ArrayList<SolutionSummary> getSolutionsHistory() {
         return searchHistory;
     }
 

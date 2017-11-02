@@ -26,16 +26,16 @@ public class Neighborhood {
         randomize();
     }
 
-    public Solution currentSolution() {
+    public Solution getCurrentSolution() {
         return currentSolution;
     }
 
-    public int power() {
+    public int getPower() {
         return configurations.size();
     }
 
-    public Solution next() {
-        return configurations.get(currentConfiguration++).Apply(currentSolution);
+    public Solution getNext() {
+        return configurations.get(currentConfiguration++).apply(currentSolution);
     }
 
     public boolean hasNext() {
@@ -43,7 +43,7 @@ public class Neighborhood {
     }
 
     public Solution getRandom() {
-        return configurations.get(random.nextInt(power())).Apply(currentSolution);
+        return configurations.get(random.nextInt(getPower())).apply(currentSolution);
     }
 
     public void moveToSolution(Solution solution) {

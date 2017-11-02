@@ -82,12 +82,12 @@ public class FloorplanSolution implements OrientedTree {
     }
 
     @Override
-    public boolean[] branching() {
+    public boolean[] getBranching() {
         return branching;
     }
 
     @Override
-    public double cost() {
+    public double getCost() {
         return cost;
     }
 
@@ -107,22 +107,22 @@ public class FloorplanSolution implements OrientedTree {
     }
 
     @Override
-    public int iterationNumber() {
+    public int getIterationNumber() {
         return iterationNumber;
     }
 
     @Override
-    public void iterationNumber(int iteration) {
+    public void setIterationNumber(int iteration) {
         iterationNumber = iteration;
     }
 
     @Override
-    public double elapsedTime() {
+    public double getElapsedTime() {
         return timeInSeconds;
     }
 
     @Override
-    public void elapsedTime(double seconds) {
+    public void setElapsedTime(double seconds) {
         timeInSeconds = seconds;
     }
 
@@ -147,22 +147,22 @@ public class FloorplanSolution implements OrientedTree {
     }
 
     @Override
-    public String instanceTag() {
+    public String getInstanceTag() {
         return instanceTag;
     }
 
     @Override
-    public void instanceTag(String tag) {
+    public void setInstanceTag(String tag) {
         instanceTag = tag;
     }
 
     @Override
-    public String operatorTag() {
+    public String getOperatorTag() {
         return operatorTag;
     }
 
     @Override
-    public int[] order() {
+    public int[] getPermutation() {
         return order;
     }
 
@@ -274,7 +274,7 @@ public class FloorplanSolution implements OrientedTree {
                 contour.previous();
             }
         }
-//        cost = maxWidth * maxHeight;
+//        getCost = maxWidth * maxHeight;
         cost = Math.pow(maxWidth + 1.05 * maxHeight, 2);
     }
 
@@ -314,7 +314,7 @@ public class FloorplanSolution implements OrientedTree {
 
         g.setPaint(Color.BLACK);
         g.setFont(new Font(style.fontName, Font.PLAIN, style.fontSize));
-        g.drawString(String.format("Packing %1$s: %2$.4f (utilization %3$.2f%%)%4$s", cost == maxWidth * maxHeight ? "area" : "cost", cost, utilization(), isCurrentBest ? " <<<" : ""), 0, style.fontSize);
+        g.drawString(String.format("Packing %1$s: %2$.4f (utilization %3$.2f%%)%4$s", cost == maxWidth * maxHeight ? "area" : "getCost", cost, utilization(), isCurrentBest ? " <<<" : ""), 0, style.fontSize);
         g.drawString(String.format("Iterations: %1$d", iterationNumber), 0, 2 * style.fontSize);
         g.drawString(String.format("Time: %1$.3fs", timeInSeconds), 0, 3 * style.fontSize);
         return bitmap;

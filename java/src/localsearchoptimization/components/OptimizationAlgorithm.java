@@ -8,9 +8,9 @@ import java.util.HashSet;
 
 public interface OptimizationAlgorithm {
 
-    Solution currentSolution();
+    Solution getCurrentSolution();
 
-    ArrayList<SolutionSummary> searchHistory();
+    ArrayList<SolutionSummary> getSolutionsHistory();
 
     Solution minimize(Solution startSolution);
 
@@ -27,20 +27,20 @@ public interface OptimizationAlgorithm {
     default BufferedImage drawCost(ImageStyle style, int maxPoints) {
         Color[] colors = new Color[]{Color.BLUE, Color.GREEN, Color.CYAN, Color.MAGENTA, Color.ORANGE, Color.RED, Color.YELLOW, Color.PINK};
         String[] notNeighborOperators = new String[]{"init", "shuffle", "transcode"};
-        if (searchHistory() == null || searchHistory().size() == 0) return null;
-        int n = maxPoints == 0 ? 1 : searchHistory().size() / maxPoints + 1;
-        ArrayList<SolutionSummary> historyToDraw = maxPoints == 0 ? searchHistory() : new ArrayList<SolutionSummary>();
+        if (getSolutionsHistory() == null || getSolutionsHistory().size() == 0) return null;
+        int n = maxPoints == 0 ? 1 : getSolutionsHistory().size() / maxPoints + 1;
+        ArrayList<SolutionSummary> historyToDraw = maxPoints == 0 ? getSolutionsHistory() : new ArrayList<SolutionSummary>();
         double minCost = Integer.MAX_VALUE;
         double maxCost = 0;
         HashSet<String> instances = new HashSet<String>();
         HashSet<String> operators = new HashSet<String>();
-        for (int i = 0; i < searchHistory().size(); i++) {
-            if (minCost > searchHistory().get(i).cost) minCost = searchHistory().get(i).cost;
-            if (maxCost < searchHistory().get(i).cost) maxCost = searchHistory().get(i).cost;
+        for (int i = 0; i < getSolutionsHistory().size(); i++) {
+            if (minCost > getSolutionsHistory().get(i).cost) minCost = getSolutionsHistory().get(i).cost;
+            if (maxCost < getSolutionsHistory().get(i).cost) maxCost = getSolutionsHistory().get(i).cost;
             if (maxPoints == 0 || i % n == 0) {
-                if (maxPoints > 0) historyToDraw.add(searchHistory().get(i));
-                instances.add(searchHistory().get(i).instance);
-                operators.add(searchHistory().get(i).operator);
+                if (maxPoints > 0) historyToDraw.add(getSolutionsHistory().get(i));
+                instances.add(getSolutionsHistory().get(i).instance);
+                operators.add(getSolutionsHistory().get(i).operator);
             }
         }
         HashMap<String, Color> instanceBrush = new HashMap<String, Color>();
@@ -76,10 +76,10 @@ public interface OptimizationAlgorithm {
         }
         g.setPaint(Color.BLACK);
         g.setFont(new Font(style.fontName, Font.PLAIN, style.fontSize));
-        g.drawString(String.format("Max cost: %1$.4f", maxCost), 0, style.fontSize);
-        g.drawString(String.format("Min cost: %1$.4f", minCost), 0, 2 * style.fontSize);
-        g.drawString(String.format("Accepted iterations: %1$d", searchHistory().size()), 0, 3 * style.fontSize);
-        g.drawString(String.format("Time: %1$.3fs", currentSolution().elapsedTime()), 0, 4 * style.fontSize);
+        g.drawString(String.format("Max getCost: %1$.4f", maxCost), 0, style.fontSize);
+        g.drawString(String.format("Min getCost: %1$.4f", minCost), 0, 2 * style.fontSize);
+        g.drawString(String.format("Accepted iterations: %1$d", getSolutionsHistory().size()), 0, 3 * style.fontSize);
+        g.drawString(String.format("Time: %1$.3fs", getCurrentSolution().getElapsedTime()), 0, 4 * style.fontSize);
         return bitmap;
     }
 }

@@ -23,10 +23,10 @@ public class Swap extends Operator {
         Permutation permutation = (Permutation) solution;
         TwoOperands operands = (TwoOperands) configuration;
 
-        int[] swapped = permutation.order().clone();
+        int[] swapped = permutation.getPermutation().clone();
 
-        swapped[operands.first] = permutation.order()[operands.second];
-        swapped[operands.second] = permutation.order()[operands.first];
+        swapped[operands.first] = permutation.getPermutation()[operands.second];
+        swapped[operands.second] = permutation.getPermutation()[operands.first];
 
         return permutation.fetchPermutation(swapped, "swap");
     }

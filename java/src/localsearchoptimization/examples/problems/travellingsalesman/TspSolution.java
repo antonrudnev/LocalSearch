@@ -64,32 +64,32 @@ public class TspSolution implements Permutation {
     }
 
     @Override
-    public int[] order() {
+    public int[] getPermutation() {
         return order;
     }
 
     @Override
-    public double cost() {
+    public double getCost() {
         return cost;
     }
 
     @Override
-    public int iterationNumber() {
+    public int getIterationNumber() {
         return iterationNumber;
     }
 
     @Override
-    public void iterationNumber(int iteration) {
+    public void setIterationNumber(int iteration) {
         iterationNumber = iteration;
     }
 
     @Override
-    public double elapsedTime() {
+    public double getElapsedTime() {
         return timeInSeconds;
     }
 
     @Override
-    public void elapsedTime(double seconds) {
+    public void setElapsedTime(double seconds) {
         timeInSeconds = seconds;
     }
 
@@ -114,17 +114,17 @@ public class TspSolution implements Permutation {
     }
 
     @Override
-    public String instanceTag() {
+    public String getInstanceTag() {
         return instanceTag;
     }
 
     @Override
-    public void instanceTag(String tag) {
+    public void setInstanceTag(String tag) {
         instanceTag = tag;
     }
 
     @Override
-    public String operatorTag() {
+    public String getOperatorTag() {
         return operatorTag;
     }
 

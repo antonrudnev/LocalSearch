@@ -23,8 +23,8 @@ public class FullLeafMove extends Operator {
         OrientedTree tree = (OrientedTree) solution;
         TwoOperands operands = (TwoOperands) configuration;
 
-        boolean[] branching = tree.branching();
-        int[] order = tree.order();
+        boolean[] branching = tree.getBranching();
+        int[] order = tree.getPermutation();
 
         int start = operands.first;
         int traverse = branching[start] == false ? 1 : -1;
@@ -43,38 +43,38 @@ public class FullLeafMove extends Operator {
                     newLeafOrder++;
             }
 
-            branching = new boolean[tree.branching().length];
+            branching = new boolean[tree.getBranching().length];
             branching[operands.second] = false;
             branching[operands.second + 1] = true;
             if (left < operands.second) {
                 for (int i = 0; i < left; i++)
-                    branching[i] = tree.branching()[i];
+                    branching[i] = tree.getBranching()[i];
                 for (int i = left + 2; i < operands.second + 2; i++)
-                    branching[i - 2] = tree.branching()[i];
+                    branching[i - 2] = tree.getBranching()[i];
                 for (int i = operands.second + 2; i < branching.length; i++)
-                    branching[i] = tree.branching()[i];
+                    branching[i] = tree.getBranching()[i];
             } else {
                 for (int i = 0; i < operands.second; i++)
-                    branching[i] = tree.branching()[i];
+                    branching[i] = tree.getBranching()[i];
                 for (int i = operands.second; i < left; i++)
-                    branching[i + 2] = tree.branching()[i];
+                    branching[i + 2] = tree.getBranching()[i];
                 for (int i = left + 2; i < branching.length; i++)
-                    branching[i] = tree.branching()[i];
+                    branching[i] = tree.getBranching()[i];
             }
 
-            order = new int[tree.order().length];
-            order[newLeafOrder] = tree.order()[leafOrder];
+            order = new int[tree.getPermutation().length];
+            order[newLeafOrder] = tree.getPermutation()[leafOrder];
 
             for (int i = 0; i < Math.min(leafOrder, newLeafOrder); i++)
-                order[i] = tree.order()[i];
+                order[i] = tree.getPermutation()[i];
             for (int i = Math.max(leafOrder, newLeafOrder) + 1; i < order.length; i++)
-                order[i] = tree.order()[i];
+                order[i] = tree.getPermutation()[i];
             if (leafOrder < newLeafOrder)
                 for (int i = leafOrder; i < newLeafOrder; i++)
-                    order[i] = tree.order()[i + 1];
+                    order[i] = tree.getPermutation()[i + 1];
             else
                 for (int i = leafOrder; i > newLeafOrder; i--)
-                    order[i] = tree.order()[i - 1];
+                    order[i] = tree.getPermutation()[i - 1];
         }
 
         return tree.fetchOrientedTree(order, branching, "full leaf");

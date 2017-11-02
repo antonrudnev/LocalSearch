@@ -44,11 +44,11 @@ public class ParallelMultistart implements OptimizationAlgorithm {
         long startedAt = System.currentTimeMillis();
         Solution bestSolution = startSolution;
         currentSolution = startSolution;
-        startSolution.iterationNumber(0);
-        startSolution.elapsedTime(0);
+        startSolution.setIterationNumber(0);
+        startSolution.setElapsedTime(0);
         startSolution.isCurrentBest(false);
         startSolution.isFinal(false);
-        startSolution.instanceTag(parameters.name);
+        startSolution.setInstanceTag(parameters.name);
         searchHistory = new ArrayList<SolutionSummary>();
         ArrayList<Solution> solutions = new ArrayList<Solution>();
         RecursiveAction[] solvers = new RecursiveAction[parameters.instancesNumber];
@@ -66,12 +66,12 @@ public class ParallelMultistart implements OptimizationAlgorithm {
                 Thread.sleep(parameters.outputFrequency);
                 synchronized (thisLock) {
                     if (solutions.size() > 0) {
-                        Solution current = solutions.stream().sorted((f1, f2) -> Double.compare(f1.cost(), f2.cost())).findFirst().get();
-                        current.elapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
+                        Solution current = solutions.stream().sorted((f1, f2) -> Double.compare(f1.getCost(), f2.getCost())).findFirst().get();
+                        current.setElapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
                         current.isCurrentBest(false);
                         current.isFinal(false);
-                        solutions.stream().map(x -> new SolutionSummary(x.instanceTag(), x.operatorTag(), x.iterationNumber(), x.cost())).collect(Collectors.toCollection(() -> searchHistory));
-                        if (current.cost() < bestSolution.cost()) {
+                        solutions.stream().map(x -> new SolutionSummary(x.getInstanceTag(), x.getOperatorTag(), x.getIterationNumber(), x.getCost())).collect(Collectors.toCollection(() -> searchHistory));
+                        if (current.getCost() < bestSolution.getCost()) {
                             current.isCurrentBest(true);
                             bestSolution = current;
                             currentSolution = current;
@@ -89,8 +89,8 @@ public class ParallelMultistart implements OptimizationAlgorithm {
                 e.printStackTrace();
             }
         }
-        bestSolution.iterationNumber(Arrays.stream(solvers).mapToInt(x -> ((Solver) x).solver.currentSolution().iterationNumber()).sum());
-        bestSolution.elapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
+        bestSolution.setIterationNumber(Arrays.stream(solvers).mapToInt(x -> ((Solver) x).solver.getCurrentSolution().getIterationNumber()).sum());
+        bestSolution.setElapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
         bestSolution.isCurrentBest(true);
         bestSolution.isFinal(true);
         currentSolution = bestSolution;
@@ -100,12 +100,12 @@ public class ParallelMultistart implements OptimizationAlgorithm {
     }
 
     @Override
-    public Solution currentSolution() {
+    public Solution getCurrentSolution() {
         return currentSolution;
     }
 
     @Override
-    public ArrayList<SolutionSummary> searchHistory() {
+    public ArrayList<SolutionSummary> getSolutionsHistory() {
         return searchHistory;
     }
 

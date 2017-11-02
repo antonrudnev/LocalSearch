@@ -38,21 +38,21 @@ public class SimulatedAnnealing implements OptimizationAlgorithm {
         Solution bestSolution = startSolution;
         Solution current = startSolution;
         currentSolution = startSolution;
-        startSolution.iterationNumber(0);
-        startSolution.elapsedTime(0);
+        startSolution.setIterationNumber(0);
+        startSolution.setElapsedTime(0);
         startSolution.isCurrentBest(false);
         startSolution.isFinal(false);
-        startSolution.instanceTag(parameters.name);
+        startSolution.setInstanceTag(parameters.name);
         searchHistory = new ArrayList<SolutionSummary>(
                 Arrays.asList(new SolutionSummary(parameters.name,
-                        currentSolution.operatorTag(),
-                        currentSolution.iterationNumber(),
-                        currentSolution.cost())));
+                        currentSolution.getOperatorTag(),
+                        currentSolution.getIterationNumber(),
+                        currentSolution.getCost())));
         Neighborhood neighborhood = parameters.useWeightedNeighborhood ?
                 new NeighborhoodWeighted(startSolution, parameters.operators, parameters.seed) :
                 new Neighborhood(startSolution, parameters.operators, parameters.seed);
         double temperature = GetStartTemperature(parameters.initProbability, neighborhood);
-        int maxIterationsByTemperature = (int) (parameters.temperatureLevelPower * neighborhood.power());
+        int maxIterationsByTemperature = (int) (parameters.temperatureLevelPower * neighborhood.getPower());
         int iterationsByTemperature = 0;
         int acceptedIterationsByTemperature = 0;
         int frozenState = 0;
@@ -61,22 +61,22 @@ public class SimulatedAnnealing implements OptimizationAlgorithm {
             iteration++;
             iterationsByTemperature++;
             Solution randomNeighbour = neighborhood.getRandom();
-            double costDifference = randomNeighbour.cost() - current.cost();
+            double costDifference = randomNeighbour.getCost() - current.getCost();
             if (costDifference < 0 || (costDifference > 0 && random.nextDouble() < Math.exp(-costDifference / temperature))) {
                 acceptedIterationsByTemperature++;
                 current = randomNeighbour;
-                current.iterationNumber(iteration);
-                current.elapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
+                current.setIterationNumber(iteration);
+                current.setElapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
                 current.isCurrentBest(false);
                 current.isFinal(false);
-                current.instanceTag(parameters.name);
+                current.setInstanceTag(parameters.name);
                 searchHistory.add(new SolutionSummary(
                         parameters.name,
-                        current.operatorTag(),
-                        current.iterationNumber(),
-                        current.cost()
+                        current.getOperatorTag(),
+                        current.getIterationNumber(),
+                        current.getCost()
                 ));
-                if (current.cost() < bestSolution.cost()) {
+                if (current.getCost() < bestSolution.getCost()) {
                     current.isCurrentBest(true);
                     bestSolution = current;
                     currentSolution = bestSolution;
@@ -96,30 +96,30 @@ public class SimulatedAnnealing implements OptimizationAlgorithm {
                     frozenState++;
                 else
                     frozenState = 0;
-                System.out.printf("\tSA %1$s cost %2$s, temp %3$s, accepted %4$d, deviation %5$s, time %6$.2fs\n", parameters.name, current.cost(), temperature, acceptedIterationsByTemperature, costDeviation, current.elapsedTime());
+                System.out.printf("\tSA %1$s getCost %2$s, temp %3$s, accepted %4$d, deviation %5$s, time %6$.2fs\n", parameters.name, current.getCost(), temperature, acceptedIterationsByTemperature, costDeviation, current.getElapsedTime());
                 iterationsByTemperature = 0;
                 acceptedIterationsByTemperature = 0;
                 current = current.transcode();
                 neighborhood.moveToSolution(current);
             }
         }
-        bestSolution.iterationNumber(iteration);
-        bestSolution.elapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
+        bestSolution.setIterationNumber(iteration);
+        bestSolution.setElapsedTime((System.currentTimeMillis() - startedAt) / 1000.0);
         bestSolution.isFinal(true);
         currentSolution = bestSolution;
-        System.out.printf("\t%1$s finished with cost %2$s, temperature %3$s, and deviation %4$s at iteration %5$d, time %6$.2fs\n", parameters.name, currentSolution.cost(), temperature, costDeviation, currentSolution.iterationNumber(), currentSolution.elapsedTime());
+        System.out.printf("\t%1$s finished with getCost %2$s, temperature %3$s, and deviation %4$s at iteration %5$d, time %6$.2fs\n", parameters.name, currentSolution.getCost(), temperature, costDeviation, currentSolution.getIterationNumber(), currentSolution.getElapsedTime());
         if (solutionHandler != null)
             solutionHandler.process(currentSolution);
         return currentSolution;
     }
 
     @Override
-    public Solution currentSolution() {
+    public Solution getCurrentSolution() {
         return currentSolution;
     }
 
     @Override
-    public ArrayList<SolutionSummary> searchHistory() {
+    public ArrayList<SolutionSummary> getSolutionsHistory() {
         return searchHistory;
     }
 
@@ -132,9 +132,9 @@ public class SimulatedAnnealing implements OptimizationAlgorithm {
         List<Double> temperature = new ArrayList<Double>();
         neighborhood.reset();
         while (neighborhood.hasNext()) {
-            Solution solution = neighborhood.next();
-            if (solution.cost() > neighborhood.currentSolution().cost())
-                temperature.add(-(solution.cost() - neighborhood.currentSolution().cost()) / Math.log(initProbability));
+            Solution solution = neighborhood.getNext();
+            if (solution.getCost() > neighborhood.getCurrentSolution().getCost())
+                temperature.add(-(solution.getCost() - neighborhood.getCurrentSolution().getCost()) / Math.log(initProbability));
         }
         return percentile(temperature, Math.sqrt(initProbability));
     }

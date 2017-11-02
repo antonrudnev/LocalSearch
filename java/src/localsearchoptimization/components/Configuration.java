@@ -9,7 +9,7 @@ public abstract class Configuration {
         this.operation = operation;
     }
 
-    public Solution Apply(Solution solution) {
+    public Solution apply(Solution solution) {
         return operation.apply(solution, this);
     }
 }

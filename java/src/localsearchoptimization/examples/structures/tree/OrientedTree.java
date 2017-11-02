@@ -9,8 +9,8 @@ public interface OrientedTree extends TreeBranching, Permutation {
     default String printTree() {
         StringBuilder builder = new StringBuilder();
         int node = 0;
-        for (boolean i : branching()) {
-            builder.append(i ? ")" : "(" + order()[node]);
+        for (boolean i : getBranching()) {
+            builder.append(i ? ")" : "(" + getPermutation()[node]);
             if (!i) node++;
         }
         return builder.toString();

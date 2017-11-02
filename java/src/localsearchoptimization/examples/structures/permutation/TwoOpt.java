@@ -24,26 +24,26 @@ public class TwoOpt extends Operator {
         Permutation permutation = (Permutation) solution;
         TwoOperands operands = (TwoOperands) configuration;
 
-        int[] twoOpted = new int[permutation.order().length];
+        int[] twoOpted = new int[permutation.getPermutation().length];
 
         if (operands.first < operands.second) {
             for (int i = 0; i < Math.min(operands.first, operands.second); i++)
-                twoOpted[i] = permutation.order()[i];
+                twoOpted[i] = permutation.getPermutation()[i];
 
             for (int i = Math.max(operands.first, operands.second) + 1; i < twoOpted.length; i++)
-                twoOpted[i] = permutation.order()[i];
+                twoOpted[i] = permutation.getPermutation()[i];
 
             for (int i = operands.first; i <= operands.second; i++)
-                twoOpted[i] = permutation.order()[operands.second - (i - operands.first)];
+                twoOpted[i] = permutation.getPermutation()[operands.second - (i - operands.first)];
         } else {
             for (int i = 0; i <= operands.second; i++)
-                twoOpted[operands.second - i] = permutation.order()[i];
+                twoOpted[operands.second - i] = permutation.getPermutation()[i];
 
             for (int i = operands.first; i < twoOpted.length; i++)
-                twoOpted[operands.second + twoOpted.length - i] = permutation.order()[i];
+                twoOpted[operands.second + twoOpted.length - i] = permutation.getPermutation()[i];
 
             for (int i = operands.second + 1; i < operands.first; i++)
-                twoOpted[twoOpted.length - operands.first + i] = permutation.order()[i];
+                twoOpted[twoOpted.length - operands.first + i] = permutation.getPermutation()[i];
         }
 
         return permutation.fetchPermutation(twoOpted, "2opt");
