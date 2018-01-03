@@ -1,1 +1,0 @@
-print('components package was imported')
