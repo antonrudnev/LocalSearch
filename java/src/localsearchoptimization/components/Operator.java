@@ -13,7 +13,7 @@ public abstract class Operator {
         return configurations.size();
     }
 
-    public Operator(int dimension, double weight) {
+    public Operator(double weight) {
         this.weight = weight;
         configurations = new ArrayList<Configuration>();
     }

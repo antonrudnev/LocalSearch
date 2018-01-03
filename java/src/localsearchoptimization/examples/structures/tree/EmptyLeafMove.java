@@ -12,7 +12,7 @@ public class EmptyLeafMove extends Operator {
     }
 
     public EmptyLeafMove(int nodesNumber, double weight) {
-        super(nodesNumber, weight);
+        super(weight);
         for (int i = 0; i < 2 * nodesNumber; i++)
             for (int j = 0; j < 2 * nodesNumber - 1; j++)
                 configurations.add(new TwoOperands(i, j, this));

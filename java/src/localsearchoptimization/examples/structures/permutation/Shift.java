@@ -12,7 +12,7 @@ public class Shift extends Operator {
     }
 
     public Shift(int elementsNumber, double weight) {
-        super(elementsNumber, weight);
+        super(weight);
         for (int i = 0; i < elementsNumber; i++)
             for (int j = 0; j < elementsNumber; j++)
                 if (Math.abs(i - j) >= 2) configurations.add(new TwoOperands(i, j, this));

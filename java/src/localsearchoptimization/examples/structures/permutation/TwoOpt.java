@@ -12,7 +12,7 @@ public class TwoOpt extends Operator {
     }
 
     public TwoOpt(int elementsNumber, double weight) {
-        super(elementsNumber, weight);
+        super(weight);
         for (int i = 0; i < elementsNumber; i++)
             for (int j = 0; j < elementsNumber; j++)
                 if (Math.abs(j - i) >= 3)

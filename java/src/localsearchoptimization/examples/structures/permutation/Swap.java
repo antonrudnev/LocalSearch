@@ -12,7 +12,7 @@ public class Swap extends Operator {
     }
 
     public Swap(int elementsNumber, double weight) {
-        super(elementsNumber, weight);
+        super(weight);
         for (int i = 0; i < elementsNumber - 1; i++)
             for (int j = i + 1; j < elementsNumber; j++)
                 configurations.add(new TwoOperands(i, j, this));
