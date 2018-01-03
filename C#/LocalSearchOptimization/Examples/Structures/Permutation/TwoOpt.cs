@@ -6,7 +6,7 @@ namespace LocalSearchOptimization.Examples.Structures.Permutation
 {
     public class TwoOpt : Operator
     {
-        public TwoOpt(int elementsNumber, double weight = 1) : base(elementsNumber, weight)
+        public TwoOpt(int elementsNumber, double weight = 1) : base(weight)
         {
             for (int i = 0; i < elementsNumber; i++)
                 for (int j = 0; j < elementsNumber; j++)

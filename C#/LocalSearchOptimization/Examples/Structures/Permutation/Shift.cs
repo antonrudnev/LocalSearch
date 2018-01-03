@@ -6,7 +6,7 @@ namespace LocalSearchOptimization.Examples.Structures.Permutation
 {
     public class Shift : Operator
     {
-        public Shift(int elementsNumber, double weight = 1) : base(elementsNumber, weight)
+        public Shift(int elementsNumber, double weight = 1) : base(weight)
         {
             for (int i = 0; i < elementsNumber; i++)
                 for (int j = 0; j < elementsNumber; j++)

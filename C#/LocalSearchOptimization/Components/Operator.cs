@@ -16,7 +16,7 @@ namespace LocalSearchOptimization.Components
             }
         }
 
-        public Operator(int dimension, double weight)
+        public Operator(double weight)
         {
             Weight = weight;
             Configurations = new List<Configuration>();

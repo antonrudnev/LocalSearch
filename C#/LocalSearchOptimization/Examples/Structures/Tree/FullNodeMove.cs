@@ -5,7 +5,7 @@ namespace LocalSearchOptimization.Examples.Structures.Tree
 {
     public class FullNodeMove : Operator
     {
-        public FullNodeMove(int nodesNumber, double weight = 1) : base(nodesNumber, weight)
+        public FullNodeMove(int nodesNumber, double weight = 1) : base(weight)
         {
             for (int i = 0; i < nodesNumber; i++)
                 for (int j = 0; j < 2 * nodesNumber - 1; j++)
