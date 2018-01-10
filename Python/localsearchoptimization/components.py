@@ -1,23 +1,31 @@
-class Solution:
+from abc import ABC, abstractmethod
+
+
+class Solution(ABC):
+    @abstractmethod
     def get_cost(self):
-        raise NotImplementedError()
+        pass
 
 
-class OptimizationAlgorithm:
-        def get_current_solution(self):
-            raise NotImplementedError()
+class OptimizationAlgorithm(ABC):
+    @abstractmethod
+    def get_current_solution(self):
+        pass
 
-        def get_search_history(self):
-            raise NotImplementedError
+    @abstractmethod
+    def get_search_history(self):
+        pass
 
-        def minimize(self, start_solution):
-            raise NotImplementedError()
+    @abstractmethod
+    def minimize(self, start_solution):
+        pass
 
-        def stop(self):
-            raise NotImplementedError()
+    @abstractmethod
+    def stop(self):
+        pass
 
 
-class Operator:
+class Operator(ABC):
     def __init__(self, weight):
         self.weight = weight
         self.configurations = []
@@ -31,8 +39,9 @@ class Operator:
     def get_power(self):
         return len(self.configurations)
 
+    @abstractmethod
     def apply(self, solution, configuration):
-        raise NotImplementedError()
+        pass
 
     def apply_ind(self, solution, index):
         return self.apply(solution, self.configurations[index])
