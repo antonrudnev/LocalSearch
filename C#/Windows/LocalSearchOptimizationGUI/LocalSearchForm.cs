@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LocalSearchOptimization.Examples.Problems.TravellingSalesman;
+using LocalSearchOptimization.Examples.Problems.VehicleRouting;
 using LocalSearchOptimization.Components;
 using LocalSearchOptimization.Examples.Structures.Permutation;
 using LocalSearchOptimization.Solvers;
@@ -19,6 +20,9 @@ namespace LocalSearchOptimizationGUI
     {
         private int tspDimension = 225;
         private int floorplanDimension = 70;
+
+        private int vehicleCustomersDimension = 100;
+        private int vehicleDimension = 5;
 
         private int seed = 0;
 
@@ -47,17 +51,25 @@ namespace LocalSearchOptimizationGUI
 
         private Bitmap tspSolutionImage;
         private Bitmap tspCostImage;
+        
         private Bitmap floorplanSolutionImage;
         private Bitmap floorplanCostImage;
 
+        private Bitmap vehicleRoutingSolutionImage;
+        private Bitmap vehicleRoutingCostImage;
+
         private TspSolution tspSolution;
         private FloorplanSolution floorplanSolution;
+        private VehicleRoutingSolution vehicleRoutingSolution;
 
         private IOptimizationAlgorithm tspOptimizer;
         private IOptimizationAlgorithm floorplanOptimizer;
+        private IOptimizationAlgorithm vehicleRoutingOptimizer;
 
         private BackgroundWorker bwTsp = new BackgroundWorker() { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
         private BackgroundWorker bwFloorplan = new BackgroundWorker() { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
+        private BackgroundWorker bwVehicle = new BackgroundWorker() { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
+
         private int optimizerType = 0;
         private bool isTspActive = true;
         private bool isFloorplanActive = true;
@@ -68,8 +80,10 @@ namespace LocalSearchOptimizationGUI
 
         Task tspSolutionDrawTask;
         Task floorplanSolutionDrawTask;
+        Task vehicleRoutingSolutionDrawTask;
         Task tspCostDrawTask;
         Task floorplanCostDrawTask;
+        Task vehicleRoutingCostDrawTask;
 
         public LocalSearchForm()
         {
@@ -92,6 +106,7 @@ namespace LocalSearchOptimizationGUI
         private void GetInitialSolutions()
         {
             tspSolution = new TspSolution(new TspProblem(tspDimension));
+            vehicleRoutingSolution = new VehicleRoutingSolution(new VehicleRoutingProblem(vehicleCustomersDimension, vehicleDimension));
             floorplanSolution = new FloorplanSolution(new FloorplanProblem(floorplanDimension)).Shuffle(1) as FloorplanSolution;
             for (int i = 0; i < 12; i++)
             {

@@ -85,7 +85,7 @@ namespace LocalSearchOptimization.Examples.Problems.VehicleRouting
                 }
                 transportationCost[i] = cost;
             }
-            CostValue = transportationCost.Average();
+            CostValue = transportationCost.Sum();
         }
 
         public override string ToString()

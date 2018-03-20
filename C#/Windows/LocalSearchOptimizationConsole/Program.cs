@@ -48,7 +48,7 @@ namespace LocalSearchOptimizationConsole
             //TspProblem problem = new TspProblem(200);
             //TspSolution solution = new TspSolution(problem);
 
-            VehicleRoutingProblem problem = new VehicleRoutingProblem(60, 3);
+            VehicleRoutingProblem problem = new VehicleRoutingProblem(225, 10);
             VehicleRoutingSolution solution = new VehicleRoutingSolution(problem);
 
             Swap swap = new Swap(problem.Dimension, 1);
@@ -79,7 +79,7 @@ namespace LocalSearchOptimizationConsole
             {
                 Name = "SA",
                 InitProbability = 0.5,
-                TemperatureCooling = 0.96,
+                TemperatureCooling = 0.98,
                 MinCostDeviation = 0,
                 UseWeightedNeighborhood = false,
                 DetailedOutput = false,
