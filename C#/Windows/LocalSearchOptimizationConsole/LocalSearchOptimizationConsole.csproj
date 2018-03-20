@@ -45,6 +45,7 @@
     <Compile Include="Extensions\BitmapStyle.cs" />
     <Compile Include="Extensions\DrawCostDiagram.cs" />
     <Compile Include="Extensions\RectangularPacking\FloorplanSolutionDraw.cs" />
+    <Compile Include="Extensions\VehicleRouting\VehicleRoutingSolutionDraw.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\TravelingSalesman\TspSolutionDraw.cs" />

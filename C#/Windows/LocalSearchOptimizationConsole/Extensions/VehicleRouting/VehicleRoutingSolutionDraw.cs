@@ -2,18 +2,18 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
+namespace LocalSearchOptimization.Examples.Problems.VehicleRouting
 {
-    public static class TspSolutionDraw
+    public static class VehicleRoutingSolutionDraw
     {
-        public static Bitmap Draw(this TspSolution solution, BitmapStyle bitmapStyle = null)
+        public static Bitmap Draw(this VehicleRoutingSolution solution, BitmapStyle bitmapStyle = null)
         {
             BitmapStyle style = bitmapStyle ?? new BitmapStyle();
             double maxSize = Math.Max(solution.MaxWidth, solution.MaxHeight);
             double scaleX = (style.ImageWidth - style.MarginX - 8 * style.Radius) / maxSize;
             double scaleY = (style.ImageHeight - style.MarginY - 4 * style.Radius) / maxSize;
-            PointF[] points = new PointF[solution.NumberOfCities];
-            for (int i = 0; i < solution.NumberOfCities; i++)
+            PointF[] points = new PointF[solution.NumberOfCustomers];
+            for (int i = 0; i < solution.NumberOfCustomers; i++)
             {
                 int n = solution.Order[i];
                 points[i] = new PointF(style.MarginX + 2 * style.Radius + (float)(solution.X[n] * scaleX), style.ImageHeight - 2 * style.Radius - (float)(solution.Y[n] * scaleY));

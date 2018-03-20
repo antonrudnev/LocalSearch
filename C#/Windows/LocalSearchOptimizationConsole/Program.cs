@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LocalSearchOptimization.Components;
 using LocalSearchOptimization.Examples.Problems.TravellingSalesman;
+using LocalSearchOptimization.Examples.Problems.VehicleRouting;
 using LocalSearchOptimization.Parameters;
 using LocalSearchOptimization.Examples.Structures.Permutation;
 using LocalSearchOptimization.Examples.RectangularPacking;
@@ -21,25 +22,39 @@ namespace LocalSearchOptimizationConsole
     {
         static void Main(string[] args)
         {
+            //VehicleRoutingProblem vrProblem = new VehicleRoutingProblem(4, 2);
+            //VehicleRoutingSolution vrSolution = new VehicleRoutingSolution(vrProblem);
+
+            //Console.WriteLine(vrSolution.ToString());
+            //Console.WriteLine(vrSolution.CostValue);
+            //Console.ReadLine();
+
+            //return;
+
+
             //FloorplanProblem problem = new FloorplanProblem(100);
-            FloorplanProblem problem = FloorplanProblem.Load("500.vlsi");
-            FloorplanSolution solution = new FloorplanSolution(problem);
-            Swap swap = new Swap(problem.Dimension, 10);
-            Shift shift = new Shift(problem.Dimension, 1);
-            EmptyLeafMove eLeaf = new EmptyLeafMove(problem.Dimension, 5);
-            FullLeafMove fLeaf = new FullLeafMove(problem.Dimension, 5);
-            FullNodeMove fnode = new FullNodeMove(problem.Dimension, 5);
-            List<Operator> operations = new List<Operator> { swap, fLeaf };
+            //FloorplanProblem problem = FloorplanProblem.Load("500.vlsi");
+            //FloorplanSolution solution = new FloorplanSolution(problem);
+            //Swap swap = new Swap(problem.Dimension, 10);
+            //Shift shift = new Shift(problem.Dimension, 1);
+            //EmptyLeafMove eLeaf = new EmptyLeafMove(problem.Dimension, 5);
+            //FullLeafMove fLeaf = new FullLeafMove(problem.Dimension, 5);
+            //FullNodeMove fnode = new FullNodeMove(problem.Dimension, 5);
+            //List<Operator> operations = new List<Operator> { swap, fLeaf };
 
 
 
 
             //TspProblem problem = new TspProblem(200);
             //TspSolution solution = new TspSolution(problem);
-            //Swap swap = new Swap(problem.Dimension, 1);
-            //Shift shift = new Shift(problem.Dimension, 2);
-            //TwoOpt twoOpt = new TwoOpt(problem.Dimension, 3);
-            //List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
+
+            VehicleRoutingProblem problem = new VehicleRoutingProblem(60, 3);
+            VehicleRoutingSolution solution = new VehicleRoutingSolution(problem);
+
+            Swap swap = new Swap(problem.Dimension, 1);
+            Shift shift = new Shift(problem.Dimension, 2);
+            TwoOpt twoOpt = new TwoOpt(problem.Dimension, 3);
+            List<Operator> operations = new List<Operator> { swap, shift, twoOpt };
 
 
             MultistartParameters multistartOptions = new MultistartParameters()
@@ -149,6 +164,7 @@ namespace LocalSearchOptimizationConsole
 
         static private IEnumerable<Bitmap> DrawSolution(ISolution solution, IOptimizationAlgorithm optimizer)
         {
+            yield return (solution as VehicleRoutingSolution)?.Draw();
             yield return (solution as TspSolution)?.Draw();
             yield return (solution as FloorplanSolution)?.Draw();
             yield return DrawCostDiagram.Draw(optimizer, new BitmapStyle());

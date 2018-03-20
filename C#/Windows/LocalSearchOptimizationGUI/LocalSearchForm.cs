@@ -17,7 +17,7 @@ namespace LocalSearchOptimizationGUI
 {
     public partial class LocalSearchForm : Form
     {
-        private int tspDimension = 210;
+        private int tspDimension = 225;
         private int floorplanDimension = 70;
 
         private int seed = 0;
@@ -167,7 +167,7 @@ namespace LocalSearchOptimizationGUI
                     {
                         saParameters.InitProbability = 0.01;
                         saParameters.MinCostDeviation = 10E-2;
-                        multistartParameters.InstancesNumber = 2;
+                        multistartParameters.InstancesNumber = 3;
                         multistartParameters.Parameters = ssParameters;
                         multistartParameters.OptimizationAlgorithm = typeof(StackedSearch);
                     }
@@ -259,7 +259,7 @@ namespace LocalSearchOptimizationGUI
                     {
                         saParameters.InitProbability = 0.005;
                         saParameters.TemperatureCooling = 0.95;
-                        multistartParameters.InstancesNumber = 2;
+                        multistartParameters.InstancesNumber = 3;
                         multistartParameters.Parameters = ssParameters;
                         multistartParameters.OptimizationAlgorithm = typeof(StackedSearch);
                     }

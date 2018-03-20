@@ -43,6 +43,8 @@ namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
             this.tspProblem = tspProblem;
             X = tspProblem.X;
             Y = tspProblem.Y;
+            MaxWidth = tspProblem.MaxX;
+            MaxHeight = tspProblem.MaxY;
             Order = order;
             OperatorTag = operatorName;
             DecodeSolution(tspProblem);
@@ -64,20 +66,16 @@ namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
             return this;
         }
 
-        private void DecodeSolution(TspProblem problem)
+        private void DecodeSolution(TspProblem tspProblem)
         {
-            int city = Order[problem.Dimension - 1];
+            int city = Order[tspProblem.Dimension - 1];
             int nextCity = Order[0];
-            double cost = problem.Distance[city, nextCity];
-            MaxWidth = problem.X[city];
-            MaxHeight = problem.Y[city];
-            for (int i = 0; i < problem.Dimension - 1; i++)
+            double cost = tspProblem.Distance[city, nextCity];
+            for (int i = 0; i < tspProblem.Dimension - 1; i++)
             {
                 city = Order[i];
                 nextCity = Order[i + 1];
-                cost += problem.Distance[city, nextCity];
-                if (MaxWidth < problem.X[i]) MaxWidth = problem.X[i];
-                if (MaxHeight < problem.Y[i]) MaxHeight = problem.Y[i];
+                cost += tspProblem.Distance[city, nextCity];
             }
             CostValue = cost;
         }

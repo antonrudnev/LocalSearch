@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+
 
 namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
 {
@@ -8,6 +10,11 @@ namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
         public double[] X { get; }
         public double[] Y { get; }
         public double[,] Distance { get; private set; }
+
+        public double MinX { get; set; }
+        public double MinY { get; set; }
+        public double MaxX { get; set; }
+        public double MaxY { get; set; }
 
         public int Dimension { get; }
 
@@ -45,6 +52,11 @@ namespace LocalSearchOptimization.Examples.Problems.TravellingSalesman
                     Distance[i, j] = Math.Sqrt(Math.Pow(X[i] - X[j], 2) + Math.Pow(Y[i] - Y[j], 2));
                     Distance[j, i] = Distance[i, j];
                 }
+
+            MinX = X.Min();
+            MinY = Y.Min();
+            MaxX = X.Max();
+            MaxY = Y.Max();
 
             double lb1 = 0.7080 * Math.Sqrt(Dimension) + 0.522;
             double lb2 = 0.7078 * Math.Sqrt(Dimension) + 0.551;
