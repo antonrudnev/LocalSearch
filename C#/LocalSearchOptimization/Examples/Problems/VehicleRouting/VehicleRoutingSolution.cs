@@ -13,6 +13,7 @@ namespace LocalSearchOptimization.Examples.Problems.VehicleRouting
         private double[] transportationCost;
 
         public double CostValue { get; private set; }
+        public double TourLenght { get; private set; }
         public int IterationNumber { get; set; }
         public double TimeInSeconds { get; set; }
         public bool IsCurrentBest { get; set; }
@@ -34,7 +35,7 @@ namespace LocalSearchOptimization.Examples.Problems.VehicleRouting
         public int NumberOfVehicles { get => vehicleRoutingProblem.NumberOfVehicles; }
         public int VehicleCapacity { get => vehicleRoutingProblem.VehicleCapacity; }
 
-        public double LowerBoundGap { get => (CostValue / vehicleRoutingProblem.LowerBound - 1) * 100; }
+        public double LowerBoundGap { get => (TourLenght / vehicleRoutingProblem.LowerBound - 1) * 100; }
 
         public VehicleRoutingSolution(VehicleRoutingProblem vehicleRoutingProblem) : this(vehicleRoutingProblem, Enumerable.Range(0, vehicleRoutingProblem.NumberOfCustomers).ToList(), "init")
         {
@@ -85,7 +86,8 @@ namespace LocalSearchOptimization.Examples.Problems.VehicleRouting
                 }
                 transportationCost[i] = cost;
             }
-            CostValue = transportationCost.Sum();
+            TourLenght = transportationCost.Sum();
+            CostValue = TourLenght;
         }
 
         public override string ToString()

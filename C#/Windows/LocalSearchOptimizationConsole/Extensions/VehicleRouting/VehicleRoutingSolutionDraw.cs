@@ -45,9 +45,9 @@ namespace LocalSearchOptimization.Examples.Problems.VehicleRouting
                     {
                         g.FillEllipse(brush, points[i][j].X - style.Radius, points[i][j].Y - style.Radius, 2 * style.Radius, 2 * style.Radius);
                         g.DrawEllipse(pen, points[i][j].X - style.Radius, points[i][j].Y - style.Radius, 2 * style.Radius, 2 * style.Radius);
-                        g.DrawString(string.Format("{0}", solution.Order[j] + 1), fontSmall, penBrush, points[i][j].X, points[i][j].Y);
+                        g.DrawString(string.Format("{0}", solution.Order[i * solution.VehicleCapacity + j] + 1), fontSmall, penBrush, points[i][j].X, points[i][j].Y);
                     }
-                g.DrawString(String.Format("Tour lenght: {0:F4} (lower bound gap {1:F2}%){4}\nIterations: {2}\nTime: {3:F3}s", solution.CostValue, solution.LowerBoundGap, solution.IterationNumber, solution.TimeInSeconds, solution.IsCurrentBest ? " <<<" : ""), font, brushBlack, 0, 0);
+                g.DrawString(String.Format("Tour lenght: {0:F4} (lower bound gap {1:F2}%){4}\nIterations: {2}\nTime: {3:F3}s", solution.TourLenght, solution.LowerBoundGap, solution.IterationNumber, solution.TimeInSeconds, solution.IsCurrentBest ? " <<<" : ""), font, brushBlack, 0, 0);
             }
             return bitmap;
         }
