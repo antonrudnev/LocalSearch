@@ -16,12 +16,12 @@ namespace LocalSearchOptimizationGUI
         private bool solveVehicleRouting = false;
         private bool solveFloorplan = true;
 
-        private int tspCities = 225;
+        private int tspCities = 220;
 
         private int routingCustomers = 225;
         private int routingVehicles = 25;
 
-        private int floorplanRectangles = 71;
+        private int floorplanRectangles = 70;
 
         private int seed = 0;
 
