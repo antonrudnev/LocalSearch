@@ -21,7 +21,7 @@ namespace LocalSearchOptimizationGUI
         private int routingCustomers = 225;
         private int routingVehicles = 25;
 
-        private int floorplanRectangles = 70;
+        private int floorplanRectangles = 71;
 
         private int seed = 0;
 

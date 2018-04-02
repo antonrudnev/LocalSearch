@@ -82,7 +82,7 @@ namespace LocalSearchOptimizationGUI
                     break;
                 case 2:
                     {
-                        saParameters.InitProbability = 0.01;
+                        saParameters.InitProbability = 0.007;
                         saParameters.MinCostDeviation = 10E-2;
                         multistartParameters.Parameters = ssParameters;
                         multistartParameters.OptimizationAlgorithm = typeof(StackedSearch);
@@ -90,7 +90,7 @@ namespace LocalSearchOptimizationGUI
                     break;
                 case 3:
                     {
-                        saParameters.InitProbability = 0.01;
+                        saParameters.InitProbability = 0.007;
                         saParameters.MinCostDeviation = 10E-2;
                         multistartParameters.InstancesNumber = 3;
                         multistartParameters.Parameters = ssParameters;
