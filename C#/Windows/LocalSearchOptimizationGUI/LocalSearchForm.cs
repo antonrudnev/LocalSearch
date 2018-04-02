@@ -18,8 +18,8 @@ namespace LocalSearchOptimizationGUI
 
         private int tspCities = 220;
 
-        private int routingCustomers = 225;
-        private int routingVehicles = 25;
+        private int routingCustomers = 220;
+        private int routingVehicles = 20;
 
         private int floorplanRectangles = 70;
 
